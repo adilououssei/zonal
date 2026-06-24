@@ -14,7 +14,7 @@ const Footer = () => {
           {/* Logo & Description */}
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <img src="/images/logo.png" alt={t('header.logo')} className="h-12 w-auto" />
+              <img src="/images/logoOrigin.png" alt={t('header.logo')} className="h-20 w-auto" />
             </div>
             <p className="text-gray-400 text-body leading-relaxed">
               {t('footer.description')}
@@ -115,6 +115,7 @@ const Footer = () => {
           <div className="flex items-center gap-6">
             <Link to="#" className="hover:text-primary-light transition-colors">{t('footer.legal')}</Link>
             <Link to="#" className="hover:text-primary-light transition-colors">{t('footer.privacy')}</Link>
+            <Link to="/login" className="text-white/10 hover:text-white/40 transition-colors text-xs" aria-label="Administration">Admin</Link>
           </div>
         </div>
       </div>

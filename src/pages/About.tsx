@@ -45,7 +45,7 @@ const About = () => {
       <section className="relative py-20 md:py-28 overflow-hidden">
         <div className="absolute inset-0">
           <img
-            src="https://images.unsplash.com/photo-1531482615713-2afd69097998?w=1920&h=600&fit=crop"
+            src="/images/hero-about.png"
             alt={t('about.hero.title')}
             className="w-full h-full object-cover"
           />
@@ -137,8 +137,8 @@ const About = () => {
             >
               <div className="rounded-card overflow-hidden shadow-xl mb-0">
                 <img
-                  src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=900&h=550&fit=crop"
-                  alt={t('about.who.title')}
+                src="images/photo-plante.jpeg"
+                alt={t('about.who.title')}
                   className="w-full h-auto"
                 />
               </div>
@@ -199,7 +199,7 @@ const About = () => {
               className="rounded-card overflow-hidden shadow-xl"
             >
               <img
-                src="https://images.unsplash.com/photo-1593113646773-028c64a8f1b8?w=900&h=550&fit=crop"
+                src="/images/ban2.jpg"
                 alt={t('about.history.title')}
                 className="w-full h-auto"
               />
@@ -238,7 +238,7 @@ const About = () => {
                   <img
                     src={member.image}
                     alt={member.name}
-                    className="w-full h-full object-cover"
+            className="w-full h-full object-scale-down"
                   />
                 </div>
                 <div className="p-5">
@@ -263,7 +263,7 @@ const About = () => {
       </section>
 
       {/* CTA */}
-      <section className="py-16 bg-primary-dark text-white">
+      <section className="py-16 bg-primary text-white">
         <div className="container-custom">
           <motion.div
             initial={{ opacity: 0, y: 30 }}

@@ -222,27 +222,6 @@
       "button": "Nous contacter"
     }
   },
-  "news": {
-    "hero": {
-      "title": "Actualités",
-      "subtitle": "Restez informé de nos dernières actualités"
-    },
-    "readMore": "Lire la suite",
-    "pagination": {
-      "prev": "Précédent",
-      "next": "Suivant"
-    },
-    "cta": {
-      "title": "Soutenez notre action",
-      "desc": "Votre soutien nous permet de continuer à agir pour un développement durable au Tchad.",
-      "button": "Faire un don"
-    },
-    "articles": [
-      { "title": "Lancement d'un nouveau projet de reboisement dans le Guera", "excerpt": "Dans le cadre de notre engagement pour la protection de l'environnement, nous avons lancé un vaste programme de reboisement dans la région du Guera.", "category": "Environnement", "date": "12 Mars 2025" },
-      { "title": "Formation en leadership pour 100 jeunes à N'Djamena", "excerpt": "Une formation intensive en leadership et gouvernance a été organisée pour 100 jeunes issus de différents quartiers de N'Djamena.", "category": "Éducation", "date": "5 Février 2025" },
-      { "title": "Construction d'un nouveau point d'eau à Abéché", "excerpt": "Un nouveau forage d'eau potable a été inauguré à Abéché, desservant plus de 500 ménages de la communauté locale.", "category": "Eau & Assainissement", "date": "20 Janvier 2025" }
-    ]
-  },
   "events": {
     "hero": {
       "title": "Nos événements",
@@ -335,5 +314,112 @@
     "october": "octobre",
     "november": "novembre",
     "december": "décembre"
+  },
+  "news": {
+    "hero": {
+      "title": "Actualités",
+      "subtitle": "Restez informé de nos dernières nouvelles, de nos actions sur le terrain et des avancées de nos programmes."
+    },
+    "breadcrumb": {
+      "home": "Accueil",
+      "current": "Actualités"
+    },
+    "allTitle": "Toutes nos actualités",
+    "sort": {
+      "recent": "Plus récentes",
+      "popular": "Plus populaires",
+      "oldest": "Plus anciennes"
+    },
+    "readMore": "Lire la suite",
+    "pagination": {
+      "prev": "Page précédente",
+      "next": "Page suivante"
+    },
+    "sidebar": {
+      "searchTitle": "Rechercher",
+      "searchPlaceholder": "Rechercher une actualité...",
+      "searchAria": "Rechercher",
+      "categoriesTitle": "Catégories",
+      "recentTitle": "Articles récents"
+    },
+    "newsletter": {
+      "title": "Restez informé !",
+      "desc": "Abonnez-vous à notre newsletter pour recevoir nos dernières actualités.",
+      "placeholder": "Votre adresse e-mail",
+      "button": "S'abonner"
+    },
+    "cta": {
+      "title": "Soutenez notre action",
+      "desc": "Votre soutien nous permet de continuer à agir pour un développement durable au Tchad.",
+      "button": "Faire un don"
+    },
+    "articles": [
+      { "title": "Lancement d'un nouveau projet de reboisement dans le Guera", "excerpt": "Dans le cadre de notre engagement pour la protection de l'environnement, nous avons lancé un vaste programme de reboisement dans la région du Guera.", "category": "Environnement", "date": "12 Mars 2025" },
+      { "title": "Formation en leadership pour 100 jeunes à N'Djamena", "excerpt": "Une formation intensive en leadership et gouvernance a été organisée pour 100 jeunes issus de différents quartiers de N'Djamena.", "category": "Éducation", "date": "5 Février 2025" },
+      { "title": "Construction d'un nouveau point d'eau à Abéché", "excerpt": "Un nouveau forage d'eau potable a été inauguré à Abéché, desservant plus de 500 ménages de la communauté locale.", "category": "Eau & Assainissement", "date": "20 Janvier 2025" },
+      { "title": "Atelier sur la gestion des catastrophes naturelles", "excerpt": "Un atelier de formation sur la prévention et la gestion des catastrophes naturelles a réuni 50 participants issus des collectivités locales.", "category": "Gestion des catastrophes", "date": "15 Décembre 2024" },
+      { "title": "Campagne de sensibilisation à l'hygiène en milieu scolaire", "excerpt": "Notre équipe a organisé une campagne de sensibilisation à l'hygiène dans 20 écoles primaires de la région du Logone.", "category": "Éducation", "date": "8 Novembre 2024" },
+      { "title": "Remise de matériel agricole aux coopératives féminines", "excerpt": "Dans le cadre de notre programme de développement rural, nous avons remis du matériel agricole à 15 coopératives féminines de la région du Mayo-Kebbi.", "category": "Développement rural", "date": "22 Octobre 2024" }
+    ]
+  },
+  "login": {
+    "hero": {
+      "title": "Agir aujourd'hui\npour un avenir durable",
+      "subtitle": "Connectez-vous pour accéder à votre espace d'administration."
+    },
+    "card": {
+      "title": "Connexion à l'espace admin",
+      "email": "Email",
+      "emailPlaceholder": "admin@zonalong.org",
+      "password": "Mot de passe",
+      "passwordPlaceholder": "••••••••",
+      "rememberMe": "Se souvenir de moi",
+      "forgotPassword": "Mot de passe oublié ?",
+      "loginButton": "Se connecter",
+      "quickLogin": "Connexion rapide (admin)",
+      "errorRequired": "Veuillez remplir tous les champs.",
+      "errorInvalid": "Email ou mot de passe incorrect."
+    },
+    "footer": "© {{year}} ZONAL ONG Développement Durable — Accès réservé aux administrateurs"
+  },
+  "admin": {
+    "sidebar": {
+      "dashboard": "Tableau de bord",
+      "events": "Événements",
+      "news": "Actualités",
+      "projects": "Projets",
+      "gallery": "Galerie",
+      "partners": "Partenaires",
+      "testimonials": "Témoignages",
+      "documents": "Documents",
+      "users": "Utilisateurs",
+      "roles": "Rôles & Permissions",
+      "settings": "Paramètres",
+      "logout": "Déconnexion"
+    },
+    "topbar": {
+      "backToSite": "Retour au site",
+      "admin": "Admin"
+    },
+    "dashboard": {
+      "title": "Tableau de bord",
+      "welcome": "Bienvenue dans l'interface d'administration de ZONAL.",
+      "stats": {
+        "projects": "Projets",
+        "events": "Événements",
+        "articles": "Articles",
+        "users": "Utilisateurs",
+        "partners": "Partenaires"
+      },
+      "activityOverview": "Aperçu des activités",
+      "recentEvents": "Derniers événements",
+      "recentArticles": "Articles récents",
+      "viewAll": "Voir tous",
+      "calendarTitle": "Juin 2024",
+      "calendarDays": ["Lu", "Ma", "Me", "Je", "Ve", "Sa", "Di"],
+      "statsTitle": "Statistiques",
+      "publicationsPerMonth": "Publications par mois",
+      "contentDistribution": "Répartition des contenus"
+    }
   }
 }

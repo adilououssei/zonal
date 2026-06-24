@@ -82,7 +82,7 @@ const Contact = () => {
       <section className="relative py-20 md:py-28 overflow-hidden">
         <div className="absolute inset-0">
           <img
-            src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=1920&h=600&fit=crop"
+            src="images/hero.png"
             alt={t('contact.hero.title')}
             className="w-full h-full object-cover"
           />

@@ -30,62 +30,62 @@ const Programs = () => {
   const domains = [
     {
       icon: 'Users',
-      title: t('programs.domains.governance.title'),
-      description: t('programs.domains.governance.description'),
+      title: t('home.domains.governance.title'),
+      description: t('home.domains.governance.desc'),
       points: [
-        t('programs.domains.governance.points.0'),
-        t('programs.domains.governance.points.1'),
-        t('programs.domains.governance.points.2'),
+        t('home.domains.governance.points.0'),
+        t('home.domains.governance.points.1'),
+        t('home.domains.governance.points.2'),
       ],
     },
     {
       icon: 'Leaf',
-      title: t('programs.domains.environment.title'),
-      description: t('programs.domains.environment.description'),
+      title: t('home.domains.environment.title'),
+      description: t('home.domains.environment.desc'),
       points: [
-        t('programs.domains.environment.points.0'),
-        t('programs.domains.environment.points.1'),
-        t('programs.domains.environment.points.2'),
+        t('home.domains.environment.points.0'),
+        t('home.domains.environment.points.1'),
+        t('home.domains.environment.points.2'),
       ],
     },
     {
       icon: 'TreePine',
-      title: t('programs.domains.rural.title'),
-      description: t('programs.domains.rural.description'),
+      title: t('home.domains.rural.title'),
+      description: t('home.domains.rural.desc'),
       points: [
-        t('programs.domains.rural.points.0'),
-        t('programs.domains.rural.points.1'),
-        t('programs.domains.rural.points.2'),
+        t('home.domains.rural.points.0'),
+        t('home.domains.rural.points.1'),
+        t('home.domains.rural.points.2'),
       ],
     },
     {
       icon: 'ShieldCheck',
-      title: t('programs.domains.disaster.title'),
-      description: t('programs.domains.disaster.description'),
+      title: t('home.domains.disaster.title'),
+      description: t('home.domains.disaster.desc'),
       points: [
-        t('programs.domains.disaster.points.0'),
-        t('programs.domains.disaster.points.1'),
-        t('programs.domains.disaster.points.2'),
+        t('home.domains.disaster.points.0'),
+        t('home.domains.disaster.points.1'),
+        t('home.domains.disaster.points.2'),
       ],
     },
     {
       icon: 'GraduationCap',
-      title: t('programs.domains.education.title'),
-      description: t('programs.domains.education.description'),
+      title: t('home.domains.education.title'),
+      description: t('home.domains.education.desc'),
       points: [
-        t('programs.domains.education.points.0'),
-        t('programs.domains.education.points.1'),
-        t('programs.domains.education.points.2'),
+        t('home.domains.education.points.0'),
+        t('home.domains.education.points.1'),
+        t('home.domains.education.points.2'),
       ],
     },
     {
       icon: 'Droplets',
-      title: t('programs.domains.water.title'),
-      description: t('programs.domains.water.description'),
+      title: t('home.domains.water.title'),
+      description: t('home.domains.water.desc'),
       points: [
-        t('programs.domains.water.points.0'),
-        t('programs.domains.water.points.1'),
-        t('programs.domains.water.points.2'),
+        t('home.domains.water.points.0'),
+        t('home.domains.water.points.1'),
+        t('home.domains.water.points.2'),
       ],
     },
   ]
@@ -96,7 +96,7 @@ const Programs = () => {
       <section className="relative py-20 md:py-28 overflow-hidden">
         <div className="absolute inset-0">
           <img
-            src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=1920&h=600&fit=crop"
+            src="/images/programms.png"
             alt={t('programs.hero.title')}
             className="w-full h-full object-cover"
           />
@@ -220,12 +220,12 @@ const Programs = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="relative rounded-card overflow-hidden bg-primary-dark"
+            className="relative rounded-card overflow-hidden bg-primary"
           >
             <div className="grid grid-cols-1 md:grid-cols-[40%_60%]">
               <div className="aspect-4/3 md:aspect-auto">
                 <img
-                  src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=700&h=600&fit=crop"
+                  src="images/enfance.png"
                   alt={t('programs.cta.quote')}
                   className="w-full h-full object-cover"
                 />

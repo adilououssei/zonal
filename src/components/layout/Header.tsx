@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { motion, LayoutGroup } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import {
   MapPin, Phone, Mail, MessageCircle,
@@ -52,7 +52,9 @@ const Header = () => {
 
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-      isScrolled ? 'bg-white/95 backdrop-blur-md shadow-lg' : 'bg-white'
+      isScrolled
+        ? 'bg-white/95 backdrop-blur-md shadow-lg'
+        : 'bg-white/60 backdrop-blur-sm'
     }`}>
       {/* Top Bar */}
       <div className="bg-primary-dark text-white text-small py-2 hidden md:block">
@@ -119,25 +121,34 @@ const Header = () => {
       </div>
 
       {/* Main Navbar */}
-      <div className="container-custom py-3 md:py-4">
+      <div className="container-custom py-1 md:py-1">
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
-            <img src="/images/logo.png" alt={t('header.logo')} className="h-12 w-auto" />
+            <img src="/images/logoOrigin.png" alt={t('header.logo')} className="h-20 w-auto" />
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center gap-7">
-            {navLinks.map((link) => (
-              <Link
-                key={link.path}
-                to={link.path}
-                className={`font-medium transition-colors hover:text-primary ${
-                  isActive(link.path) ? 'text-primary' : 'text-gray-600'
-                }`}
-              >
-                {link.label}
-              </Link>
-            ))}
+          <nav className="hidden lg:flex items-center gap-1">
+            <LayoutGroup>
+              {navLinks.map((link) => (
+                <Link
+                  key={link.path}
+                  to={link.path}
+                  className={`relative font-medium transition-colors hover:text-primary px-3 py-2 ${
+                    isActive(link.path) ? 'text-primary' : 'text-gray-600'
+                  }`}
+                >
+                  {link.label}
+                  {isActive(link.path) && (
+                    <motion.div
+                      layoutId="nav-indicator"
+                      className="absolute -bottom-0.5 left-2 right-2 h-0.5 bg-primary rounded-full"
+                      transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                    />
+                  )}
+                </Link>
+              ))}
+            </LayoutGroup>
           </nav>
 
           <div className="hidden lg:flex items-center gap-5">
@@ -177,8 +188,10 @@ const Header = () => {
             <Link
               key={link.path}
               to={link.path}
-              className={`block font-medium text-lg transition-colors hover:text-primary ${
-                isActive(link.path) ? 'text-primary' : 'text-gray-600'
+              className={`block font-medium text-lg transition-colors hover:text-primary border-l-4 py-1.5 pl-3 ${
+                isActive(link.path)
+                  ? 'text-primary border-primary'
+                  : 'text-gray-600 border-transparent'
               }`}
               onClick={() => setIsMobileMenuOpen(false)}
             >

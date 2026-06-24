@@ -225,12 +225,35 @@
   "news": {
     "hero": {
       "title": "News",
-      "subtitle": "Stay informed with our latest news"
+      "subtitle": "Stay informed with our latest news from the field and updates on our programs."
+    },
+    "breadcrumb": {
+      "home": "Home",
+      "current": "News"
+    },
+    "allTitle": "All news",
+    "sort": {
+      "recent": "Most recent",
+      "popular": "Most popular",
+      "oldest": "Oldest"
     },
     "readMore": "Read more",
     "pagination": {
-      "prev": "Previous",
-      "next": "Next"
+      "prev": "Previous page",
+      "next": "Next page"
+    },
+    "sidebar": {
+      "searchTitle": "Search",
+      "searchPlaceholder": "Search news...",
+      "searchAria": "Search",
+      "categoriesTitle": "Categories",
+      "recentTitle": "Recent articles"
+    },
+    "newsletter": {
+      "title": "Stay informed!",
+      "desc": "Subscribe to our newsletter to receive our latest news.",
+      "placeholder": "Your email address",
+      "button": "Subscribe"
     },
     "cta": {
       "title": "Support our action",
@@ -240,7 +263,10 @@
     "articles": [
       { "title": "Launch of a new reforestation project in Guera", "excerpt": "As part of our commitment to environmental protection, we have launched a large-scale reforestation program in the Guera region.", "category": "Environment", "date": "March 12, 2025" },
       { "title": "Leadership training for 100 young people in N'Djamena", "excerpt": "Intensive training in leadership and governance was organized for 100 young people from different neighborhoods of N'Djamena.", "category": "Education", "date": "February 5, 2025" },
-      { "title": "Construction of a new water point in Abeche", "excerpt": "A new drinking water borehole was inaugurated in Abeche, serving more than 500 households in the local community.", "category": "Water & Sanitation", "date": "January 20, 2025" }
+      { "title": "Construction of a new water point in Abeche", "excerpt": "A new drinking water borehole was inaugurated in Abeche, serving more than 500 households in the local community.", "category": "Water & Sanitation", "date": "January 20, 2025" },
+      { "title": "Workshop on natural disaster management", "excerpt": "A training workshop on disaster prevention and management brought together 50 participants from local communities.", "category": "Disaster Management", "date": "December 15, 2024" },
+      { "title": "Hygiene awareness campaign in schools", "excerpt": "Our team organized a hygiene awareness campaign in 20 primary schools in the Logone region.", "category": "Education", "date": "November 8, 2024" },
+      { "title": "Delivery of agricultural equipment to women's cooperatives", "excerpt": "As part of our rural development program, we delivered agricultural equipment to 15 women's cooperatives in the Mayo-Kebbi region.", "category": "Rural Development", "date": "October 22, 2024" }
     ]
   },
   "events": {
@@ -335,5 +361,65 @@
     "october": "October",
     "november": "November",
     "december": "December"
+  },
+  "login": {
+    "hero": {
+      "title": "Act today\nfor a sustainable future",
+      "subtitle": "Log in to access your administration area."
+    },
+    "card": {
+      "title": "Admin login",
+      "email": "Email",
+      "emailPlaceholder": "admin@zonalong.org",
+      "password": "Password",
+      "passwordPlaceholder": "••••••••",
+      "rememberMe": "Remember me",
+      "forgotPassword": "Forgot password?",
+      "loginButton": "Sign in",
+      "quickLogin": "Quick login (admin)",
+      "errorRequired": "Please fill in all fields.",
+      "errorInvalid": "Incorrect email or password."
+    },
+    "footer": "© {{year}} ZONAL NGO for Sustainable Development — Access restricted to administrators"
+  },
+  "admin": {
+    "sidebar": {
+      "dashboard": "Dashboard",
+      "events": "Events",
+      "news": "News",
+      "projects": "Projects",
+      "gallery": "Gallery",
+      "partners": "Partners",
+      "testimonials": "Testimonials",
+      "documents": "Documents",
+      "users": "Users",
+      "roles": "Roles & Permissions",
+      "settings": "Settings",
+      "logout": "Log out"
+    },
+    "topbar": {
+      "backToSite": "Back to site",
+      "admin": "Admin"
+    },
+    "dashboard": {
+      "title": "Dashboard",
+      "welcome": "Welcome to the ZONAL administration interface.",
+      "stats": {
+        "projects": "Projects",
+        "events": "Events",
+        "articles": "Articles",
+        "users": "Users",
+        "partners": "Partners"
+      },
+      "activityOverview": "Activity overview",
+      "recentEvents": "Recent events",
+      "recentArticles": "Recent articles",
+      "viewAll": "View all",
+      "calendarTitle": "June 2024",
+      "calendarDays": ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"],
+      "statsTitle": "Statistics",
+      "publicationsPerMonth": "Publications per month",
+      "contentDistribution": "Content distribution"
+    }
   }
 }

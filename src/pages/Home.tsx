@@ -128,13 +128,13 @@ const Home = () => {
       <section className="relative min-h-[85vh] flex items-end overflow-hidden pb-28 md:pb-32">
         <div className="absolute inset-0">
           <img
-            src="https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?w=1920&h=1080&fit=crop"
+            src="/images/hero1.png"
             alt={t('home.hero.tagline')}
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-linear-to-r from-black/70 via-black/50 to-black/30" />
         </div>
-        <div className="relative container-custom text-white">
+        <div className="relative text-white px-4 sm:px-6 lg:px-8 max-w-6xl ml-0 lg:ml-12">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
@@ -313,7 +313,7 @@ const Home = () => {
             <h2 className="section-title">{t('home.events.title')}</h2>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
             {translatedUpcomingEvents.map((event, index) => (
               <motion.div
                 key={index}
@@ -322,28 +322,28 @@ const Home = () => {
                 viewport={{ once: true, amount: 0.1 }}
                 variants={fadeUp}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="card overflow-hidden group"
+                className="card overflow-hidden group flex flex-row"
               >
-                <div className="relative aspect-16/10 overflow-hidden">
+                <div className="relative w-2/5 shrink-0 overflow-hidden">
                   <img
                     src={event.image}
                     alt={event.title}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
-                  <div className="absolute top-4 left-4 bg-white rounded-lg px-3 py-2 text-center shadow-md leading-none">
-                    <div className="text-red font-bold text-xl">{event.day}</div>
-                    <div className="text-gray-500 text-[11px] font-semibold tracking-wide">{event.month}</div>
+                  <div className="absolute top-2 left-2 bg-white rounded-lg px-2 py-1.5 text-center shadow-md leading-none">
+                    <div className="text-red font-bold text-sm">{event.day}</div>
+                    <div className="text-gray-500 text-[9px] font-semibold tracking-wide">{event.month}</div>
                   </div>
                 </div>
-                <div className="p-6">
-                  <span className="text-red text-small font-semibold">{event.status}</span>
-                  <h3 className="text-lg font-semibold text-gray-900 mt-2 mb-3 leading-snug">{event.title}</h3>
-                  <div className="flex items-center gap-2 text-gray-500 text-small mb-4">
-                    <MapPin size={16} className="text-primary-light shrink-0" />
+                <div className="p-4 w-3/5 flex flex-col justify-center">
+                  <span className="text-red text-xs font-semibold">{event.status}</span>
+                  <h3 className="text-sm font-semibold text-gray-900 mt-0.5 mb-1.5 leading-snug">{event.title}</h3>
+                  <div className="flex items-center gap-1 text-gray-500 text-xs mb-2">
+                    <MapPin size={12} className="text-primary-light shrink-0" />
                     <span>{event.location}</span>
                   </div>
-                  <Link to="/events" className="text-primary font-semibold text-body inline-flex items-center gap-1.5 hover:gap-2.5 transition-all">
-                    {t('home.events.details')} <ArrowRight size={16} />
+                  <Link to="/events" className="text-primary font-semibold text-xs inline-flex items-center gap-1 hover:gap-2 transition-all">
+                    {t('home.events.details')} <ArrowRight size={13} />
                   </Link>
                 </div>
               </motion.div>
@@ -359,7 +359,7 @@ const Home = () => {
       </section>
 
       {/* Call To Action */}
-      <section className="py-16 bg-primary-dark text-white">
+      <section className="py-16 bg-primary text-white">
         <div className="container-custom">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
