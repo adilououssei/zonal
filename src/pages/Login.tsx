@@ -2,7 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
-import { LogIn, Lock, Mail, Eye, EyeOff, Zap } from 'lucide-react'
+import { LogIn, Eye, EyeOff, Zap } from 'lucide-react'
 
 const Login = () => {
   const { t } = useTranslation()
