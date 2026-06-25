@@ -1,16 +1,34 @@
-import { useState } from 'react'
-import { Link, Outlet, useLocation } from 'react-router-dom'
+import { useState, useRef, useEffect } from 'react'
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import {
   LayoutDashboard, Calendar, Newspaper, FolderOpen, Image as ImageIcon,
   Handshake, MessageSquare, FileText, Users, Shield, Settings,
-  LogOut, ChevronDown, Menu, X
+  LogOut, ChevronDown, Menu, X, User
 } from 'lucide-react'
 
 const AdminLayout = () => {
   const { t } = useTranslation()
   const location = useLocation()
+  const navigate = useNavigate()
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [profileOpen, setProfileOpen] = useState(false)
+  const profileRef = useRef<HTMLDivElement>(null)
+
+  const handleLogout = () => {
+    localStorage.removeItem('zonal_admin')
+    navigate('/login')
+  }
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (profileRef.current && !profileRef.current.contains(e.target as Node)) {
+        setProfileOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
   const navItems = [
     { path: '/admin', label: t('admin.sidebar.dashboard'), icon: LayoutDashboard, end: true },
@@ -34,7 +52,7 @@ const AdminLayout = () => {
       {/* Sidebar */}
       <aside className={`fixed inset-y-0 left-0 z-40 w-64 bg-primary-dark text-white transform transition-transform duration-300 lg:translate-x-0 lg:z-auto ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="flex items-center h-16 px-5 border-b border-white/10">
-          <img src="/images/logoOrigin.png" alt="ZONAL" className="h-24 w-auto" />
+          <img src="/images/logoOrigin.png" alt="ZONAL" className="h-20 w-auto" />
           <button onClick={() => setSidebarOpen(false)} className="lg:hidden ml-auto">
             <X size={20} />
           </button>
@@ -59,13 +77,13 @@ const AdminLayout = () => {
             )
           })}
           <div className="pt-3 mt-3 border-t border-white/10">
-            <Link
-              to="/login"
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-small text-white/60 hover:text-white hover:bg-white/10 transition-colors"
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-small text-white/60 hover:text-white hover:bg-white/10 transition-colors w-full text-left cursor-pointer"
             >
               <LogOut size={18} />
               {t('admin.sidebar.logout')}
-            </Link>
+            </button>
           </div>
         </nav>
       </aside>
@@ -87,16 +105,49 @@ const AdminLayout = () => {
             <Link to="/" className="text-gray-400 hover:text-primary text-small transition-colors">
               {t('admin.topbar.backToSite')}
             </Link>
-            <div className="flex items-center gap-2 text-gray-600 cursor-pointer">
-              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold text-small">
-                A
-              </div>
-              <span className="text-small font-medium hidden sm:inline">{t('admin.topbar.admin')}</span>
-              <ChevronDown size={14} />
+            <div className="relative" ref={profileRef}>
+              <button
+                onClick={() => setProfileOpen(!profileOpen)}
+                className="flex items-center gap-2 text-gray-600 cursor-pointer hover:text-gray-900 transition-colors"
+              >
+                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold text-small">
+                  A
+                </div>
+                <span className="text-small font-medium hidden sm:inline">{t('admin.topbar.admin')}</span>
+                <ChevronDown size={14} className={`transition-transform ${profileOpen ? 'rotate-180' : ''}`} />
+              </button>
+              {profileOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-50">
+                  <Link
+                    to="/admin/profile"
+                    onClick={() => setProfileOpen(false)}
+                    className="flex items-center gap-2.5 px-4 py-2.5 text-gray-700 text-small hover:bg-gray-50 transition-colors"
+                  >
+                    <User size={16} />
+                    {t('admin.topbar.myProfile')}
+                  </Link>
+                  <Link
+                    to="/admin/settings"
+                    onClick={() => setProfileOpen(false)}
+                    className="flex items-center gap-2.5 px-4 py-2.5 text-gray-700 text-small hover:bg-gray-50 transition-colors"
+                  >
+                    <Settings size={16} />
+                    {t('admin.topbar.settings')}
+                  </Link>
+                  <div className="border-t border-gray-100 my-1" />
+                  <button
+                    onClick={() => { setProfileOpen(false); handleLogout() }}
+                    className="flex items-center gap-2.5 px-4 py-2.5 text-red text-small hover:bg-red-50 transition-colors w-full text-left cursor-pointer"
+                  >
+                    <LogOut size={16} />
+                    {t('admin.sidebar.logout')}
+                  </button>
+                </div>
+              )}
             </div>
-            <Link to="/login" className="text-gray-400 hover:text-red transition-colors">
+            <button onClick={handleLogout} className="text-gray-400 hover:text-red transition-colors cursor-pointer">
               <LogOut size={18} />
-            </Link>
+            </button>
           </div>
         </header>
 

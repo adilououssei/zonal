@@ -1,11 +1,12 @@
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import {
-  MapPin, Phone, Mail, MessageCircle, Clock
+  MapPin, Phone, Mail, MessageCircle, Clock, LayoutDashboard
 } from 'lucide-react'
 
 const Footer = () => {
   const { t } = useTranslation()
+  const isAdmin = localStorage.getItem('zonal_admin') === 'true'
 
   return (
     <footer className="bg-primary-dark text-white pt-16 pb-6">
@@ -20,17 +21,17 @@ const Footer = () => {
               {t('footer.description')}
             </p>
             <div className="flex items-center gap-3 mt-5">
-              <a href="#" aria-label={t('social.facebook')} className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-primary transition-colors">
-                <img src="/images/icons/facebook.png" alt={t('social.facebook')} className="w-4.5 h-4.5" />
+              <a href="#" aria-label={t('social.facebook')} className="w-11 h-11 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/20 transition-colors">
+                <img src="/images/icons/facebook.png" alt={t('social.facebook')} className="w-6.5 h-6.5" />
               </a>
-              <a href="#" aria-label={t('social.linkedin')} className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-primary transition-colors">
-                <img src="/images/icons/linkedin.png" alt={t('social.linkedin')} className="w-4.5 h-4.5" />
+              <a href="#" aria-label={t('social.linkedin')} className="w-11 h-11 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/20 transition-colors">
+                <img src="/images/icons/linkedin.png" alt={t('social.linkedin')} className="w-6.5 h-6.5" />
               </a>
-              <a href="#" aria-label={t('social.youtube')} className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-primary transition-colors">
-                <img src="/images/icons/youtube.png" alt={t('social.youtube')} className="w-4.5 h-4.5" />
+              <a href="#" aria-label={t('social.youtube')} className="w-11 h-11 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/20 transition-colors">
+                <img src="/images/icons/youtube.png" alt={t('social.youtube')} className="w-6.5 h-6.5" />
               </a>
-              <a href="#" aria-label={t('social.whatsapp')} className="w-9 h-9 rounded-full bg-green-600 flex items-center justify-center hover:opacity-90 transition-opacity">
-                <img src="/images/icons/whatsapp.png" alt={t('social.whatsapp')} className="w-4.5 h-4.5" />
+              <a href="https://wa.me/23566200620" target="_blank" rel="noopener noreferrer" aria-label={t('social.whatsapp')} className="w-11 h-11 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/20 transition-colors">
+                <img src="/images/icons/whatsapp.png" alt={t('social.whatsapp')} className="w-6.5 h-6.5" />
               </a>
             </div>
           </div>
@@ -111,13 +112,23 @@ const Footer = () => {
 
         {/* Copyright */}
         <div className="border-t border-white/10 pt-6 flex flex-col md:flex-row items-center justify-between gap-4 text-gray-400 text-small">
-          <p>{t('footer.copyright', { year: new Date().getFullYear() })}</p>
+          <div className="flex items-center gap-2">
+            <p>{t('footer.copyright', { year: new Date().getFullYear() })}</p>
+            <span className="text-white/5 hover:text-white/20 text-[10px] transition-colors hidden sm:inline">
+              — ◈ Ousseï Adilou
+            </span>
+          </div>
           <div className="flex items-center gap-6">
-            <Link to="#" className="hover:text-primary-light transition-colors">{t('footer.legal')}</Link>
             <Link to="#" className="hover:text-primary-light transition-colors">{t('footer.privacy')}</Link>
-            <Link to="/login" className="text-white/10 hover:text-white/40 transition-colors text-xs" aria-label="Administration">Admin</Link>
+            <Link to={isAdmin ? '/admin' : '/login'} className="text-white/10 hover:text-white/40 transition-colors text-xs flex items-center gap-1" aria-label="Administration">
+              {isAdmin ? <LayoutDashboard size={10} /> : null}
+              {isAdmin ? 'Dashboard' : 'Admin'}
+            </Link>
           </div>
         </div>
+        <p className="text-center text-white/5 hover:text-white/20 text-[10px] transition-colors mt-2 sm:hidden">
+          ◈ Ousseï Adilou
+        </p>
       </div>
     </footer>
   )

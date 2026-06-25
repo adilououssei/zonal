@@ -245,14 +245,14 @@ const About = () => {
                   <h3 className="font-semibold text-gray-900">{member.name}</h3>
                   <p className="text-gray-500 text-small mb-3">{member.role}</p>
                   <div className="flex items-center justify-center gap-2">
-                    <a href="#" aria-label={t('social.facebook')} className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center hover:bg-primary hover:text-white transition-colors">
-                      <img src="/images/icons/facebook.png" alt={t('social.facebook')} className="w-4 h-4" />
+                    <a href="#" aria-label={t('social.facebook')} className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors">
+                      <img src="/images/icons/facebook.png" alt={t('social.facebook')} className="w-5.5 h-5.5" />
                     </a>
-                    <a href="#" aria-label={t('social.linkedin')} className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center hover:bg-primary hover:text-white transition-colors">
-                      <img src="/images/icons/linkedin.png" alt={t('social.linkedin')} className="w-4 h-4" />
+                    <a href="#" aria-label={t('social.linkedin')} className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors">
+                      <img src="/images/icons/linkedin.png" alt={t('social.linkedin')} className="w-5.5 h-5.5" />
                     </a>
-                    <a href="#" aria-label={t('social.email')} className="w-8 h-8 rounded-full bg-red/10 text-red flex items-center justify-center hover:bg-red hover:text-white transition-colors">
-                      <Mail size={15} />
+                    <a href="#" aria-label={t('social.email')} className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors">
+                      <Mail size={15} className="text-gray-500" />
                     </a>
                   </div>
                 </div>

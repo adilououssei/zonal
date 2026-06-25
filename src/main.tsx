@@ -9,10 +9,29 @@ import About from './pages/About'
 import Programs from './pages/Programs'
 import Events from './pages/Events'
 import News from './pages/News'
+import Projects from './pages/Projects'
 import Contact from './pages/Contact'
 import Login from './pages/Login'
 import AdminLayout from './pages/admin/AdminLayout'
 import Dashboard from './pages/admin/Dashboard'
+import EventsList from './pages/admin/EventsList'
+import EventForm from './pages/admin/EventForm'
+import NewsList from './pages/admin/NewsList'
+import NewsForm from './pages/admin/NewsForm'
+import AdminProjects from './pages/admin/Projects'
+import ProjectsForm from './pages/admin/ProjectsForm'
+import Gallery from './pages/admin/Gallery'
+import GalleryForm from './pages/admin/GalleryForm'
+import Partners from './pages/admin/Partners'
+import PartnersForm from './pages/admin/PartnersForm'
+import Testimonials from './pages/admin/Testimonials'
+import TestimonialsForm from './pages/admin/TestimonialsForm'
+import Documents from './pages/admin/Documents'
+import DocumentsForm from './pages/admin/DocumentsForm'
+import Users from './pages/admin/Users'
+import Roles from './pages/admin/Roles'
+import Settings from './pages/admin/Settings'
+import Profile from './pages/admin/Profile'
 import './index.css'
 import './i18n/config'
 
@@ -24,6 +43,7 @@ const router = createBrowserRouter([
       { index: true, element: <Home /> },
       { path: 'about', element: <About /> },
       { path: 'programs', element: <Programs /> },
+      { path: 'projects', element: <Projects /> },
       { path: 'events', element: <Events /> },
       { path: 'news', element: <News /> },
       { path: 'contact', element: <Contact /> },
@@ -35,6 +55,31 @@ const router = createBrowserRouter([
     element: <AdminLayout />,
     children: [
       { index: true, element: <Dashboard /> },
+      { path: 'events', element: <EventsList /> },
+      { path: 'events/new', element: <EventForm /> },
+      { path: 'events/:id/edit', element: <EventForm /> },
+      { path: 'news', element: <NewsList /> },
+      { path: 'news/new', element: <NewsForm /> },
+      { path: 'news/:id/edit', element: <NewsForm /> },
+      { path: 'projects', element: <AdminProjects /> },
+      { path: 'projects/new', element: <ProjectsForm /> },
+      { path: 'projects/:id/edit', element: <ProjectsForm /> },
+      { path: 'gallery', element: <Gallery /> },
+      { path: 'gallery/new', element: <GalleryForm /> },
+      { path: 'gallery/:id/edit', element: <GalleryForm /> },
+      { path: 'partners', element: <Partners /> },
+      { path: 'partners/new', element: <PartnersForm /> },
+      { path: 'partners/:id/edit', element: <PartnersForm /> },
+      { path: 'testimonials', element: <Testimonials /> },
+      { path: 'testimonials/new', element: <TestimonialsForm /> },
+      { path: 'testimonials/:id/edit', element: <TestimonialsForm /> },
+      { path: 'documents', element: <Documents /> },
+      { path: 'documents/new', element: <DocumentsForm /> },
+      { path: 'documents/:id/edit', element: <DocumentsForm /> },
+      { path: 'users', element: <Users /> },
+      { path: 'roles', element: <Roles /> },
+      { path: 'settings', element: <Settings /> },
+      { path: 'profile', element: <Profile /> },
     ],
   },
 ])
@@ -45,4 +90,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       <RouterProvider router={router} />
     </HelmetProvider>
   </React.StrictMode>,
+)
+
+console.log(
+  '%c◈ Site développé par Ousseï Adilou',
+  'font-size:14px; font-weight:bold; color:#0B6B3A; padding:4px 8px;'
 )

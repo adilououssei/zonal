@@ -65,10 +65,10 @@ const Contact = () => {
   ]
 
   const socialLinks = [
-    { icon: 'facebook', label: t('social.facebook'), bg: 'bg-[#1877F2]' },
-    { icon: 'linkedin', label: t('social.linkedin'), bg: 'bg-[#0A66C2]' },
-    { icon: 'youtube', label: t('social.youtube'), bg: 'bg-[#FF0000]' },
-    { icon: 'whatsapp', label: t('social.whatsapp'), bg: 'bg-[#25D366]' },
+    { icon: 'facebook', label: t('social.facebook'), href: '#' },
+    { icon: 'linkedin', label: t('social.linkedin'), href: '#' },
+    { icon: 'youtube', label: t('social.youtube'), href: '#' },
+    { icon: 'whatsapp', label: t('social.whatsapp'), href: 'https://wa.me/23566200620' },
   ]
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -299,11 +299,13 @@ const Contact = () => {
               {socialLinks.map((social, index) => (
                 <a
                   key={index}
-                  href="#"
+                  href={social.href}
+                  target={social.href.startsWith('http') ? '_blank' : undefined}
+                  rel={social.href.startsWith('http') ? 'noopener noreferrer' : undefined}
                   aria-label={social.label}
-                  className={`w-12 h-12 ${social.bg} rounded-full flex items-center justify-center text-white shadow-md hover:opacity-90 transition-all duration-300 hover:shadow-xl hover:-translate-y-1`}
+                  className="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center hover:bg-primary transition-colors shadow-md hover:shadow-xl hover:-translate-y-1"
                 >
-                  <img src={`/images/icons/${social.icon}.png`} alt={social.label} className="w-5 h-5" />
+                  <img src={`/images/icons/${social.icon}.png`} alt={social.label} className="w-7 h-7" />
                 </a>
               ))}
             </div>

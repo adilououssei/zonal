@@ -36,8 +36,7 @@
     "phone": "+235 662 00 620",
     "email": "zonal.ch@gmail.com",
     "whatsapp": "Nous écrire sur WhatsApp",
-    "copyright": "© {{year}} Zonal ONG Développement Durable - Tous droits réservés",
-    "legal": "Mentions légales",
+    "copyright": "© {{year}} Zonal - Tous droits réservés",
     "privacy": "Politique de confidentialité",
     "schedule": {
       "monThu": "Lun - Jeu",
@@ -222,6 +221,20 @@
       "button": "Nous contacter"
     }
   },
+  "projects": {
+    "hero": {
+      "title": "Nos projets",
+      "subtitle": "Découvrez l'ensemble de nos projets sur le terrain et leur impact sur les communautés."
+    },
+    "breadcrumb": {
+      "home": "Accueil",
+      "current": "Projets"
+    },
+    "filter": {
+      "all": "Tous"
+    },
+    "empty": "Aucun projet dans cette catégorie pour le moment."
+  },
   "events": {
     "hero": {
       "title": "Nos événements",
@@ -399,7 +412,9 @@
     },
     "topbar": {
       "backToSite": "Retour au site",
-      "admin": "Admin"
+      "admin": "Admin",
+      "myProfile": "Mon profil",
+      "settings": "Paramètres"
     },
     "dashboard": {
       "title": "Tableau de bord",
@@ -420,6 +435,88 @@
       "statsTitle": "Statistiques",
       "publicationsPerMonth": "Publications par mois",
       "contentDistribution": "Répartition des contenus"
+    },
+    "pages": {
+      "events": "Gérez les événements de l'organisation.",
+      "news": "Publiez et gérez les actualités de l'organisation.",
+      "projects": "Suivez l'avancement des projets de l'organisation.",
+      "gallery": "Gérez les photos et médias de l'organisation.",
+      "partners": "Gérez les partenaires et collaborateurs de l'organisation.",
+      "testimonials": "Gérez les témoignages des bénéficiaires et partenaires.",
+      "documents": "Gérez les documents et fichiers de l'organisation.",
+      "users": "Gérez les utilisateurs et leurs accès à la plateforme.",
+      "roles": "Gérez les rôles et les permissions des utilisateurs.",
+      "settings": "Configurez les paramètres généraux de l'organisation."
+    },
+    "table": {
+      "title": "Titre",
+      "event": "Événement",
+      "date": "Date",
+      "location": "Lieu",
+      "status": "Statut",
+      "actions": "Actions",
+      "category": "Catégorie",
+      "views": "Vues",
+      "project": "Projet",
+      "budget": "Budget",
+      "partner": "Partenaire",
+      "domain": "Domaine",
+      "contact": "Contact",
+      "name": "Nom",
+      "type": "Type",
+      "size": "Taille",
+      "user": "Utilisateur",
+      "email": "Email",
+      "role": "Rôle"
+    },
+    "status": {
+      "upcoming": "À venir",
+      "ongoing": "En cours",
+      "completed": "Terminé",
+      "planned": "Planifié",
+      "active": "Actif",
+      "inactive": "Inactif"
+    },
+    "actions": {
+      "addEvent": "Ajouter un événement",
+      "addArticle": "Nouvel article",
+      "addProject": "Nouveau projet",
+      "addImage": "Ajouter des images",
+      "addPartner": "Ajouter un partenaire",
+      "addTestimonial": "Ajouter un témoignage",
+      "addDocument": "Ajouter un document",
+      "addUser": "Ajouter un utilisateur",
+      "addRole": "Nouveau rôle",
+      "save": "Enregistrer",
+      "edit": "Modifier",
+      "delete": "Supprimer",
+      "view": "Voir",
+      "download": "Télécharger"
+    },
+    "settings": {
+      "generalInfo": "Informations générales",
+      "coordinates": "Coordonnées",
+      "orgName": "Nom de l'organisation",
+      "slogan": "Slogan",
+      "description": "Description",
+      "phone": "Téléphone",
+      "address": "Adresse"
+    },
+    "profile": {
+      "title": "Mon profil",
+      "subtitle": "Gérez vos informations personnelles et votre mot de passe.",
+      "role": "Super Administrateur",
+      "personalInfo": "Informations personnelles",
+      "fullName": "Nom complet",
+      "email": "Email",
+      "phone": "Téléphone",
+      "location": "Localisation",
+      "bio": "Biographie",
+      "bioPlaceholder": "Parlez de vous en quelques lignes...",
+      "changePassword": "Changer le mot de passe",
+      "currentPassword": "Mot de passe actuel",
+      "newPassword": "Nouveau mot de passe",
+      "confirmPassword": "Confirmer le mot de passe"
     }
   }
 }

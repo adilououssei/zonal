@@ -36,8 +36,7 @@
     "phone": "+235 662 00 620",
     "email": "zonal.ch@gmail.com",
     "whatsapp": "Write to us on WhatsApp",
-    "copyright": "© {{year}} Zonal NGO for Sustainable Development - All rights reserved",
-    "legal": "Legal Notice",
+    "copyright": "© {{year}} Zonal - All rights reserved",
     "privacy": "Privacy Policy",
     "schedule": {
       "monThu": "Mon - Thu",
@@ -222,6 +221,20 @@
       "button": "Contact us"
     }
   },
+  "projects": {
+    "hero": {
+      "title": "Our Projects",
+      "subtitle": "Discover all our projects on the field and their impact on communities."
+    },
+    "breadcrumb": {
+      "home": "Home",
+      "current": "Projects"
+    },
+    "filter": {
+      "all": "All"
+    },
+    "empty": "No projects in this category at the moment."
+  },
   "news": {
     "hero": {
       "title": "News",
@@ -399,7 +412,9 @@
     },
     "topbar": {
       "backToSite": "Back to site",
-      "admin": "Admin"
+      "admin": "Admin",
+      "myProfile": "My profile",
+      "settings": "Settings"
     },
     "dashboard": {
       "title": "Dashboard",
@@ -420,6 +435,88 @@
       "statsTitle": "Statistics",
       "publicationsPerMonth": "Publications per month",
       "contentDistribution": "Content distribution"
+    },
+    "pages": {
+      "events": "Manage the organization's events.",
+      "news": "Publish and manage the organization's news.",
+      "projects": "Track the progress of the organization's projects.",
+      "gallery": "Manage the organization's photos and media.",
+      "partners": "Manage the organization's partners and collaborators.",
+      "testimonials": "Manage beneficiary and partner testimonials.",
+      "documents": "Manage the organization's documents and files.",
+      "users": "Manage users and their access to the platform.",
+      "roles": "Manage user roles and permissions.",
+      "settings": "Configure the organization's general settings."
+    },
+    "table": {
+      "title": "Title",
+      "event": "Event",
+      "date": "Date",
+      "location": "Location",
+      "status": "Status",
+      "actions": "Actions",
+      "category": "Category",
+      "views": "Views",
+      "project": "Project",
+      "budget": "Budget",
+      "partner": "Partner",
+      "domain": "Domain",
+      "contact": "Contact",
+      "name": "Name",
+      "type": "Type",
+      "size": "Size",
+      "user": "User",
+      "email": "Email",
+      "role": "Role"
+    },
+    "status": {
+      "upcoming": "Upcoming",
+      "ongoing": "Ongoing",
+      "completed": "Completed",
+      "planned": "Planned",
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "actions": {
+      "addEvent": "Add an event",
+      "addArticle": "New article",
+      "addProject": "New project",
+      "addImage": "Add images",
+      "addPartner": "Add a partner",
+      "addTestimonial": "Add a testimonial",
+      "addDocument": "Add a document",
+      "addUser": "Add a user",
+      "addRole": "New role",
+      "save": "Save",
+      "edit": "Edit",
+      "delete": "Delete",
+      "view": "View",
+      "download": "Download"
+    },
+    "settings": {
+      "generalInfo": "General Information",
+      "coordinates": "Contact Details",
+      "orgName": "Organization Name",
+      "slogan": "Slogan",
+      "description": "Description",
+      "phone": "Phone",
+      "address": "Address"
+    },
+    "profile": {
+      "title": "My Profile",
+      "subtitle": "Manage your personal information and password.",
+      "role": "Super Administrator",
+      "personalInfo": "Personal Information",
+      "fullName": "Full Name",
+      "email": "Email",
+      "phone": "Phone",
+      "location": "Location",
+      "bio": "Biography",
+      "bioPlaceholder": "Tell us about yourself in a few lines...",
+      "changePassword": "Change Password",
+      "currentPassword": "Current Password",
+      "newPassword": "New Password",
+      "confirmPassword": "Confirm Password"
     }
   }
 }

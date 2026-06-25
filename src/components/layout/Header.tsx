@@ -104,16 +104,16 @@ const Header = () => {
             </div>
             <div className="flex items-center gap-3">
               <a href="#" aria-label={t('social.facebook')} className="hover:text-primary-light transition-colors">
-                <img src="/images/icons/facebook.png" alt={t('social.facebook')} className="w-4.5 h-4.5" />
+                <img src="/images/icons/facebook.png" alt={t('social.facebook')} className="w-5.5 h-5.5" />
               </a>
               <a href="#" aria-label={t('social.linkedin')} className="hover:text-primary-light transition-colors">
-                <img src="/images/icons/linkedin.png" alt={t('social.linkedin')} className="w-4.5 h-4.5" />
+                <img src="/images/icons/linkedin.png" alt={t('social.linkedin')} className="w-5.5 h-5.5" />
               </a>
               <a href="#" aria-label={t('social.youtube')} className="hover:text-primary-light transition-colors">
-                <img src="/images/icons/youtube.png" alt={t('social.youtube')} className="w-4.5 h-4.5" />
+                <img src="/images/icons/youtube.png" alt={t('social.youtube')} className="w-5.5 h-5.5" />
               </a>
-              <a href="#" aria-label={t('social.whatsapp')} className="hover:text-primary-light transition-colors">
-                <img src="/images/icons/whatsapp.png" alt={t('social.whatsapp')} className="w-4.5 h-4.5" />
+              <a href="https://wa.me/23566200620" target="_blank" rel="noopener noreferrer" aria-label={t('social.whatsapp')} className="hover:text-primary-light transition-colors">
+                <img src="/images/icons/whatsapp.png" alt={t('social.whatsapp')} className="w-5.5 h-5.5" />
               </a>
             </div>
           </div>
@@ -209,16 +209,16 @@ const Header = () => {
           </a>
           <div className="flex items-center gap-4 pt-4 border-t border-gray-100">
             <a href="#" aria-label={t('social.facebook')}>
-              <img src="/images/icons/facebook.png" alt={t('social.facebook')} className="w-5.5 h-5.5" />
+              <img src="/images/icons/facebook.png" alt={t('social.facebook')} className="w-6.5 h-6.5" />
             </a>
             <a href="#" aria-label={t('social.linkedin')}>
-              <img src="/images/icons/linkedin.png" alt={t('social.linkedin')} className="w-5.5 h-5.5" />
+              <img src="/images/icons/linkedin.png" alt={t('social.linkedin')} className="w-6.5 h-6.5" />
             </a>
             <a href="#" aria-label={t('social.youtube')}>
-              <img src="/images/icons/youtube.png" alt={t('social.youtube')} className="w-5.5 h-5.5" />
+              <img src="/images/icons/youtube.png" alt={t('social.youtube')} className="w-6.5 h-6.5" />
             </a>
-            <a href="#" aria-label={t('social.whatsapp')}>
-              <img src="/images/icons/whatsapp.png" alt={t('social.whatsapp')} className="w-5.5 h-5.5" />
+            <a href="https://wa.me/23566200620" target="_blank" rel="noopener noreferrer" aria-label={t('social.whatsapp')}>
+              <img src="/images/icons/whatsapp.png" alt={t('social.whatsapp')} className="w-6.5 h-6.5" />
             </a>
           </div>
         </div>

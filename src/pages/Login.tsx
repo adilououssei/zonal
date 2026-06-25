@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react'
+import { useState, useEffect, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
@@ -7,6 +7,12 @@ import { LogIn, Eye, EyeOff, Zap } from 'lucide-react'
 const Login = () => {
   const { t } = useTranslation()
   const navigate = useNavigate()
+
+  useEffect(() => {
+    if (localStorage.getItem('zonal_admin') === 'true') {
+      navigate('/admin', { replace: true })
+    }
+  }, [navigate])
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -23,6 +29,7 @@ const Login = () => {
     }
 
     if (email === 'admin@zonalong.org' && password === 'admin123') {
+      localStorage.setItem('zonal_admin', 'true')
       navigate('/admin')
     } else {
       setError(t('login.card.errorInvalid'))
@@ -33,6 +40,7 @@ const Login = () => {
     setEmail('admin@zonalong.org')
     setPassword('admin123')
     setError('')
+    localStorage.setItem('zonal_admin', 'true')
     setTimeout(() => navigate('/admin'), 300)
   }
 
