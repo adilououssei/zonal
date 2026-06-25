@@ -3,23 +3,27 @@ import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { LogIn, Eye, EyeOff, Zap } from 'lucide-react'
+import { useAuth } from '../contexts/useAuth'
 
 const Login = () => {
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const { isAuthenticated, login } = useAuth()
 
   useEffect(() => {
-    if (localStorage.getItem('zonal_admin') === 'true') {
+    if (isAuthenticated) {
       navigate('/admin', { replace: true })
     }
-  }, [navigate])
+  }, [isAuthenticated, navigate])
+
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [rememberMe, setRememberMe] = useState(false)
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     setError('')
 
@@ -28,20 +32,20 @@ const Login = () => {
       return
     }
 
-    if (email === 'admin@zonalong.org' && password === 'admin123') {
-      localStorage.setItem('zonal_admin', 'true')
+    setLoading(true)
+    try {
+      await login(email, password)
       navigate('/admin')
-    } else {
-      setError(t('login.card.errorInvalid'))
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t('login.card.errorInvalid'))
+    } finally {
+      setLoading(false)
     }
   }
 
   const quickLogin = () => {
     setEmail('admin@zonalong.org')
     setPassword('admin123')
-    setError('')
-    localStorage.setItem('zonal_admin', 'true')
-    setTimeout(() => navigate('/admin'), 300)
   }
 
   return (
@@ -56,7 +60,6 @@ const Login = () => {
       <div className="relative z-10 h-screen flex items-center overflow-y-auto py-6">
         <div className="w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col lg:flex-row items-center justify-center gap-10 lg:gap-16">
-            {/* Left: Text */}
             <motion.div
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
@@ -76,7 +79,6 @@ const Login = () => {
               </p>
             </motion.div>
 
-            {/* Right: Form card */}
             <motion.div
               initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
@@ -142,10 +144,11 @@ const Login = () => {
 
                 <button
                   type="submit"
-                  className="w-full bg-primary text-white py-2.5 rounded-lg font-semibold hover:bg-primary-dark transition-colors flex items-center justify-center gap-2"
+                  disabled={loading}
+                  className="w-full bg-primary text-white py-2.5 rounded-lg font-semibold hover:bg-primary-dark transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <LogIn size={18} />
-                  {t('login.card.loginButton')}
+                  {loading ? t('login.card.loggingIn') || 'Connexion...' : t('login.card.loginButton')}
                 </button>
 
                 <button
@@ -162,7 +165,6 @@ const Login = () => {
         </div>
       </div>
 
-      {/* Bottom bar */}
       <div className="absolute bottom-0 left-0 right-0 z-20 text-center py-4">
         <p className="text-white/40 text-xs">
           {t('login.footer', { year: new Date().getFullYear() })}

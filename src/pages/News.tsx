@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -6,7 +6,9 @@ import {
   Calendar, ArrowRight, ChevronRight, ChevronDown, Search, Send,
   ChevronsLeft, ChevronsRight, Mail
 } from 'lucide-react'
-import { categories, articles } from '../data/newsData'
+import { categories } from '../data/newsData'
+import { publicNewsService } from '../services/news'
+import type { PublicNews } from '../services/news'
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -17,6 +19,23 @@ const News = () => {
   const { t } = useTranslation()
   const [searchQuery, setSearchQuery] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
+  const [articles, setArticles] = useState<PublicNews[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchNews = async () => {
+      try {
+        const data = await publicNewsService.getAll()
+        setArticles(data)
+      } catch {
+        console.error('Erreur lors du chargement des actualités')
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchNews()
+  }, [])
+
   const recentArticles = articles.slice(0, 4)
 
   return (
@@ -86,7 +105,13 @@ const News = () => {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-10">
-                {articles.map((article, index) => (
+                {loading ? (
+                  <div className="col-span-2 flex items-center justify-center py-20">
+                    <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+                  </div>
+                ) : articles.length === 0 ? (
+                  <p className="col-span-2 text-center text-gray-500 py-10">{t('news.empty', 'Aucune actualité pour le moment.')}</p>
+                ) : articles.map((article, index) => (
                   <motion.article
                     key={article.id}
                     initial="hidden"
@@ -98,11 +123,11 @@ const News = () => {
                   >
                     <div className="relative aspect-video overflow-hidden">
                       <img
-                        src={article.image}
+                        src={article.image ?? ''}
                         alt={article.title}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                       />
-                      <span className={`absolute top-3 left-3 ${article.categoryColor} text-white text-[11px] font-semibold tracking-wide px-3 py-1 rounded-full`}>
+                      <span className="absolute top-3 left-3 bg-primary text-white text-[11px] font-semibold tracking-wide px-3 py-1 rounded-full">
                         {article.category}
                       </span>
                     </div>
@@ -117,7 +142,7 @@ const News = () => {
                       <p className="text-gray-600 text-body mb-4 line-clamp-2">
                         {article.excerpt}
                       </p>
-                      <Link to="/news" className="text-primary font-semibold text-body hover:text-primary-dark transition-colors inline-flex items-center gap-1.5">
+                      <Link to={`/news/${article.id}`} className="text-primary font-semibold text-body hover:text-primary-dark transition-colors inline-flex items-center gap-1.5">
                         {t('news.readMore')} <ArrowRight size={16} />
                       </Link>
                     </div>
@@ -211,10 +236,10 @@ const News = () => {
                 <ul className="space-y-4">
                   {recentArticles.map((article) => (
                     <li key={article.id}>
-                      <Link to="/news" className="flex items-start gap-3 group">
+                      <Link to={`/news/${article.id}`} className="flex items-start gap-3 group">
                         <div className="w-16 h-16 rounded-lg overflow-hidden shrink-0">
                           <img
-                            src={article.image}
+                        src={article.image ?? ''}
                             alt={article.title}
                             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                           />

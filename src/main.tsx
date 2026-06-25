@@ -1,23 +1,28 @@
-// src/main.tsx
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { HelmetProvider } from 'react-helmet-async'
+import { AuthProvider } from './contexts/AuthProvider'
 import Layout from './components/layout/Layout'
 import Home from './pages/Home'
 import About from './pages/About'
 import Programs from './pages/Programs'
 import Events from './pages/Events'
+import EventDetail from './pages/EventDetail'
 import News from './pages/News'
+import NewsDetail from './pages/NewsDetail'
 import Projects from './pages/Projects'
+import ProjectDetail from './pages/ProjectDetail'
 import Contact from './pages/Contact'
 import Login from './pages/Login'
 import AdminLayout from './pages/admin/AdminLayout'
 import Dashboard from './pages/admin/Dashboard'
 import EventsList from './pages/admin/EventsList'
 import EventForm from './pages/admin/EventForm'
+import AdminEventDetail from './pages/admin/EventDetail'
 import NewsList from './pages/admin/NewsList'
 import NewsForm from './pages/admin/NewsForm'
+import AdminNewsDetail from './pages/admin/NewsDetail'
 import AdminProjects from './pages/admin/Projects'
 import ProjectsForm from './pages/admin/ProjectsForm'
 import Gallery from './pages/admin/Gallery'
@@ -44,8 +49,11 @@ const router = createBrowserRouter([
       { path: 'about', element: <About /> },
       { path: 'programs', element: <Programs /> },
       { path: 'projects', element: <Projects /> },
+      { path: 'projects/:id', element: <ProjectDetail /> },
       { path: 'events', element: <Events /> },
+      { path: 'events/:id', element: <EventDetail /> },
       { path: 'news', element: <News /> },
+      { path: 'news/:id', element: <NewsDetail /> },
       { path: 'contact', element: <Contact /> },
     ],
   },
@@ -57,9 +65,11 @@ const router = createBrowserRouter([
       { index: true, element: <Dashboard /> },
       { path: 'events', element: <EventsList /> },
       { path: 'events/new', element: <EventForm /> },
+      { path: 'events/:id', element: <AdminEventDetail /> },
       { path: 'events/:id/edit', element: <EventForm /> },
       { path: 'news', element: <NewsList /> },
       { path: 'news/new', element: <NewsForm /> },
+      { path: 'news/:id', element: <AdminNewsDetail /> },
       { path: 'news/:id/edit', element: <NewsForm /> },
       { path: 'projects', element: <AdminProjects /> },
       { path: 'projects/new', element: <ProjectsForm /> },
@@ -87,7 +97,9 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <HelmetProvider>
-      <RouterProvider router={router} />
+      <AuthProvider>
+        <RouterProvider router={router} />
+      </AuthProvider>
     </HelmetProvider>
   </React.StrictMode>,
 )

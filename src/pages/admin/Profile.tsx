@@ -1,8 +1,10 @@
-import { useState, type FormEvent, type ElementType } from 'react'
+import { useState, useEffect, type FormEvent, type ElementType } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  User, Lock, Monitor, Camera, Mail, Phone, Smartphone, Laptop, LogOut
+  User, Lock, Monitor, Camera, Mail, Phone, Laptop, CheckCircle
 } from 'lucide-react'
+import { useAuth } from '../../contexts/useAuth'
+import { adminService } from '../../services/admin'
 
 type TabKey = 'info' | 'password' | 'sessions'
 
@@ -16,32 +18,88 @@ const inputClass =
   'w-full px-3.5 py-2.5 rounded-lg border border-gray-200 text-small focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition'
 const labelClass = 'block text-small font-medium text-gray-700 mb-1.5'
 
-const activeSessions = [
-  { device: 'Chrome — Windows', location: "N'Djamena, Tchad", lastActive: 'Maintenant', icon: Laptop, current: true },
-  { device: 'Application — Android', location: "N'Djamena, Tchad", lastActive: 'Il y a 2 heures', icon: Smartphone, current: false },
-  { device: 'Safari — macOS', location: 'Moundou, Tchad', lastActive: 'Il y a 3 jours', icon: Laptop, current: false },
-]
-
 const Profile = () => {
+  const { user: authUser } = useAuth()
   const [activeTab, setActiveTab] = useState<TabKey>('info')
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [success, setSuccess] = useState('')
+  const [error, setError] = useState('')
 
-  const [name, setName] = useState('Admin Principal')
-  const [email, setEmail] = useState('admin@zonalong.org')
-  const [phone, setPhone] = useState('+235 66 00 00 00')
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
+  const [email, setEmail] = useState('')
+  const [phone, setPhone] = useState('')
 
   const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+
+  useEffect(() => {
+    adminService.getProfile().then((data) => {
+      setFirstName(data.firstName || '')
+      setLastName(data.lastName || '')
+      setEmail(data.email)
+      setPhone(data.phone || '')
+    }).catch((err) => {
+      setError(err instanceof Error ? err.message : 'Erreur')
+    }).finally(() => {
+      setLoading(false)
+    })
+  }, [])
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) setAvatarPreview(URL.createObjectURL(file))
   }
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleInfoSubmit = async (e: FormEvent) => {
     e.preventDefault()
-    // À connecter à l'API backend
+    setError('')
+    setSuccess('')
+    try {
+      const updated = await adminService.updateProfile({ firstName, lastName, email, phone })
+      setFirstName(updated.firstName || '')
+      setLastName(updated.lastName || '')
+      setEmail(updated.email)
+      setPhone(updated.phone || '')
+      setSuccess('Informations mises à jour.')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erreur')
+    }
+  }
+
+  const handlePasswordSubmit = async (e: FormEvent) => {
+    e.preventDefault()
+    setError('')
+    setSuccess('')
+
+    if (!currentPassword || !newPassword) {
+      setError('Tous les champs sont requis.')
+      return
+    }
+    if (newPassword.length < 6) {
+      setError('Le mot de passe doit contenir au moins 6 caractères.')
+      return
+    }
+    if (newPassword !== confirmPassword) {
+      setError('Les mots de passe ne correspondent pas.')
+      return
+    }
+
+    try {
+      await adminService.changePassword({ currentPassword, newPassword })
+      setCurrentPassword('')
+      setNewPassword('')
+      setConfirmPassword('')
+      setSuccess('Mot de passe mis à jour.')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erreur')
+    }
+  }
+
+  if (loading) {
+    return <div className="p-8 text-center text-gray-400">Chargement...</div>
   }
 
   return (
@@ -51,8 +109,22 @@ const Profile = () => {
         <p className="text-gray-500 text-small mt-1">Tableau de bord &gt; Mon profil</p>
       </div>
 
+      {success && (
+        <div className="mb-4 p-3 bg-emerald-50 border border-emerald-200 text-emerald-700 text-small rounded-lg flex items-center gap-2">
+          <CheckCircle size={16} />
+          {success}
+          <button onClick={() => setSuccess('')} className="ml-auto font-bold">&times;</button>
+        </div>
+      )}
+
+      {error && (
+        <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red text-small rounded-lg">
+          {error}
+          <button onClick={() => setError('')} className="ml-2 font-bold">&times;</button>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr] gap-6">
-        {/* Sous-menu à onglets */}
         <nav className="bg-white rounded-xl shadow-sm border border-gray-100 p-2 flex lg:flex-col gap-1 overflow-x-auto lg:overflow-visible">
           {tabs.map(({ key, label, icon: Icon }) => (
             <button
@@ -68,7 +140,6 @@ const Profile = () => {
           ))}
         </nav>
 
-        {/* Panneau de contenu */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -83,9 +154,8 @@ const Profile = () => {
               transition={{ duration: 0.2 }}
             >
               {activeTab === 'info' && (
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleInfoSubmit}>
                   <div className="grid grid-cols-1 sm:grid-cols-[140px_1fr] gap-8">
-                    {/* Photo */}
                     <div>
                       <p className="text-small font-medium text-gray-700 mb-3">Photo de profil</p>
                       <label className="relative cursor-pointer group block w-28 h-28">
@@ -111,18 +181,28 @@ const Profile = () => {
                       </label>
                     </div>
 
-                    {/* Champs */}
                     <div>
                       <h3 className="font-semibold text-gray-900 text-body mb-4">Informations personnelles</h3>
                       <div className="space-y-4">
-                        <div>
-                          <label className={labelClass}>Nom complet</label>
-                          <input
-                            type="text"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            className={inputClass}
-                          />
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label className={labelClass}>Prénom</label>
+                            <input
+                              type="text"
+                              value={firstName}
+                              onChange={(e) => setFirstName(e.target.value)}
+                              className={inputClass}
+                            />
+                          </div>
+                          <div>
+                            <label className={labelClass}>Nom</label>
+                            <input
+                              type="text"
+                              value={lastName}
+                              onChange={(e) => setLastName(e.target.value)}
+                              className={inputClass}
+                            />
+                          </div>
                         </div>
                         <div>
                           <label className={`${labelClass} flex items-center gap-2`}>
@@ -153,6 +233,12 @@ const Profile = () => {
                   <div className="flex items-center justify-end gap-3 mt-8 pt-6 border-t border-gray-100">
                     <button
                       type="button"
+                      onClick={() => {
+                        setFirstName(authUser?.firstName || '')
+                        setLastName(authUser?.lastName || '')
+                        setEmail(authUser?.email || '')
+                        setPhone(authUser?.phone || '')
+                      }}
                       className="px-5 py-2.5 rounded-lg text-gray-600 font-medium text-small border border-gray-200 hover:bg-gray-50 transition-colors"
                     >
                       Annuler
@@ -168,7 +254,7 @@ const Profile = () => {
               )}
 
               {activeTab === 'password' && (
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handlePasswordSubmit}>
                   <h3 className="font-semibold text-gray-900 text-body mb-4">Changer le mot de passe</h3>
                   <div className="space-y-4 max-w-md">
                     <div>
@@ -208,6 +294,7 @@ const Profile = () => {
                   <div className="flex items-center justify-end gap-3 mt-8 pt-6 border-t border-gray-100">
                     <button
                       type="button"
+                      onClick={() => { setCurrentPassword(''); setNewPassword(''); setConfirmPassword('') }}
                       className="px-5 py-2.5 rounded-lg text-gray-600 font-medium text-small border border-gray-200 hover:bg-gray-50 transition-colors"
                     >
                       Annuler
@@ -229,46 +316,23 @@ const Profile = () => {
                     Liste des appareils actuellement connectés à votre compte.
                   </p>
                   <ul className="space-y-3">
-                    {activeSessions.map((session, i) => {
-                      const Icon = session.icon
-                      return (
-                        <li
-                          key={i}
-                          className="flex items-center justify-between gap-4 p-4 rounded-xl border border-gray-100"
-                        >
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
-                              <Icon size={18} />
-                            </div>
-                            <div>
-                              <p className="text-gray-800 text-small font-medium flex items-center gap-2">
-                                {session.device}
-                                {session.current && (
-                                  <span className="bg-emerald-100 text-emerald-700 text-[10px] font-semibold px-2 py-0.5 rounded-full">
-                                    Session actuelle
-                                  </span>
-                                )}
-                              </p>
-                              <p className="text-gray-400 text-xs">{session.location} · {session.lastActive}</p>
-                            </div>
-                          </div>
-                          {!session.current && (
-                            <button
-                              className="flex items-center gap-1.5 text-red text-small font-medium hover:text-red/80 transition-colors flex-shrink-0"
-                              title="Déconnecter cette session"
-                            >
-                              <LogOut size={14} />
-                              Déconnecter
-                            </button>
-                          )}
-                        </li>
-                      )
-                    })}
+                    <li className="flex items-center justify-between gap-4 p-4 rounded-xl border border-gray-100">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
+                          <Laptop size={18} />
+                        </div>
+                        <div>
+                          <p className="text-gray-800 text-small font-medium flex items-center gap-2">
+                            Session actuelle
+                            <span className="bg-emerald-100 text-emerald-700 text-[10px] font-semibold px-2 py-0.5 rounded-full">
+                              Session actuelle
+                            </span>
+                          </p>
+                          <p className="text-gray-400 text-xs">N'Djamena, Tchad · Maintenant</p>
+                        </div>
+                      </div>
+                    </li>
                   </ul>
-
-                  <button className="mt-6 text-red text-small font-medium hover:text-red/80 transition-colors">
-                    Déconnecter toutes les autres sessions
-                  </button>
                 </div>
               )}
             </motion.div>

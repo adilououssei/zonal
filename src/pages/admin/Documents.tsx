@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { FileText, Plus, Download, Trash2, FileType, Search, ChevronDown, ChevronsLeft, ChevronRight } from 'lucide-react'
-import { adminDocuments, typeColors, documentCategories } from '../../data/adminDocumentsData'
+import { adminDocuments, typeColors } from '../../data/adminDocumentsData'
 
 const Documents = () => {
   const { t } = useTranslation()

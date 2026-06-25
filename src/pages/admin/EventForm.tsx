@@ -1,24 +1,61 @@
-import { useState, type FormEvent } from 'react'
+import { useState, useEffect, useRef, type FormEvent } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
   Image as ImageIcon, Bold, Italic, Underline, Link2, List, ListOrdered,
-  AlignLeft, Quote, Plus, Calendar, Clock, MapPin
+  AlignLeft, Quote, Plus, MapPin, X
 } from 'lucide-react'
+import { eventsService } from '../../services/events'
 
 const EventForm = () => {
   const navigate = useNavigate()
   const { id } = useParams()
   const isEditing = Boolean(id)
 
+  const [loading, setLoading] = useState(false)
+  const [fetching, setFetching] = useState(isEditing)
+  const computeStatusFromDate = (dateStr: string): string => {
+    if (!dateStr) return 'À venir'
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const eventDate = new Date(dateStr + 'T00:00:00')
+    if (eventDate < today) return 'Terminé'
+    if (eventDate.getTime() === today.getTime()) return 'En cours'
+    return 'À venir'
+  }
+
   const [coverPreview, setCoverPreview] = useState<string | null>(null)
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
-  const [date, setDate] = useState('')
+  const [date, setDate] = useState(new Date().toISOString().split('T')[0])
   const [time, setTime] = useState('')
   const [location, setLocation] = useState('')
   const [status, setStatus] = useState('À venir')
   const [gallery, setGallery] = useState<string[]>([])
+
+  useEffect(() => {
+    if (!id) return
+    const fetchEvent = async () => {
+      try {
+        const event = await eventsService.getById(Number(id))
+        setTitle(event.title)
+        setDescription(event.description ?? '')
+        setDate(event.date)
+        setTime(event.time ?? '')
+        setLocation(event.location)
+        setCoverPreview(event.coverImage)
+        setGallery(event.gallery ?? [])
+        // Use the backend status, but also recompute from date
+        setStatus(computeStatusFromDate(event.date))
+      } catch {
+        console.error('Erreur lors du chargement de l\'événement')
+        navigate('/admin/events')
+      } finally {
+        setFetching(false)
+      }
+    }
+    fetchEvent()
+  }, [id, navigate])
 
   const handleCoverChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -32,13 +69,86 @@ const EventForm = () => {
     setGallery((prev) => [...prev, ...urls])
   }
 
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault()
-    // À connecter à l'API backend
-    navigate('/admin/events')
+  const removeFromGallery = (index: number) => {
+    setGallery((prev) => prev.filter((_, i) => i !== index))
   }
 
-  const toolbarButtons = [Bold, Italic, Underline, Link2, List, ListOrdered, AlignLeft, Quote]
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+
+    try {
+      const payload = {
+        title,
+        description: description || undefined,
+        date,
+        time: time || undefined,
+        location,
+        status,
+        coverImage: coverPreview || undefined,
+        gallery: gallery.length > 0 ? gallery : undefined,
+      }
+
+      if (isEditing && id) {
+        await eventsService.update(Number(id), payload)
+      } else {
+        await eventsService.create(payload as {
+          title: string
+          description?: string
+          date: string
+          time?: string
+          location: string
+          status?: string
+          coverImage?: string
+          gallery?: string[]
+        })
+      }
+      navigate('/admin/events')
+    } catch {
+      console.error('Erreur lors de l\'enregistrement')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const descRef = useRef<HTMLTextAreaElement>(null)
+
+  const applyFormat = (prefix: string, suffix: string, fallback: string) => {
+    const ta = descRef.current
+    if (!ta) return
+    const start = ta.selectionStart
+    const end = ta.selectionEnd
+    const selected = description.substring(start, end)
+    const before = description.substring(0, start)
+    const after = description.substring(end)
+    const wrapped = selected || fallback
+    const newText = before + prefix + wrapped + suffix + after
+    setDescription(newText)
+    requestAnimationFrame(() => {
+      ta.focus()
+      const pos = start + prefix.length + wrapped.length + suffix.length
+      ta.setSelectionRange(pos, pos)
+    })
+  }
+
+  const formatActions: { icon: typeof Bold; action: () => void }[] = [
+    { icon: Bold, action: () => applyFormat('<b>', '</b>', 'texte en gras') },
+    { icon: Italic, action: () => applyFormat('<i>', '</i>', 'texte en italique') },
+    { icon: Underline, action: () => applyFormat('<u>', '</u>', 'texte souligné') },
+    { icon: Link2, action: () => applyFormat('<a href="', '">', 'url') },
+    { icon: List, action: () => applyFormat('<ul>\n<li>', '</li>\n</ul>', 'item') },
+    { icon: ListOrdered, action: () => applyFormat('<ol>\n<li>', '</li>\n</ol>', 'item') },
+    { icon: AlignLeft, action: () => {} },
+    { icon: Quote, action: () => applyFormat('<blockquote>', '</blockquote>', 'citation') },
+  ]
+
+  if (fetching) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+      </div>
+    )
+  }
 
   return (
     <div>
@@ -58,7 +168,6 @@ const EventForm = () => {
         className="bg-white rounded-xl shadow-sm border border-gray-100 p-6"
       >
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Colonne gauche */}
           <div className="space-y-6">
             <div>
               <label className="block text-small font-medium text-gray-700 mb-2">Image de couverture</label>
@@ -87,6 +196,7 @@ const EventForm = () => {
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Ex : Journée mondiale de l'environnement"
                 className="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-small focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition"
+                required
               />
             </div>
 
@@ -94,10 +204,11 @@ const EventForm = () => {
               <label className="block text-small font-medium text-gray-700 mb-2">Description</label>
               <div className="border border-gray-200 rounded-lg overflow-hidden">
                 <div className="flex items-center gap-1 px-2 py-1.5 border-b border-gray-100 bg-gray-50/60">
-                  {toolbarButtons.map((Icon, i) => (
+                  {formatActions.map(({ icon: Icon, action }, i) => (
                     <button
                       key={i}
                       type="button"
+                      onClick={action}
                       className="w-7 h-7 flex items-center justify-center rounded text-gray-500 hover:bg-gray-200 transition-colors"
                     >
                       <Icon size={14} />
@@ -105,6 +216,7 @@ const EventForm = () => {
                   ))}
                 </div>
                 <textarea
+                  ref={descRef}
                   rows={6}
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
@@ -115,19 +227,17 @@ const EventForm = () => {
             </div>
           </div>
 
-          {/* Colonne droite */}
           <div className="space-y-6">
             <div>
               <label className="block text-small font-medium text-gray-700 mb-2">Date</label>
               <div className="relative">
                 <input
-                  type="text"
+                  type="date"
                   value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                  placeholder="jj/mm/aaaa"
-                  className="w-full px-4 py-2.5 pr-10 rounded-lg border border-gray-200 text-small focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition"
+                  onChange={(e) => { setDate(e.target.value); setStatus(computeStatusFromDate(e.target.value)) }}
+                  className="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-small focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition"
+                  required
                 />
-                <Calendar size={16} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
               </div>
             </div>
 
@@ -135,13 +245,11 @@ const EventForm = () => {
               <label className="block text-small font-medium text-gray-700 mb-2">Heure</label>
               <div className="relative">
                 <input
-                  type="text"
+                  type="time"
                   value={time}
                   onChange={(e) => setTime(e.target.value)}
-                  placeholder="--:--"
-                  className="w-full px-4 py-2.5 pr-10 rounded-lg border border-gray-200 text-small focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition"
+                  className="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-small focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition"
                 />
-                <Clock size={16} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
               </div>
             </div>
 
@@ -154,6 +262,7 @@ const EventForm = () => {
                   onChange={(e) => setLocation(e.target.value)}
                   placeholder="Ex : N'Djamena, Tchad"
                   className="w-full px-4 py-2.5 pr-10 rounded-lg border border-gray-200 text-small focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition"
+                  required
                 />
                 <MapPin size={16} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
               </div>
@@ -182,7 +291,16 @@ const EventForm = () => {
               {gallery.length > 0 && (
                 <div className="grid grid-cols-4 gap-2 mt-3">
                   {gallery.map((src, i) => (
-                    <img key={i} src={src} alt={`Galerie ${i + 1}`} className="w-full aspect-square object-cover rounded-lg" />
+                    <div key={i} className="relative group">
+                      <img src={src} alt={`Galerie ${i + 1}`} className="w-full aspect-square object-cover rounded-lg" />
+                      <button
+                        type="button"
+                        onClick={() => removeFromGallery(i)}
+                        className="absolute top-1 right-1 w-6 h-6 bg-black/50 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <X size={14} />
+                      </button>
+                    </div>
                   ))}
                 </div>
               )}
@@ -190,7 +308,6 @@ const EventForm = () => {
           </div>
         </div>
 
-        {/* Actions */}
         <div className="flex items-center justify-end gap-3 mt-8 pt-6 border-t border-gray-100">
           <button
             type="button"
@@ -201,9 +318,10 @@ const EventForm = () => {
           </button>
           <button
             type="submit"
-            className="px-6 py-2.5 rounded-lg bg-primary text-white font-medium text-small hover:bg-primary-dark transition-colors"
+            disabled={loading}
+            className="px-6 py-2.5 rounded-lg bg-primary text-white font-medium text-small hover:bg-primary-dark transition-colors disabled:opacity-50"
           >
-            Enregistrer
+            {loading ? 'Enregistrement...' : 'Enregistrer'}
           </button>
         </div>
       </motion.form>

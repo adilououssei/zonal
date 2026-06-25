@@ -1,22 +1,43 @@
 import { useState, useRef, useEffect } from 'react'
-import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { Link, Outlet, useLocation, useNavigate, useNavigation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import {
   LayoutDashboard, Calendar, Newspaper, FolderOpen, Image as ImageIcon,
   Handshake, MessageSquare, FileText, Users, Shield, Settings,
   LogOut, ChevronDown, Menu, X, User
 } from 'lucide-react'
+import { useAuth } from '../../contexts/useAuth'
+import Loader from '../../components/ui/Loader'
 
 const AdminLayout = () => {
   const { t } = useTranslation()
   const location = useLocation()
   const navigate = useNavigate()
+  const { user, isAuthenticated, logout } = useAuth()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [profileOpen, setProfileOpen] = useState(false)
   const profileRef = useRef<HTMLDivElement>(null)
 
+  const navigation = useNavigation()
+  const [showLoader, setShowLoader] = useState(false)
+
+  useEffect(() => {
+    if (navigation.state === 'loading') {
+      const timer = setTimeout(() => setShowLoader(true), 150)
+      return () => { clearTimeout(timer); setShowLoader(false) }
+    } else {
+      setShowLoader(false)
+    }
+  }, [navigation.state])
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate('/login', { replace: true })
+    }
+  }, [isAuthenticated, navigate])
+
   const handleLogout = () => {
-    localStorage.removeItem('zonal_admin')
+    logout()
     navigate('/login')
   }
 
@@ -29,6 +50,8 @@ const AdminLayout = () => {
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
+
+  const userInitial = user?.firstName?.charAt(0)?.toUpperCase() || user?.email?.charAt(0)?.toUpperCase() || 'A'
 
   const navItems = [
     { path: '/admin', label: t('admin.sidebar.dashboard'), icon: LayoutDashboard, end: true },
@@ -48,8 +71,9 @@ const AdminLayout = () => {
     end ? location.pathname === path : location.pathname.startsWith(path)
 
   return (
-    <div className="min-h-screen flex bg-gray-50">
-      {/* Sidebar */}
+    <>
+      {showLoader && <Loader />}
+      <div className="min-h-screen flex bg-gray-50">
       <aside className={`fixed inset-y-0 left-0 z-40 w-64 bg-primary-dark text-white transform transition-transform duration-300 lg:translate-x-0 lg:z-auto ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="flex items-center h-16 px-5 border-b border-white/10">
           <img src="/images/logoOrigin.png" alt="ZONAL" className="h-20 w-auto" />
@@ -88,14 +112,11 @@ const AdminLayout = () => {
         </nav>
       </aside>
 
-      {/* Overlay */}
       {sidebarOpen && (
         <div className="fixed inset-0 bg-black/50 z-30 lg:hidden" onClick={() => setSidebarOpen(false)} />
       )}
 
-      {/* Main */}
       <div className="flex-1 flex flex-col min-w-0 lg:ml-64">
-        {/* Top bar */}
         <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 lg:px-6 shrink-0">
           <button onClick={() => setSidebarOpen(true)} className="lg:hidden text-gray-600">
             <Menu size={24} />
@@ -111,9 +132,11 @@ const AdminLayout = () => {
                 className="flex items-center gap-2 text-gray-600 cursor-pointer hover:text-gray-900 transition-colors"
               >
                 <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold text-small">
-                  A
+                  {userInitial}
                 </div>
-                <span className="text-small font-medium hidden sm:inline">{t('admin.topbar.admin')}</span>
+                <span className="text-small font-medium hidden sm:inline">
+                  {user?.firstName || t('admin.topbar.admin')}
+                </span>
                 <ChevronDown size={14} className={`transition-transform ${profileOpen ? 'rotate-180' : ''}`} />
               </button>
               {profileOpen && (
@@ -151,13 +174,13 @@ const AdminLayout = () => {
           </div>
         </header>
 
-        {/* Page content */}
         <main className="flex-1 p-4 lg:p-6 overflow-auto">
           <Outlet />
         </main>
       </div>
     </div>
-  )
+  </>
+)
 }
 
 export default AdminLayout

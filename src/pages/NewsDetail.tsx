@@ -1,0 +1,188 @@
+import { useState, useEffect } from 'react'
+import { useParams, Link } from 'react-router-dom'
+import { motion } from 'framer-motion'
+import {
+  Calendar, User, ChevronRight, ArrowLeft, Eye,
+} from 'lucide-react'
+import { publicNewsService } from '../services/news'
+import type { PublicNews } from '../services/news'
+
+const monthNames = [
+  'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
+  'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre',
+]
+
+const categoryColors: Record<string, string> = {
+  'Environnement': 'bg-emerald-100 text-emerald-700',
+  'Éducation': 'bg-blue-100 text-blue-700',
+  'Eau & Assainissement': 'bg-cyan-100 text-cyan-700',
+  'Gestion des catastrophes': 'bg-orange-100 text-orange-700',
+  'Développement rural': 'bg-green-100 text-green-700',
+  'Gouvernance locale': 'bg-purple-100 text-purple-700',
+}
+
+const NewsDetail = () => {
+  const { id } = useParams()
+  const [article, setArticle] = useState<PublicNews | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    if (!id) return
+    const fetchNews = async () => {
+      try {
+        const data = await publicNewsService.getById(Number(id))
+        setArticle(data)
+      } catch {
+        console.error('Erreur lors du chargement de l\'article')
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchNews()
+  }, [id])
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+      </div>
+    )
+  }
+
+  if (!article) {
+    return (
+      <div className="container-custom py-20 text-center">
+        <p className="text-gray-500 text-lg">Article introuvable.</p>
+        <Link to="/news" className="text-primary font-medium mt-4 inline-block">&larr; Retour aux actualités</Link>
+      </div>
+    )
+  }
+
+  const articleDate = new Date(article.date + 'T00:00:00')
+
+  return (
+    <>
+      {/* Hero with cover */}
+      <section className="relative py-20 md:py-28 overflow-hidden">
+        <div className="absolute inset-0">
+          <img
+            src={article.image ?? '/images/hero-news.png'}
+            alt={article.title}
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-linear-to-r from-black/75 via-black/50 to-black/25" />
+        </div>
+        <div className="relative container-custom text-white">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <Link to="/news" className="inline-flex items-center gap-1.5 text-gray-200 hover:text-primary-light transition-colors mb-4 text-body">
+              <ArrowLeft size={16} />
+              Retour aux actualités
+            </Link>
+            <span className={`inline-block px-3 py-1 rounded-full text-[11px] font-semibold tracking-wide mb-4 ${categoryColors[article.category] ?? 'bg-primary/10 text-primary'}`}>
+              {article.category}
+            </span>
+            <h1 className="text-3xl md:text-section font-bold mb-4">{article.title}</h1>
+            <div className="flex flex-wrap items-center gap-4 text-gray-200 text-body">
+              <span className="flex items-center gap-1.5">
+                <Calendar size={16} />
+                {articleDate.getDate()} {monthNames[articleDate.getMonth()]} {articleDate.getFullYear()}
+              </span>
+              {article.author && (
+                <span className="flex items-center gap-1.5">
+                  <User size={16} />
+                  {article.author}
+                </span>
+              )}
+              <span className="flex items-center gap-1.5">
+                <Eye size={16} />
+                {article.views} vues
+              </span>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Content */}
+      <section className="py-14">
+        <div className="container-custom">
+          <div className="max-w-3xl mx-auto">
+            {/* Excerpt */}
+            {article.excerpt && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+                className="text-lg text-gray-600 font-medium leading-relaxed mb-8 italic border-l-4 border-primary pl-4"
+              >
+                {article.excerpt}
+              </motion.div>
+            )}
+
+            {/* Content */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.15 }}
+              className="prose prose-lg max-w-none"
+            >
+              {article.content ? (
+                <div className="text-gray-700 leading-relaxed" dangerouslySetInnerHTML={{ __html: article.content }} />
+              ) : (
+                <p className="text-gray-400 italic">Aucun contenu.</p>
+              )}
+            </motion.div>
+
+            {/* Gallery */}
+            {article.gallery && article.gallery.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="mt-12"
+              >
+                <h2 className="text-xl font-bold text-gray-900 mb-6">Galerie photos</h2>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  {article.gallery.map((src, i) => (
+                    <div key={i} className="aspect-video rounded-xl overflow-hidden">
+                      <img src={src} alt={`Photo ${i + 1}`} className="w-full h-full object-cover" />
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+
+            {/* Back link */}
+            <div className="mt-12 text-center">
+              <Link
+                to="/news"
+                className="inline-flex items-center gap-2 text-primary font-semibold hover:gap-3 transition-all"
+              >
+                <ArrowLeft size={16} />
+                Retour à toutes les actualités
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Breadcrumb */}
+      <section className="pb-10">
+        <div className="container-custom">
+          <div className="flex items-center gap-2 text-gray-500 text-small">
+            <Link to="/" className="hover:text-primary transition-colors">Accueil</Link>
+            <ChevronRight size={14} />
+            <Link to="/news" className="hover:text-primary transition-colors">Actualités</Link>
+            <ChevronRight size={14} />
+            <span className="text-gray-800">{article.title}</span>
+          </div>
+        </div>
+      </section>
+    </>
+  )
+}
+
+export default NewsDetail

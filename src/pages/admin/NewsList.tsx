@@ -1,24 +1,58 @@
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
   Newspaper, Plus, Edit, Trash2, Search, ChevronDown,
   ChevronsLeft, ChevronRight, Eye
 } from 'lucide-react'
-import { adminNews } from '../../data/adminNewsData'
+import { newsService, type AdminNews } from '../../services/news'
 
 const NewsList = () => {
+  const [news, setNews] = useState<AdminNews[]>([])
+  const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('Toutes')
 
-  const categories = ['Toutes', ...new Set(adminNews.map((a) => a.category))]
+  const categories = ['Toutes', ...Array.from(new Set(news.map((a) => a.category)))]
   const [currentPage, setCurrentPage] = useState(1)
 
-  const filteredNews = adminNews.filter((article) => {
+  const fetchNews = useCallback(async () => {
+    try {
+      setLoading(true)
+      const data = await newsService.getAll()
+      setNews(data)
+    } catch {
+      console.error('Erreur lors du chargement des articles')
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => { fetchNews() }, [fetchNews])
+
+  const handleDelete = async (id: number) => {
+    if (!confirm('Confirmer la suppression de cet article ?')) return
+    try {
+      await newsService.delete(id)
+      setNews((prev) => prev.filter((a) => a.id !== id))
+    } catch {
+      console.error('Erreur lors de la suppression')
+    }
+  }
+
+  const filteredNews = news.filter((article) => {
     const matchesSearch = article.title.toLowerCase().includes(searchQuery.toLowerCase())
     const matchesCategory = categoryFilter === 'Toutes' || article.category === categoryFilter
     return matchesSearch && matchesCategory
   })
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+      </div>
+    )
+  }
 
   return (
     <div>
@@ -36,7 +70,6 @@ const NewsList = () => {
         </Link>
       </div>
 
-      {/* Filtres */}
       <div className="flex flex-col sm:flex-row gap-3 mb-5">
         <div className="relative flex-1">
           <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -73,7 +106,6 @@ const NewsList = () => {
         </div>
       </div>
 
-      {/* Tableau */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -97,7 +129,7 @@ const NewsList = () => {
                   <tr key={article.id} className={`border-b border-gray-50 ${i % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'}`}>
                     <td className="px-5 py-4">
                       <div className="w-14 h-14 rounded-lg overflow-hidden bg-gray-100">
-                        <img src={article.image} alt={article.title} className="w-full h-full object-cover" />
+                        <img src={article.coverImage ?? ''} alt={article.title} className="w-full h-full object-cover" />
                       </div>
                     </td>
                     <td className="px-5 py-4">
@@ -121,6 +153,13 @@ const NewsList = () => {
                     <td className="px-5 py-4 text-right">
                       <div className="flex items-center justify-end gap-1">
                         <Link
+                          to={`/admin/news/${article.id}`}
+                          className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-blue-500 hover:bg-blue/10 transition-colors"
+                          title="Voir les détails"
+                        >
+                          <Eye size={15} />
+                        </Link>
+                        <Link
                           to={`/admin/news/${article.id}/edit`}
                           className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-primary hover:bg-primary/10 transition-colors"
                           title="Modifier"
@@ -128,6 +167,7 @@ const NewsList = () => {
                           <Edit size={15} />
                         </Link>
                         <button
+                          onClick={() => handleDelete(article.id)}
                           className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-red hover:bg-red/10 transition-colors"
                           title="Supprimer"
                         >
@@ -148,7 +188,6 @@ const NewsList = () => {
           </table>
         </div>
 
-        {/* Pagination */}
         <div className="flex items-center justify-center gap-2 px-5 py-4 border-t border-gray-100">
           <button
             onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}

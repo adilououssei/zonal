@@ -1,22 +1,61 @@
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
-import { FolderOpen, Plus, Edit, Trash2, MapPin, Search, ChevronDown, ChevronsLeft, ChevronRight } from 'lucide-react'
-import { adminProjects, statusColorMap, statusLabelMap, type AdminProject } from '../../data/adminProjectsData'
+import {
+  FolderOpen, Plus, Edit, Trash2, MapPin, Search, ChevronDown,
+  ChevronsLeft, ChevronRight
+} from 'lucide-react'
+import { projectsService } from '../../services/projects'
+import type { AdminProject } from '../../services/projects'
+import { statusLabelMap, statusColorMap } from '../../data/adminProjectsData'
 
-const statusFilters: ('Tous' | AdminProject['status'])[] = ['Tous', 'ongoing', 'completed', 'planned']
+const statusFilters: ('Tous' | string)[] = ['Tous', 'ongoing', 'completed', 'planned']
 
 const Projects = () => {
   const { t } = useTranslation()
+  const [projects, setProjects] = useState<AdminProject[]>([])
+  const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
-  const [statusFilter, setStatusFilter] = useState<'Tous' | AdminProject['status']>('Tous')
+  const [statusFilter, setStatusFilter] = useState<'Tous' | string>('Tous')
 
-  const filteredProjects = adminProjects.filter((project) => {
+  const fetchProjects = useCallback(async () => {
+    try {
+      setLoading(true)
+      const data = await projectsService.getAll()
+      setProjects(data)
+    } catch {
+      console.error('Erreur lors du chargement des projets')
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => { fetchProjects() }, [fetchProjects])
+
+  const handleDelete = async (id: number) => {
+    if (!confirm('Confirmer la suppression de ce projet ?')) return
+    try {
+      await projectsService.delete(id)
+      setProjects((prev) => prev.filter((p) => p.id !== id))
+    } catch {
+      console.error('Erreur lors de la suppression')
+    }
+  }
+
+  const filteredProjects = projects.filter((project) => {
     const matchesSearch = project.title.toLowerCase().includes(searchQuery.toLowerCase())
     const matchesStatus = statusFilter === 'Tous' || project.status === statusFilter
     return matchesSearch && matchesStatus
   })
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+      </div>
+    )
+  }
 
   return (
     <div>
@@ -48,7 +87,7 @@ const Projects = () => {
         <div className="relative">
           <select
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value as 'Tous' | AdminProject['status'])}
+            onChange={(e) => setStatusFilter(e.target.value)}
             className="appearance-none pl-4 pr-9 py-2.5 rounded-lg border border-gray-200 text-small text-gray-600 focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
           >
             {statusFilters.map((s) => (
@@ -95,8 +134,8 @@ const Projects = () => {
                     </td>
                     <td className="px-5 py-4 text-gray-600 text-small">{project.budget}</td>
                     <td className="px-5 py-4">
-                      <span className={`inline-block px-2.5 py-1 rounded-full text-[11px] font-semibold ${statusColorMap[project.status]}`}>
-                        {statusLabelMap[project.status]}
+                      <span className={`inline-block px-2.5 py-1 rounded-full text-[11px] font-semibold ${statusColorMap[project.status] ?? 'bg-gray-100 text-gray-500'}`}>
+                        {statusLabelMap[project.status] ?? project.status}
                       </span>
                     </td>
                     <td className="px-5 py-4 text-right">
@@ -109,6 +148,7 @@ const Projects = () => {
                           <Edit size={15} />
                         </Link>
                         <button
+                          onClick={() => handleDelete(project.id)}
                           className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-red hover:bg-red/10 transition-colors"
                           title={t('admin.actions.delete')}
                         >

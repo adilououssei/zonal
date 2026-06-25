@@ -1,25 +1,93 @@
-import { useState, type FormEvent } from 'react'
+import { useState, useEffect, type FormEvent } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Calendar, MapPin, Coins } from 'lucide-react'
 import { statusLabelMap } from '../../data/adminProjectsData'
+import { projectsService } from '../../services/projects'
 
 const ProjectsForm = () => {
   const navigate = useNavigate()
   const { id } = useParams()
   const isEditing = Boolean(id)
 
+  const [loading, setLoading] = useState(false)
+  const [fetching, setFetching] = useState(isEditing)
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
+  const [image, setImage] = useState('')
   const [location, setLocation] = useState('')
   const [budget, setBudget] = useState('')
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
   const [status, setStatus] = useState('ongoing')
 
-  const handleSubmit = (e: FormEvent) => {
+  useEffect(() => {
+    if (!id) return
+    const fetchProject = async () => {
+      try {
+        const project = await projectsService.getById(Number(id))
+        setTitle(project.title)
+        setDescription(project.description ?? '')
+        setImage(project.image ?? '')
+        setLocation(project.location)
+        setBudget(project.budget ?? '')
+        setStartDate(project.startDate ?? '')
+        setEndDate(project.endDate ?? '')
+        setStatus(project.status)
+      } catch {
+        console.error('Erreur lors du chargement du projet')
+        navigate('/admin/projects')
+      } finally {
+        setFetching(false)
+      }
+    }
+    fetchProject()
+  }, [id, navigate])
+
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
-    navigate('/admin/projects')
+    setLoading(true)
+
+    try {
+      const payload = {
+        title,
+        description: description || undefined,
+        image: image || undefined,
+        location,
+        budget: budget || undefined,
+        startDate: startDate || undefined,
+        endDate: endDate || undefined,
+        status,
+      }
+
+      if (isEditing && id) {
+        await projectsService.update(Number(id), payload)
+      } else {
+        await projectsService.create(payload as {
+          title: string
+          description?: string
+          image?: string
+          location: string
+          budget?: string
+          startDate?: string
+          endDate?: string
+          status?: string
+        })
+      }
+      navigate('/admin/projects')
+    } catch {
+      console.error('Erreur lors de l\'enregistrement')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (fetching) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+      </div>
+    )
   }
 
   return (
@@ -42,6 +110,16 @@ const ProjectsForm = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <div className="space-y-6">
             <div>
+              <label className="block text-small font-medium text-gray-700 mb-2">Image du projet</label>
+              <input
+                type="text"
+                value={image}
+                onChange={(e) => setImage(e.target.value)}
+                placeholder="URL de l'image (optionnel)"
+                className="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-small focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition"
+              />
+            </div>
+            <div>
               <label className="block text-small font-medium text-gray-700 mb-2">Titre du projet</label>
               <input
                 type="text"
@@ -49,6 +127,7 @@ const ProjectsForm = () => {
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Ex : Projet de reboisement du Guera"
                 className="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-small focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition"
+                required
               />
             </div>
             <div>
@@ -70,6 +149,7 @@ const ProjectsForm = () => {
                   onChange={(e) => setLocation(e.target.value)}
                   placeholder="Ex : N'Djamena, Tchad"
                   className="w-full px-4 py-2.5 pr-10 rounded-lg border border-gray-200 text-small focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition"
+                  required
                 />
                 <MapPin size={16} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
               </div>
@@ -94,26 +174,22 @@ const ProjectsForm = () => {
               <label className="block text-small font-medium text-gray-700 mb-2">Date de début</label>
               <div className="relative">
                 <input
-                  type="text"
+                  type="date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
-                  placeholder="jj/mm/aaaa"
-                  className="w-full px-4 py-2.5 pr-10 rounded-lg border border-gray-200 text-small focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition"
+                  className="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-small focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition"
                 />
-                <Calendar size={16} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
               </div>
             </div>
             <div>
               <label className="block text-small font-medium text-gray-700 mb-2">Date de fin</label>
               <div className="relative">
                 <input
-                  type="text"
+                  type="date"
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
-                  placeholder="jj/mm/aaaa"
-                  className="w-full px-4 py-2.5 pr-10 rounded-lg border border-gray-200 text-small focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition"
+                  className="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-small focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition"
                 />
-                <Calendar size={16} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
               </div>
             </div>
             <div>
@@ -141,9 +217,10 @@ const ProjectsForm = () => {
           </button>
           <button
             type="submit"
-            className="px-6 py-2.5 rounded-lg bg-primary text-white font-medium text-small hover:bg-primary-dark transition-colors"
+            disabled={loading}
+            className="px-6 py-2.5 rounded-lg bg-primary text-white font-medium text-small hover:bg-primary-dark transition-colors disabled:opacity-50"
           >
-            Enregistrer
+            {loading ? 'Enregistrement...' : 'Enregistrer'}
           </button>
         </div>
       </motion.form>

@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Link } from 'react-router-dom'
@@ -6,20 +6,23 @@ import {
   Calendar, Hourglass, CalendarCheck, MapPin, Clock, ArrowRight,
   ChevronRight, ChevronLeft, Mail, Send
 } from 'lucide-react'
-import { upcomingEventsList, pastEventsList, type EventStatus } from '../data/eventsData'
+import { publicEventsService } from '../services/events'
+import type { PublicEvent } from '../services/events'
+
+type EventStatus = 'Tous' | 'À venir' | 'En cours' | 'Passé'
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
   visible: { opacity: 1, y: 0 }
 }
 
-const statusKey = (s: EventStatus): string => {
-  const map: Record<EventStatus, string> = {
+const statusKey = (s: string): string => {
+  const map: Record<string, string> = {
     'À venir': 'events.filters.upcoming',
     'En cours': 'events.filters.ongoing',
-    'Passé': 'events.filters.past',
+    'Terminé': 'events.filters.past',
   }
-  return map[s]
+  return map[s] ?? 'events.filters.upcoming'
 }
 
 const monthKey = (m: string): string => {
@@ -33,6 +36,7 @@ const monthKey = (m: string): string => {
 }
 
 const filters: { value: EventStatus; icon: typeof Calendar }[] = [
+  { value: 'Tous', icon: Calendar },
   { value: 'À venir', icon: Calendar },
   { value: 'En cours', icon: Hourglass },
   { value: 'Passé', icon: CalendarCheck },
@@ -40,10 +44,37 @@ const filters: { value: EventStatus; icon: typeof Calendar }[] = [
 
 const Events = () => {
   const { t } = useTranslation()
-  const [activeFilter, setActiveFilter] = useState<EventStatus>('À venir')
+  const [activeFilter, setActiveFilter] = useState<EventStatus>('Tous')
+  const [allEvents, setAllEvents] = useState<PublicEvent[]>([])
+  const [pastEvents, setPastEvents] = useState<PublicEvent[]>([])
+  const [loading, setLoading] = useState(true)
   const pastScrollRef = useRef<HTMLDivElement>(null)
 
-  const visibleEvents = upcomingEventsList.filter((e) => e.status === activeFilter)
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const [allData, pastData] = await Promise.all([
+          publicEventsService.getAll(),
+          publicEventsService.getPast(),
+        ])
+        setAllEvents(allData)
+        setPastEvents(pastData)
+      } catch {
+        console.error('Erreur lors du chargement des événements')
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchEvents()
+  }, [])
+
+  const visibleEvents = allEvents.filter((e) => {
+    if (activeFilter === 'Tous') return true
+    if (activeFilter === 'À venir') return e.status === 'À venir'
+    if (activeFilter === 'En cours') return e.status === 'En cours'
+    if (activeFilter === 'Passé') return e.status === 'Terminé'
+    return true
+  })
 
   const scrollPast = (dir: 'left' | 'right') => {
     const el = pastScrollRef.current
@@ -127,7 +158,11 @@ const Events = () => {
               transition={{ duration: 0.3 }}
               className="grid grid-cols-1 md:grid-cols-3 gap-6"
             >
-              {visibleEvents.length > 0 ? (
+              {loading ? (
+                <div className="col-span-3 flex items-center justify-center py-20">
+                  <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+                </div>
+              ) : visibleEvents.length > 0 ? (
                 visibleEvents.map((event, index) => (
                   <motion.div
                     key={event.id}
@@ -140,13 +175,13 @@ const Events = () => {
                   >
                     <div className="relative aspect-4/3 overflow-hidden">
                       <img
-                        src={event.image}
+                        src={event.image ?? ''}
                         alt={event.title}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                       />
                       <div className="absolute top-4 left-4 bg-white rounded-lg px-3 py-2 text-center shadow-md leading-none">
                         <div className="text-red font-bold text-xl">{event.day}</div>
-                        <div className="text-gray-500 text-[11px] font-semibold tracking-wide">{t(monthKey(event.month))}</div>
+                        <div className="text-gray-500 text-[11px] font-semibold tracking-wide">{t(monthKey(event.month ?? ''))}</div>
                         <div className="text-gray-400 text-[10px]">{event.year}</div>
                       </div>
                     </div>
@@ -164,7 +199,7 @@ const Events = () => {
                         <span>{event.time}</span>
                       </div>
                       <p className="text-gray-600 text-body mb-4">{event.description}</p>
-                      <Link to="/contact" className="text-primary font-semibold text-body inline-flex items-center gap-1.5 hover:gap-2.5 transition-all">
+                      <Link to={`/events/${event.id}`} className="text-primary font-semibold text-body inline-flex items-center gap-1.5 hover:gap-2.5 transition-all">
                         {t('events.details')} <ArrowRight size={16} />
                       </Link>
                     </div>
@@ -213,13 +248,13 @@ const Events = () => {
                   className="flex gap-5 overflow-x-auto scroll-smooth scrollbar-hide pb-1"
                   style={{ scrollbarWidth: 'none' }}
                 >
-                  {pastEventsList.map((event) => (
+                  {pastEvents.map((event) => (
                     <div key={event.id} className="shrink-0 w-64">
                       <div className="relative aspect-4/3 rounded-xl overflow-hidden mb-3">
-                        <img src={event.image} alt={event.title} className="w-full h-full object-cover" />
+                        <img src={event.image ?? ''} alt={event.title} className="w-full h-full object-cover" />
                         <div className="absolute top-3 left-3 bg-white rounded-md px-2.5 py-1.5 text-center shadow-md leading-none">
                           <div className="text-red font-bold text-base">{event.day}</div>
-                          <div className="text-gray-500 text-[10px] font-semibold tracking-wide">{t(monthKey(event.month))}</div>
+                          <div className="text-gray-500 text-[10px] font-semibold tracking-wide">{t(monthKey(event.month ?? ''))}</div>
                           <div className="text-gray-400 text-[9px]">{event.year}</div>
                         </div>
                       </div>

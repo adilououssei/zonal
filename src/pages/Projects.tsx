@@ -1,152 +1,165 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
-import { motion, AnimatePresence } from 'framer-motion'
-import { MapPin, ChevronRight, ChevronLeft, Clock, Coins } from 'lucide-react'
-import { publicProjects, projectStatusLabels, projectStatusColors, type PublicProject } from '../data/projectsData'
+import { Link } from 'react-router-dom'
+import { MapPin, ArrowUpRight } from 'lucide-react'
+import { publicProjectsService } from '../services/projects'
+import type { PublicProject } from '../services/projects'
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0 }
+const statusLabelMap: Record<string, string> = {
+  ongoing: 'En cours',
+  completed: 'Terminé',
+  planned: 'Planifié',
 }
 
-const statusFilters: ('Tous' | PublicProject['status'])[] = ['Tous', 'ongoing', 'completed', 'planned']
+const statusColorMap: Record<string, string> = {
+  ongoing: 'bg-emerald-100 text-emerald-700',
+  completed: 'bg-gray-100 text-gray-500',
+  planned: 'bg-blue-100 text-blue-700',
+}
+
+const filters = ['Tous', 'ongoing', 'completed', 'planned'] as const
+type Filter = (typeof filters)[number]
+
+const formatPeriod = (start: string | null, end: string | null): string => {
+  const fullOpts: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'long', year: 'numeric' }
+  const monthDayOpts: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'long' }
+  if (start && end) {
+    const s = new Date(start)
+    const e = new Date(end)
+    if (s.getFullYear() === e.getFullYear()) {
+      return `${s.toLocaleDateString('fr-FR', monthDayOpts)} - ${e.toLocaleDateString('fr-FR', fullOpts)}`
+    }
+    return `${s.toLocaleDateString('fr-FR', fullOpts)} - ${e.toLocaleDateString('fr-FR', fullOpts)}`
+  }
+  if (start) return new Date(start).toLocaleDateString('fr-FR', fullOpts)
+  if (end) return new Date(end).toLocaleDateString('fr-FR', fullOpts)
+  return ''
+}
 
 const Projects = () => {
   const { t } = useTranslation()
-  const [filter, setFilter] = useState<'Tous' | PublicProject['status']>('Tous')
+  const [projects, setProjects] = useState<PublicProject[]>([])
+  const [loading, setLoading] = useState(true)
+  const [activeFilter, setActiveFilter] = useState<Filter>('Tous')
 
-  const filtered = filter === 'Tous'
-    ? publicProjects
-    : publicProjects.filter((p) => p.status === filter)
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const data = await publicProjectsService.getAll()
+        setProjects(data)
+      } catch {
+        console.error('Erreur lors du chargement des projets')
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchProjects()
+  }, [])
+
+  const visibleProjects = activeFilter === 'Tous'
+    ? projects
+    : projects.filter((p) => p.status === activeFilter)
 
   return (
-    <div>
-      {/* Hero */}
-      <div className="relative h-[45vh] min-h-[320px] overflow-hidden">
-          <img
-            src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=1600&h=600&fit=crop"
-            alt=""
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-linear-to-r from-black/75 via-black/50 to-black/25" />
-          <div className="absolute inset-0 container-custom flex items-center">
-            <div className="relative text-white">
-              <motion.h1
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
-                className="text-4xl md:text-section font-bold mb-4"
-              >
-                {t('projects.hero.title')}
-              </motion.h1>
-              <motion.p
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.15 }}
-                className="text-subtitle text-gray-200 max-w-2xl mb-5"
-              >
-                {t('projects.hero.subtitle')}
-              </motion.p>
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.25 }}
-                className="flex items-center gap-2 text-gray-200 text-body"
-              >
-                <a href="/" className="hover:text-primary-light transition-colors">{t('projects.breadcrumb.home')}</a>
-                <ChevronRight size={16} />
-                <span className="text-primary-light">{t('projects.breadcrumb.current')}</span>
-              </motion.div>
-          </div>
-        </div>
-      </div>
+    <section className="py-16 bg-white">
+      <div className="max-w-7xl mx-auto px-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center mb-12"
+        >
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            {t('projects.hero.title')}
+          </h1>
+          <p className="text-gray-600 max-w-2xl mx-auto">
+            {t('projects.hero.subtitle')}
+          </p>
+        </motion.div>
 
-      {/* Filtres */}
-      <section className="py-10 bg-white border-b border-gray-100">
-        <div className="container-custom">
-          <div className="flex items-center justify-center gap-2 sm:gap-3 flex-wrap">
-            {statusFilters.map((s) => (
-              <button
-                key={s}
-                onClick={() => setFilter(s)}
-                className={`px-5 py-2 rounded-full text-small font-medium transition-colors ${
-                  filter === s
-                    ? 'bg-primary text-white'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
-              >
-                {s === 'Tous' ? t('projects.filter.all') : projectStatusLabels[s]}
-              </button>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Liste des projets */}
-      <section className="py-16">
-        <div className="container-custom">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={filter}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+        {/* Filtres */}
+        <div className="flex flex-wrap items-center justify-center gap-3 mb-10">
+          {filters.map((f) => (
+            <button
+              key={f}
+              onClick={() => setActiveFilter(f)}
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-full font-medium text-sm border transition-all duration-300 ${
+                activeFilter === f
+                  ? 'bg-primary text-white border-primary shadow-md'
+                  : 'bg-white text-gray-600 border-gray-200 hover:border-primary hover:text-primary'
+              }`}
             >
-              {filtered.map((project, index) => (
-                <motion.div
-                  key={project.id}
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true, amount: 0.1 }}
-                  variants={fadeUp}
-                  transition={{ duration: 0.5, delay: index * 0.08 }}
-                  className="card overflow-hidden group flex flex-col"
-                >
-                  <div className="aspect-4/3 overflow-hidden">
+              {f === 'Tous' ? 'Tous' : statusLabelMap[f]}
+            </button>
+          ))}
+        </div>
+
+        {loading ? (
+          <div className="flex items-center justify-center py-20">
+            <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+          </div>
+        ) : visibleProjects.length === 0 ? (
+          <p className="text-center text-gray-400 py-10">Aucun projet pour le moment.</p>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {visibleProjects.map((project, i) => (
+              <motion.article
+                key={project.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.075, duration: 0.45 }}
+                className="group bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300"
+              >
+                <div className="relative h-48 bg-gray-200 overflow-hidden">
+                  {project.image ? (
                     <img
                       src={project.image}
                       alt={project.title}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
-                  </div>
-                  <div className="p-6 flex flex-col flex-1">
-                    <span className={`inline-block self-start px-3 py-1 rounded-full text-[11px] font-semibold mb-3 ${projectStatusColors[project.status]}`}>
-                      {projectStatusLabels[project.status]}
-                    </span>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2">{project.title}</h3>
-                    <p className="text-gray-600 text-body leading-relaxed mb-4 flex-1">
-                      {project.description}
-                    </p>
-                    <div className="space-y-2 pt-4 border-t border-gray-100">
-                      <span className="flex items-center gap-2 text-gray-500 text-small">
-                        <MapPin size={14} className="text-primary shrink-0" />
-                        {project.location}
-                      </span>
-                      <span className="flex items-center gap-2 text-gray-500 text-small">
-                        <Coins size={14} className="text-primary shrink-0" />
-                        {project.budget}
-                      </span>
-                      <span className="flex items-center gap-2 text-gray-500 text-small">
-                        <Clock size={14} className="text-primary shrink-0" />
-                        {project.period}
-                      </span>
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-gray-400">
+                      <MapPin size={32} />
                     </div>
-                  </div>
-                </motion.div>
-              ))}
-            </motion.div>
-          </AnimatePresence>
+                  )}
+                  <span className={`absolute top-3 left-3 px-2.5 py-1 rounded-full text-[11px] font-semibold ${statusColorMap[project.status] ?? 'bg-gray-100 text-gray-500'}`}>
+                    {statusLabelMap[project.status] ?? project.status}
+                  </span>
+                </div>
 
-          {filtered.length === 0 && (
-            <div className="text-center py-20 text-gray-400">
-              {t('projects.empty')}
-            </div>
-          )}
-        </div>
-      </section>
-    </div>
+                <div className="p-5">
+                  <div className="flex items-center gap-4 text-gray-500 text-xs mb-3">
+                    <span className="flex items-center gap-1">
+                      <MapPin size={13} />
+                      {project.location}
+                    </span>
+                    {project.startDate && (
+                      <span>{formatPeriod(project.startDate, project.endDate)}</span>
+                    )}
+                  </div>
+
+                  <h3 className="font-bold text-gray-900 text-lg mb-2 group-hover:text-primary transition-colors">
+                    {project.title}
+                  </h3>
+
+                  <p className="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-2">
+                    {project.description}
+                  </p>
+
+                  <Link to={`/projects/${project.id}`} className="inline-flex items-center gap-1.5 text-primary font-medium text-sm hover:gap-2.5 transition-all">
+                    En savoir plus
+                    <ArrowUpRight size={15} />
+                  </Link>
+                </div>
+              </motion.article>
+            ))}
+          </div>
+        )}
+
+
+      </div>
+    </section>
   )
 }
 

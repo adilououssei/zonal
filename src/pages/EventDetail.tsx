@@ -1,0 +1,172 @@
+import { useState, useEffect } from 'react'
+import { useParams, Link } from 'react-router-dom'
+import { motion } from 'framer-motion'
+import {
+  Calendar, MapPin, Clock, ArrowLeft, ChevronRight,
+} from 'lucide-react'
+import { publicEventsService } from '../services/events'
+import type { PublicEvent } from '../services/events'
+
+const monthNames = [
+  'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
+  'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre',
+]
+
+const statusStyles: Record<string, string> = {
+  'À venir': 'bg-emerald-100 text-emerald-700',
+  'En cours': 'bg-blue-100 text-blue-700',
+  'Terminé': 'bg-gray-100 text-gray-500',
+}
+
+const EventDetail = () => {
+  const { id } = useParams()
+  const [event, setEvent] = useState<PublicEvent | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    if (!id) return
+    const fetchEvent = async () => {
+      try {
+        const data = await publicEventsService.getById(Number(id))
+        setEvent(data)
+      } catch {
+        console.error('Erreur lors du chargement de l\'événement')
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchEvent()
+  }, [id])
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+      </div>
+    )
+  }
+
+  if (!event) {
+    return (
+      <div className="container-custom py-20 text-center">
+        <p className="text-gray-500 text-lg">Événement introuvable.</p>
+        <Link to="/events" className="text-primary font-medium mt-4 inline-block">&larr; Retour aux événements</Link>
+      </div>
+    )
+  }
+
+  const eventDate = new Date(event.date + 'T00:00:00')
+
+  return (
+    <>
+      {/* Hero */}
+      <section className="relative py-20 md:py-28 overflow-hidden">
+        <div className="absolute inset-0">
+          <img
+            src={event.image ?? '/images/hero-event.png'}
+            alt={event.title}
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-linear-to-r from-black/75 via-black/50 to-black/25" />
+        </div>
+        <div className="relative container-custom text-white">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <Link to="/events" className="inline-flex items-center gap-1.5 text-gray-200 hover:text-primary-light transition-colors mb-4 text-body">
+              <ArrowLeft size={16} />
+              Retour aux événements
+            </Link>
+            <span className={`inline-block px-3 py-1 rounded-full text-[11px] font-semibold tracking-wide mb-4 ${statusStyles[event.status] ?? 'bg-gray-100 text-gray-500'}`}>
+              {event.status}
+            </span>
+            <h1 className="text-3xl md:text-section font-bold mb-4">{event.title}</h1>
+            <div className="flex flex-wrap items-center gap-4 text-gray-200 text-body">
+              <span className="flex items-center gap-1.5">
+                <Calendar size={16} />
+                {eventDate.getDate()} {monthNames[eventDate.getMonth()]} {eventDate.getFullYear()}
+              </span>
+              {event.time && (
+                <span className="flex items-center gap-1.5">
+                  <Clock size={16} />
+                  {event.time}
+                </span>
+              )}
+              <span className="flex items-center gap-1.5">
+                <MapPin size={16} />
+                {event.location}
+              </span>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Content */}
+      <section className="py-14">
+        <div className="container-custom">
+          <div className="max-w-3xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="prose prose-lg max-w-none"
+            >
+              {event.description ? (
+                <div className="text-gray-700 leading-relaxed" dangerouslySetInnerHTML={{ __html: event.description }} />
+              ) : (
+                <p className="text-gray-400 italic">Aucune description fournie.</p>
+              )}
+            </motion.div>
+
+            {/* Gallery */}
+            {event.gallery && event.gallery.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="mt-12"
+              >
+                <h2 className="text-xl font-bold text-gray-900 mb-6">Galerie photos</h2>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  {event.gallery.map((src, i) => (
+                    <div key={i} className="aspect-video rounded-xl overflow-hidden">
+                      <img src={src} alt={`Photo ${i + 1}`} className="w-full h-full object-cover" />
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+
+            {/* Back link */}
+            <div className="mt-12 text-center">
+              <Link
+                to="/events"
+                className="inline-flex items-center gap-2 text-primary font-semibold hover:gap-3 transition-all"
+              >
+                <ArrowLeft size={16} />
+                Retour à tous les événements
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Breadcrumb */}
+      <section className="pb-10">
+        <div className="container-custom">
+          <div className="flex items-center gap-2 text-gray-500 text-small">
+            <Link to="/" className="hover:text-primary transition-colors">Accueil</Link>
+            <ChevronRight size={14} />
+            <Link to="/events" className="hover:text-primary transition-colors">Événements</Link>
+            <ChevronRight size={14} />
+            <span className="text-gray-800">{event.title}</span>
+          </div>
+        </div>
+      </section>
+    </>
+  )
+}
+
+export default EventDetail
