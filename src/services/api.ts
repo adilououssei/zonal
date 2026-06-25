@@ -66,6 +66,30 @@ class ApiService {
   patch<T>(path: string, body?: unknown, authenticated = true): Promise<T> {
     return this.request<T>(path, { method: 'PATCH', body, authenticated })
   }
+
+  async upload<T>(path: string, formData: FormData, authenticated = true): Promise<T> {
+    const headers: Record<string, string> = {}
+
+    if (authenticated) {
+      const token = this.getToken()
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`
+      }
+    }
+
+    const response = await fetch(`${this.baseUrl}${path}`, {
+      method: 'POST',
+      headers,
+      body: formData,
+    })
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({ error: 'Erreur serveur' }))
+      throw new ApiError(errorData.error || `Erreur ${response.status}`, response.status)
+    }
+
+    return response.json() as Promise<T>
+  }
 }
 
 class ApiError extends Error {

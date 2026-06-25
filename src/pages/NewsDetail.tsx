@@ -66,7 +66,7 @@ const NewsDetail = () => {
       <section className="relative py-20 md:py-28 overflow-hidden">
         <div className="absolute inset-0">
           <img
-            src={article.image ?? '/images/hero-news.png'}
+            src={article.image ?? ''}
             alt={article.title}
             className="w-full h-full object-cover"
           />

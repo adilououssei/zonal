@@ -1,52 +1,71 @@
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import {
-  FolderOpen, Calendar, Newspaper, Users, Handshake, ChevronLeft, ChevronRight
+  FolderOpen, Calendar, Newspaper, Users, Handshake, Loader2
 } from 'lucide-react'
 import { SimpleLineChart, SimpleDonutChart } from '../../components/admin/Charts'
+import { adminService } from '../../services/admin'
+import type { DashboardStats } from '../../services/admin'
 
 const Dashboard = () => {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const [data, setData] = useState<DashboardStats | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
 
-  const stats = [
-    { label: t('admin.dashboard.stats.projects'), value: 24, icon: FolderOpen, color: 'bg-emerald-500' },
-    { label: t('admin.dashboard.stats.events'), value: 18, icon: Calendar, color: 'bg-red' },
-    { label: t('admin.dashboard.stats.articles'), value: 32, icon: Newspaper, color: 'bg-blue-500' },
-    { label: t('admin.dashboard.stats.users'), value: 56, icon: Users, color: 'bg-purple-500' },
-    { label: t('admin.dashboard.stats.partners'), value: 12, icon: Handshake, color: 'bg-orange-500' },
+  useEffect(() => {
+    adminService.getDashboardStats()
+      .then(setData)
+      .catch(() => setError('Erreur lors du chargement des statistiques'))
+      .finally(() => setLoading(false))
+  }, [])
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-[60vh]">
+        <Loader2 size={32} className="animate-spin text-primary" />
+      </div>
+    )
+  }
+
+  if (error || !data) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[60vh] gap-3">
+        <p className="text-gray-500">{error}</p>
+        <button
+          onClick={() => window.location.reload()}
+          className="btn-primary px-4 py-2 rounded-lg"
+        >
+          Réessayer
+        </button>
+      </div>
+    )
+  }
+
+  const { stats, recentEvents, recentNews, recentProjects, monthlyStats, contentDistribution } = data
+
+  const statCards = [
+    { label: t('admin.dashboard.stats.projects'), value: stats.totalProjects, icon: FolderOpen, color: 'bg-emerald-500' },
+    { label: t('admin.dashboard.stats.events'), value: stats.totalEvents, icon: Calendar, color: 'bg-red' },
+    { label: t('admin.dashboard.stats.articles'), value: stats.totalNews, icon: Newspaper, color: 'bg-blue-500' },
+    { label: t('admin.dashboard.stats.users'), value: stats.totalUsers, icon: Users, color: 'bg-purple-500' },
+    { label: t('admin.dashboard.stats.partners'), value: stats.totalPartners, icon: Handshake, color: 'bg-orange-500' },
   ]
 
-  const recentEvents = [
-    { title: "Journée mondiale de l'environnement", date: '05 Juin 2024' },
-    { title: 'Atelier sur la gouvernance locale', date: '12 Juin 2024' },
-    { title: 'Campagne de reboisement', date: '20 Juin 2024' },
-  ]
-
-  const recentArticles = [
-    { title: 'Agir ensemble pour la planète', date: '02 Juin 2024' },
-    { title: 'Le changement commence localement', date: '28 Mai 2024' },
-    { title: 'Nos actions en 2024', date: '20 Mai 2024' },
-  ]
-
-  const publicationsPerMonth = [
-    { label: 'Jan', value: 4 },
-    { label: 'Fév', value: 7 },
-    { label: 'Mar', value: 5 },
-    { label: 'Avr', value: 9 },
-    { label: 'Mai', value: 6 },
-    { label: 'Juin', value: 12 },
-  ]
-
-  const contentDistribution = [
-    { label: t('admin.dashboard.stats.projects'), value: 24, color: '#1a6b3c' },
-    { label: t('admin.dashboard.stats.events'), value: 18, color: '#dc2626' },
-    { label: t('admin.dashboard.stats.articles'), value: 32, color: '#3b82f6' },
-    { label: t('admin.dashboard.stats.partners'), value: 14, color: '#f59e0b' },
-  ]
-
-  const calendarDays = Array.from({ length: 30 }, (_, i) => i + 1)
-  const today = 19
+  const now = new Date()
+  const currentYear = now.getFullYear()
+  const currentMonth = now.getMonth()
+  const today = now.getDate()
+  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate()
+  const firstDayOfWeek = (new Date(currentYear, currentMonth, 1).getDay() + 6) % 7
+  const monthName = now.toLocaleDateString(
+    i18n.language === 'fr' ? 'fr-FR' : 'en-US',
+    { month: 'long', year: 'numeric' }
+  )
+  const calendarDays = Array.from({ length: daysInMonth }, (_, i) => i + 1)
+  const leadingBlanks = Array.from({ length: firstDayOfWeek }, (_, i) => null)
 
   const weekDays = t('admin.dashboard.calendarDays', { returnObjects: true }) as string[]
 
@@ -61,7 +80,7 @@ const Dashboard = () => {
 
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
-        {stats.map((stat, index) => {
+        {statCards.map((stat, index) => {
           const Icon = stat.icon
           return (
             <motion.div
@@ -98,14 +117,14 @@ const Dashboard = () => {
             </Link>
           </div>
           <ul className="space-y-3">
-            {recentEvents.map((item, i) => (
-              <li key={i} className="flex items-center gap-3">
+            {recentEvents.map((item) => (
+              <li key={item.id} className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0">
                   <Calendar size={16} />
                 </div>
                 <div className="min-w-0">
                   <p className="text-gray-800 text-small font-medium truncate">{item.title}</p>
-                  <p className="text-gray-400 text-xs">{item.date}</p>
+                  <p className="text-gray-400 text-xs">{item.date ?? 'Date non définie'}</p>
                 </div>
               </li>
             ))}
@@ -126,14 +145,14 @@ const Dashboard = () => {
             </Link>
           </div>
           <ul className="space-y-3">
-            {recentArticles.map((item, i) => (
-              <li key={i} className="flex items-center gap-3">
+            {recentNews.map((item) => (
+              <li key={item.id} className="flex items-center gap-3">
                   <div className="w-9 h-9 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500 shrink-0">
                   <Newspaper size={16} />
                 </div>
                 <div className="min-w-0">
                   <p className="text-gray-800 text-small font-medium truncate">{item.title}</p>
-                  <p className="text-gray-400 text-xs">{item.date}</p>
+                  <p className="text-gray-400 text-xs">{item.date ?? 'Date non définie'}</p>
                 </div>
               </li>
             ))}
@@ -148,19 +167,14 @@ const Dashboard = () => {
           className="bg-white rounded-xl shadow-sm border border-gray-100 p-5"
         >
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-gray-900 text-body">{t('admin.dashboard.calendarTitle')}</h3>
-            <div className="flex items-center gap-1">
-              <button className="w-6 h-6 flex items-center justify-center rounded text-gray-400 hover:bg-gray-100">
-                <ChevronLeft size={14} />
-              </button>
-              <button className="w-6 h-6 flex items-center justify-center rounded text-gray-400 hover:bg-gray-100">
-                <ChevronRight size={14} />
-              </button>
-            </div>
+            <h3 className="font-semibold text-gray-900 text-body">{monthName}</h3>
           </div>
           <div className="grid grid-cols-7 gap-1 text-center">
             {weekDays.map((d) => (
               <span key={d} className="text-gray-400 text-[10px] font-medium py-1">{d}</span>
+            ))}
+            {leadingBlanks.map((_, i) => (
+              <span key={`b-${i}`} />
             ))}
             {calendarDays.map((day) => (
               <span
@@ -188,7 +202,7 @@ const Dashboard = () => {
           className="bg-white rounded-xl shadow-sm border border-gray-100 p-5"
         >
           <h3 className="font-semibold text-gray-900 text-body mb-4">{t('admin.dashboard.publicationsPerMonth')}</h3>
-          <SimpleLineChart data={publicationsPerMonth} />
+          <SimpleLineChart data={monthlyStats} />
         </motion.div>
 
         <motion.div

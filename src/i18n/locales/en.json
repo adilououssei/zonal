@@ -288,6 +288,7 @@
       "subtitle": "Discover our past and upcoming events. Together, let's mobilize for a sustainable future."
     },
     "filters": {
+      "all": "All",
       "upcoming": "Upcoming",
       "ongoing": "Ongoing",
       "past": "Past"

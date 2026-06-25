@@ -1,17 +1,20 @@
-import { useState, useEffect, type FormEvent } from 'react'
+import { useState, useEffect, useRef, type FormEvent } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Calendar, MapPin, Coins } from 'lucide-react'
+import { Image as ImageIcon, MapPin, Coins, Loader2 } from 'lucide-react'
 import { statusLabelMap } from '../../data/adminProjectsData'
+import { api } from '../../services/api'
 import { projectsService } from '../../services/projects'
 
 const ProjectsForm = () => {
   const navigate = useNavigate()
   const { id } = useParams()
   const isEditing = Boolean(id)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const [loading, setLoading] = useState(false)
   const [fetching, setFetching] = useState(isEditing)
+  const [uploading, setUploading] = useState(false)
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [image, setImage] = useState('')
@@ -43,6 +46,22 @@ const ProjectsForm = () => {
     }
     fetchProject()
   }, [id, navigate])
+
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setUploading(true)
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+      const result = await api.upload<{ url: string }>('/api/upload', formData)
+      setImage(result.url)
+    } catch {
+      console.error('Erreur lors de l\'upload')
+    } finally {
+      setUploading(false)
+    }
+  }
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
@@ -111,13 +130,41 @@ const ProjectsForm = () => {
           <div className="space-y-6">
             <div>
               <label className="block text-small font-medium text-gray-700 mb-2">Image du projet</label>
-              <input
-                type="text"
-                value={image}
-                onChange={(e) => setImage(e.target.value)}
-                placeholder="URL de l'image (optionnel)"
-                className="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-small focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition"
-              />
+              {image ? (
+                <div className="relative rounded-xl overflow-hidden mb-2">
+                  <img src={image} alt="Aperçu" className="w-full h-48 object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => { setImage(''); if (fileInputRef.current) fileInputRef.current.value = '' }}
+                    className="absolute top-2 right-2 w-8 h-8 bg-white/80 rounded-full flex items-center justify-center text-gray-600 hover:text-red transition-colors text-lg"
+                  >
+                    &times;
+                  </button>
+                </div>
+              ) : (
+                <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-gray-200 rounded-xl py-12 cursor-pointer hover:border-primary/50 hover:bg-primary/5 transition-colors overflow-hidden">
+                  {uploading ? (
+                    <Loader2 size={24} className="animate-spin text-primary" />
+                  ) : (
+                    <>
+                      <div className="w-11 h-11 rounded-full bg-gray-100 flex items-center justify-center text-gray-400">
+                        <ImageIcon size={20} />
+                      </div>
+                      <span className="text-gray-500 text-small text-center">
+                        Cliquez pour uploader<br />ou glissez-déposez une image
+                      </span>
+                    </>
+                  )}
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleImageChange}
+                    disabled={uploading}
+                  />
+                </label>
+              )}
             </div>
             <div>
               <label className="block text-small font-medium text-gray-700 mb-2">Titre du projet</label>

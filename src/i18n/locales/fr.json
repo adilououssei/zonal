@@ -241,6 +241,7 @@
       "subtitle": "Découvrez nos événements passés et à venir. Ensemble, mobilisons-nous pour un avenir durable."
     },
     "filters": {
+      "all": "Tous",
       "upcoming": "À venir",
       "ongoing": "En cours",
       "past": "Passé"

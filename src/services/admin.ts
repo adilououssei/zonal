@@ -7,6 +7,7 @@ export interface AdminUser {
   lastName: string | null
   name: string
   phone: string | null
+  avatar: string | null
   roles: string[]
   role: string
   isActive: boolean
@@ -45,6 +46,42 @@ export interface PermissionModule {
   key: string
   label: string
   icon: string
+}
+
+export interface DashboardStats {
+  stats: {
+    totalProjects: number
+    totalEvents: number
+    totalNews: number
+    totalUsers: number
+    totalPartners: number
+    totalGallery: number
+    totalTestimonials: number
+    totalDocuments: number
+  }
+  recentEvents: {
+    id: number
+    title: string
+    date: string | null
+    location: string
+    status: string
+  }[]
+  recentNews: {
+    id: number
+    title: string
+    date: string | null
+    category: string
+    coverImage: string | null
+  }[]
+  recentProjects: {
+    id: number
+    title: string
+    location: string
+    status: string
+    startDate: string | null
+  }[]
+  monthlyStats: { label: string; value: number }[]
+  contentDistribution: { label: string; value: number; color: string }[]
 }
 
 export const adminService = {
@@ -108,10 +145,13 @@ export const adminService = {
 
   deleteEvent: (id: number) => api.delete<{ message: string }>(`/api/admin/events/${id}`),
 
+  // Dashboard
+  getDashboardStats: () => api.get<DashboardStats>('/api/admin/dashboard/stats'),
+
   // Profile
   getProfile: () => api.get<AdminUser & { createdAt: string | null }>('/api/admin/profile'),
 
-  updateProfile: (data: { firstName?: string; lastName?: string; email?: string; phone?: string }) =>
+  updateProfile: (data: { firstName?: string; lastName?: string; email?: string; phone?: string; avatar?: string }) =>
     api.put<AdminUser>('/api/admin/profile', data),
 
   changePassword: (data: { currentPassword: string; newPassword: string }) =>

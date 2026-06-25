@@ -1,10 +1,12 @@
-import { useState, useEffect, type FormEvent, type ElementType } from 'react'
+import { useState, useEffect, useRef, type FormEvent, type ElementType } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  User, Lock, Monitor, Camera, Mail, Phone, Laptop, CheckCircle
+  User, Lock, Monitor, Camera, Mail, Phone, Laptop, CheckCircle, Loader2
 } from 'lucide-react'
 import { useAuth } from '../../contexts/useAuth'
 import { adminService } from '../../services/admin'
+import { api } from '../../services/api'
+import { authService } from '../../services/auth'
 
 type TabKey = 'info' | 'password' | 'sessions'
 
@@ -19,9 +21,9 @@ const inputClass =
 const labelClass = 'block text-small font-medium text-gray-700 mb-1.5'
 
 const Profile = () => {
-  const { user: authUser } = useAuth()
+  const { user: authUser, refreshUser } = useAuth()
   const [activeTab, setActiveTab] = useState<TabKey>('info')
-  const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
+  const [uploadingAvatar, setUploadingAvatar] = useState(false)
   const [loading, setLoading] = useState(true)
   const [success, setSuccess] = useState('')
   const [error, setError] = useState('')
@@ -30,6 +32,7 @@ const Profile = () => {
   const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
+  const [avatar, setAvatar] = useState('')
 
   const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
@@ -41,6 +44,7 @@ const Profile = () => {
       setLastName(data.lastName || '')
       setEmail(data.email)
       setPhone(data.phone || '')
+      setAvatar(data.avatar ?? '')
     }).catch((err) => {
       setError(err instanceof Error ? err.message : 'Erreur')
     }).finally(() => {
@@ -48,9 +52,23 @@ const Profile = () => {
     })
   }, [])
 
-  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
-    if (file) setAvatarPreview(URL.createObjectURL(file))
+    if (!file) return
+    setUploadingAvatar(true)
+    try {
+      const fd = new FormData()
+      fd.append('file', file)
+      const result = await api.upload<{ url: string }>('/api/upload', fd)
+      const updated = await adminService.updateProfile({ avatar: result.url })
+      setAvatar(updated.avatar ?? '')
+      authService.updateUser(updated)
+      refreshUser()
+    } catch {
+      setError("Erreur lors de l'upload de la photo")
+    } finally {
+      setUploadingAvatar(false)
+    }
   }
 
   const handleInfoSubmit = async (e: FormEvent) => {
@@ -63,6 +81,8 @@ const Profile = () => {
       setLastName(updated.lastName || '')
       setEmail(updated.email)
       setPhone(updated.phone || '')
+      authService.updateUser(updated)
+      refreshUser()
       setSuccess('Informations mises à jour.')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erreur')
@@ -160,24 +180,26 @@ const Profile = () => {
                       <p className="text-small font-medium text-gray-700 mb-3">Photo de profil</p>
                       <label className="relative cursor-pointer group block w-28 h-28">
                         <div className="w-28 h-28 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-3xl overflow-hidden">
-                          {avatarPreview ? (
-                            <img src={avatarPreview} alt="Avatar" className="w-full h-full object-cover" />
+                          {uploadingAvatar ? (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <Loader2 size={24} className="animate-spin text-primary" />
+                            </div>
+                          ) : avatar ? (
+                            <img src={avatar} alt="Avatar" className="w-full h-full object-cover" />
                           ) : (
-                            <img
-                              src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop"
-                              alt="Avatar"
-                              className="w-full h-full object-cover"
-                            />
+                            <div className="w-full h-full flex items-center justify-center text-primary font-bold text-3xl">
+                              {authUser?.firstName?.charAt(0)?.toUpperCase() || authUser?.email?.charAt(0)?.toUpperCase() || '?'}
+                            </div>
                           )}
                         </div>
                         <div className="absolute inset-0 rounded-full bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
                           <Camera size={20} className="text-white opacity-0 group-hover:opacity-100 transition-opacity" />
                         </div>
-                        <input type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
+                        <input type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} disabled={uploadingAvatar} />
                       </label>
                       <label className="block text-center mt-3 text-primary text-small font-medium hover:text-primary-dark transition-colors cursor-pointer">
-                        Changer la photo
-                        <input type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
+                        {uploadingAvatar ? 'Upload...' : 'Changer la photo'}
+                        <input type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} disabled={uploadingAvatar} />
                       </label>
                     </div>
 

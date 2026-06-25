@@ -1,21 +1,74 @@
-import { useState, type FormEvent } from 'react'
+import { useState, useEffect, type FormEvent } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Globe } from 'lucide-react'
+import { Mail, Phone, Globe } from 'lucide-react'
+import { partnersService } from '../../services/partners'
 
 const PartnersForm = () => {
   const navigate = useNavigate()
   const { id } = useParams()
   const isEditing = Boolean(id)
 
+  const [loading, setLoading] = useState(false)
+  const [fetching, setFetching] = useState(isEditing)
   const [name, setName] = useState('')
   const [domain, setDomain] = useState('')
-  const [contact, setContact] = useState('')
+  const [email, setEmail] = useState('')
+  const [phone, setPhone] = useState('')
   const [status, setStatus] = useState('active')
 
-  const handleSubmit = (e: FormEvent) => {
+  useEffect(() => {
+    if (!id) return
+    const fetchPartner = async () => {
+      try {
+        const partner = await partnersService.getById(Number(id))
+        setName(partner.name)
+        setDomain(partner.domain ?? '')
+        setEmail(partner.email ?? '')
+        setPhone(partner.phone ?? '')
+        setStatus(partner.status)
+      } catch {
+        console.error('Erreur lors du chargement')
+        navigate('/admin/partners')
+      } finally {
+        setFetching(false)
+      }
+    }
+    fetchPartner()
+  }, [id, navigate])
+
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
-    navigate('/admin/partners')
+    setLoading(true)
+
+    try {
+      const payload = {
+        name,
+        domain: domain || undefined,
+        email: email || undefined,
+        phone: phone || undefined,
+        status,
+      }
+
+      if (isEditing && id) {
+        await partnersService.update(Number(id), payload)
+      } else {
+        await partnersService.create(payload)
+      }
+      navigate('/admin/partners')
+    } catch {
+      console.error('Erreur lors de l\'enregistrement')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (fetching) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+      </div>
+    )
   }
 
   return (
@@ -45,6 +98,7 @@ const PartnersForm = () => {
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Ex : PNUD"
                 className="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-small focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition"
+                required
               />
             </div>
             <div>
@@ -60,16 +114,30 @@ const PartnersForm = () => {
           </div>
 
           <div>
-            <label className="block text-small font-medium text-gray-700 mb-2">Contact</label>
+            <label className="block text-small font-medium text-gray-700 mb-2">Email</label>
+            <div className="relative">
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="contact@partenaire.org"
+                className="w-full px-4 py-2.5 pr-10 rounded-lg border border-gray-200 text-small focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition"
+              />
+              <Mail size={16} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-small font-medium text-gray-700 mb-2">Téléphone</label>
             <div className="relative">
               <input
                 type="text"
-                value={contact}
-                onChange={(e) => setContact(e.target.value)}
-                placeholder="Ex : contact@partenaire.org"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="+235 00 00 00 00"
                 className="w-full px-4 py-2.5 pr-10 rounded-lg border border-gray-200 text-small focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition"
               />
-              <Globe size={16} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+              <Phone size={16} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
             </div>
           </div>
 
@@ -96,9 +164,10 @@ const PartnersForm = () => {
           </button>
           <button
             type="submit"
-            className="px-6 py-2.5 rounded-lg bg-primary text-white font-medium text-small hover:bg-primary-dark transition-colors"
+            disabled={loading}
+            className="px-6 py-2.5 rounded-lg bg-primary text-white font-medium text-small hover:bg-primary-dark transition-colors disabled:opacity-50"
           >
-            Enregistrer
+            {loading ? 'Enregistrement...' : 'Enregistrer'}
           </button>
         </div>
       </motion.form>

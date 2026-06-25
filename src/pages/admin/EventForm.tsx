@@ -3,8 +3,9 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
   Image as ImageIcon, Bold, Italic, Underline, Link2, List, ListOrdered,
-  AlignLeft, Quote, Plus, MapPin, X
+  AlignLeft, Quote, Plus, MapPin, X, Loader2
 } from 'lucide-react'
+import { api } from '../../services/api'
 import { eventsService } from '../../services/events'
 
 const EventForm = () => {
@@ -24,7 +25,11 @@ const EventForm = () => {
     return 'À venir'
   }
 
+  const coverInputRef = useRef<HTMLInputElement>(null)
+  const galleryInputRef = useRef<HTMLInputElement>(null)
   const [coverPreview, setCoverPreview] = useState<string | null>(null)
+  const [uploadingCover, setUploadingCover] = useState(false)
+  const [uploadingGallery, setUploadingGallery] = useState(false)
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [date, setDate] = useState(new Date().toISOString().split('T')[0])
@@ -57,16 +62,41 @@ const EventForm = () => {
     fetchEvent()
   }, [id, navigate])
 
-  const handleCoverChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCoverChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
-    if (file) setCoverPreview(URL.createObjectURL(file))
+    if (!file) return
+    setUploadingCover(true)
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+      const result = await api.upload<{ url: string }>('/api/upload', formData)
+      setCoverPreview(result.url)
+    } catch {
+      console.error('Erreur lors de l\'upload de la couverture')
+    } finally {
+      setUploadingCover(false)
+    }
   }
 
-  const handleGalleryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleGalleryChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
     if (!files) return
-    const urls = Array.from(files).map((f) => URL.createObjectURL(f))
-    setGallery((prev) => [...prev, ...urls])
+    setUploadingGallery(true)
+    try {
+      const urls: string[] = []
+      for (const file of Array.from(files)) {
+        const formData = new FormData()
+        formData.append('file', file)
+        const result = await api.upload<{ url: string }>('/api/upload', formData)
+        urls.push(result.url)
+      }
+      setGallery((prev) => [...prev, ...urls])
+    } catch {
+      console.error('Erreur lors de l\'upload de la galerie')
+    } finally {
+      setUploadingGallery(false)
+      if (galleryInputRef.current) galleryInputRef.current.value = ''
+    }
   }
 
   const removeFromGallery = (index: number) => {
@@ -171,21 +201,34 @@ const EventForm = () => {
           <div className="space-y-6">
             <div>
               <label className="block text-small font-medium text-gray-700 mb-2">Image de couverture</label>
-              <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-gray-200 rounded-xl py-10 cursor-pointer hover:border-primary/50 hover:bg-primary/5 transition-colors overflow-hidden">
-                {coverPreview ? (
-                  <img src={coverPreview} alt="Aperçu" className="w-full h-40 object-cover rounded-lg" />
-                ) : (
-                  <>
-                    <div className="w-11 h-11 rounded-full bg-gray-100 flex items-center justify-center text-gray-400">
-                      <ImageIcon size={20} />
-                    </div>
-                    <span className="text-gray-500 text-small text-center">
-                      Cliquez pour uploader<br />ou glissez-déposez une image
-                    </span>
-                  </>
-                )}
-                <input type="file" accept="image/*" className="hidden" onChange={handleCoverChange} />
-              </label>
+              {coverPreview ? (
+                <div className="relative rounded-xl overflow-hidden mb-2">
+                  <img src={coverPreview} alt="Aperçu" className="w-full h-40 object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => { setCoverPreview(null); if (coverInputRef.current) coverInputRef.current.value = '' }}
+                    className="absolute top-2 right-2 w-8 h-8 bg-white/80 rounded-full flex items-center justify-center text-gray-600 hover:text-red transition-colors text-lg"
+                  >
+                    &times;
+                  </button>
+                </div>
+              ) : (
+                <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-gray-200 rounded-xl py-10 cursor-pointer hover:border-primary/50 hover:bg-primary/5 transition-colors overflow-hidden">
+                  {uploadingCover ? (
+                    <Loader2 size={24} className="animate-spin text-primary" />
+                  ) : (
+                    <>
+                      <div className="w-11 h-11 rounded-full bg-gray-100 flex items-center justify-center text-gray-400">
+                        <ImageIcon size={20} />
+                      </div>
+                      <span className="text-gray-500 text-small text-center">
+                        Cliquez pour uploader<br />ou glissez-déposez une image
+                      </span>
+                    </>
+                  )}
+                  <input ref={coverInputRef} type="file" accept="image/*" className="hidden" onChange={handleCoverChange} disabled={uploadingCover} />
+                </label>
+              )}
             </div>
 
             <div>
@@ -284,9 +327,13 @@ const EventForm = () => {
             <div>
               <label className="block text-small font-medium text-gray-700 mb-2">Galerie photos</label>
               <label className="flex items-center justify-center gap-2 border-2 border-dashed border-gray-200 rounded-xl py-6 cursor-pointer hover:border-primary/50 hover:bg-primary/5 transition-colors text-primary font-medium text-small">
-                <Plus size={16} />
-                Ajouter des images
-                <input type="file" accept="image/*" multiple className="hidden" onChange={handleGalleryChange} />
+                {uploadingGallery ? (
+                  <Loader2 size={16} className="animate-spin" />
+                ) : (
+                  <Plus size={16} />
+                )}
+                {uploadingGallery ? 'Upload en cours...' : 'Ajouter des images'}
+                <input ref={galleryInputRef} type="file" accept="image/*" multiple className="hidden" onChange={handleGalleryChange} disabled={uploadingGallery} />
               </label>
               {gallery.length > 0 && (
                 <div className="grid grid-cols-4 gap-2 mt-3">

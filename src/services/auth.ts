@@ -7,6 +7,7 @@ export interface User {
   firstName: string | null
   lastName: string | null
   phone: string | null
+  avatar: string | null
 }
 
 interface LoginResponse {
@@ -64,6 +65,14 @@ class AuthService {
 
   private setUser(user: User): void {
     localStorage.setItem(this.USER_KEY, JSON.stringify(user))
+  }
+
+  updateUser(user: User): void {
+    this.setUser(user)
+  }
+
+  refreshUser(): void {
+    // no-op: user data is fetched from storage
   }
 }
 

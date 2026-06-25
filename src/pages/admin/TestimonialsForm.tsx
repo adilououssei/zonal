@@ -1,22 +1,96 @@
-import { useState, type FormEvent } from 'react'
+import { useState, useEffect, useRef, type FormEvent } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Star } from 'lucide-react'
+import { Star, Upload, X } from 'lucide-react'
+import { testimonialsService } from '../../services/testimonials'
+import { api } from '../../services/api'
 
 const TestimonialsForm = () => {
   const navigate = useNavigate()
   const { id } = useParams()
   const isEditing = Boolean(id)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
+  const [loading, setLoading] = useState(false)
+  const [fetching, setFetching] = useState(isEditing)
+  const [uploading, setUploading] = useState(false)
   const [author, setAuthor] = useState('')
   const [role, setRole] = useState('')
   const [content, setContent] = useState('')
   const [rating, setRating] = useState(5)
+  const [avatar, setAvatar] = useState('')
   const [status, setStatus] = useState('published')
 
-  const handleSubmit = (e: FormEvent) => {
+  useEffect(() => {
+    if (!id) return
+    const fetchTestimonial = async () => {
+      try {
+        const item = await testimonialsService.getById(Number(id))
+        setAuthor(item.author)
+        setRole(item.role ?? '')
+        setContent(item.content)
+        setRating(item.rating)
+        setAvatar(item.avatar ?? '')
+        setStatus(item.status)
+      } catch {
+        console.error('Erreur lors du chargement')
+        navigate('/admin/testimonials')
+      } finally {
+        setFetching(false)
+      }
+    }
+    fetchTestimonial()
+  }, [id, navigate])
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setUploading(true)
+    try {
+      const fd = new FormData()
+      fd.append('file', file)
+      const result = await api.upload<{ url: string }>('/api/upload', fd)
+      setAvatar(result.url)
+    } catch {
+      console.error('Erreur lors de l\'upload')
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
-    navigate('/admin/testimonials')
+    setLoading(true)
+
+    try {
+      const payload = {
+        author,
+        role: role || undefined,
+        content,
+        rating,
+        avatar: avatar || undefined,
+        status,
+      }
+
+      if (isEditing && id) {
+        await testimonialsService.update(Number(id), payload)
+      } else {
+        await testimonialsService.create(payload)
+      }
+      navigate('/admin/testimonials')
+    } catch {
+      console.error('Erreur lors de l\'enregistrement')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (fetching) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+      </div>
+    )
   }
 
   return (
@@ -46,6 +120,7 @@ const TestimonialsForm = () => {
                 onChange={(e) => setAuthor(e.target.value)}
                 placeholder="Ex : Mariam Abakar"
                 className="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-small focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition"
+                required
               />
             </div>
             <div>
@@ -68,7 +143,44 @@ const TestimonialsForm = () => {
               onChange={(e) => setContent(e.target.value)}
               placeholder="Écrivez le témoignage..."
               className="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-small focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition resize-none"
+              required
             />
+          </div>
+
+          <div>
+            <label className="block text-small font-medium text-gray-700 mb-2">Photo (avatar)</label>
+            <div
+              onClick={() => fileInputRef.current?.click()}
+              className="relative flex items-center gap-3 px-4 py-3 rounded-lg border border-dashed border-gray-300 cursor-pointer hover:border-primary transition-colors"
+            >
+              {avatar ? (
+                <>
+                  <img src={avatar} alt="Avatar" className="w-10 h-10 rounded-full object-cover" />
+                  <span className="text-small text-gray-600 truncate flex-1">{avatar.split('/').pop()}</span>
+                  <button
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); setAvatar('') }}
+                    className="p-1 rounded hover:bg-gray-100 text-gray-400 hover:text-red transition-colors"
+                  >
+                    <X size={16} />
+                  </button>
+                </>
+              ) : (
+                <>
+                  <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-400">
+                    <Upload size={16} />
+                  </div>
+                  <span className="text-small text-gray-500">{uploading ? 'Upload...' : 'Cliquez pour ajouter une photo'}</span>
+                </>
+              )}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleAvatarUpload}
+                className="hidden"
+              />
+            </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -114,9 +226,10 @@ const TestimonialsForm = () => {
           </button>
           <button
             type="submit"
-            className="px-6 py-2.5 rounded-lg bg-primary text-white font-medium text-small hover:bg-primary-dark transition-colors"
+            disabled={loading}
+            className="px-6 py-2.5 rounded-lg bg-primary text-white font-medium text-small hover:bg-primary-dark transition-colors disabled:opacity-50"
           >
-            Enregistrer
+            {loading ? 'Enregistrement...' : 'Enregistrer'}
           </button>
         </div>
       </motion.form>

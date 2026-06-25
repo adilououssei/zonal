@@ -1,18 +1,59 @@
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
-import { Handshake, Plus, Edit, Trash2, Globe, Search, ChevronDown, ChevronsLeft, ChevronRight } from 'lucide-react'
-import { adminPartners, partnerStatusColorMap } from '../../data/adminPartnersData'
+import { Handshake, Plus, Edit, Trash2, Globe, Mail, Phone, ToggleLeft, ToggleRight, Search, ChevronDown } from 'lucide-react'
+import { partnersService } from '../../services/partners'
+import type { AdminPartner } from '../../services/partners'
+
+const statusColorMap: Record<string, string> = {
+  active: 'bg-emerald-100 text-emerald-700',
+  inactive: 'bg-gray-100 text-gray-500',
+}
 
 const Partners = () => {
   const { t } = useTranslation()
+  const [partners, setPartners] = useState<AdminPartner[]>([])
+  const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState('Tous')
 
-  const filtered = adminPartners.filter((partner) => {
-    const matchesSearch = partner.name.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesStatus = statusFilter === 'Tous' || partner.status === statusFilter
+  const fetchPartners = useCallback(async () => {
+    try {
+      setLoading(true)
+      const data = await partnersService.getAll()
+      setPartners(data)
+    } catch {
+      console.error('Erreur lors du chargement')
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => { fetchPartners() }, [fetchPartners])
+
+  const handleToggleStatus = async (id: number) => {
+    try {
+      const updated = await partnersService.toggleStatus(id)
+      setPartners((prev) => prev.map((p) => p.id === id ? { ...p, status: updated.status } : p))
+    } catch {
+      console.error('Erreur lors du changement de statut')
+    }
+  }
+
+  const handleDelete = async (id: number) => {
+    if (!confirm('Confirmer la suppression ?')) return
+    try {
+      await partnersService.delete(id)
+      setPartners((prev) => prev.filter((p) => p.id !== id))
+    } catch {
+      console.error('Erreur lors de la suppression')
+    }
+  }
+
+  const filtered = partners.filter((p) => {
+    const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase())
+    const matchesStatus = statusFilter === 'Tous' || p.status === statusFilter
     return matchesSearch && matchesStatus
   })
 
@@ -62,87 +103,95 @@ const Partners = () => {
         animate={{ opacity: 1, y: 0 }}
         className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"
       >
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-gray-100 bg-gray-50/50">
-                <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.partner')}</th>
-                <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.domain')}</th>
-                <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.contact')}</th>
-                <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.status')}</th>
-                <th className="text-right px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.actions')}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.length > 0 ? (
-                filtered.map((partner, i) => (
-                  <tr key={partner.id} className={`border-b border-gray-50 ${i % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'}`}>
-                    <td className="px-5 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-lg bg-orange-50 flex items-center justify-center text-orange-500 shrink-0">
-                          <Handshake size={16} />
+        {loading ? (
+          <div className="flex items-center justify-center py-20">
+            <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-gray-100 bg-gray-50/50">
+                  <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.partner')}</th>
+                  <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.domain')}</th>
+                  <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.contact')}</th>
+                  <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.status')}</th>
+                  <th className="text-right px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.actions')}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.length > 0 ? (
+                  filtered.map((partner, i) => (
+                    <tr key={partner.id} className={`border-b border-gray-50 ${i % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'}`}>
+                      <td className="px-5 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-9 h-9 rounded-lg bg-orange-50 flex items-center justify-center text-orange-500 shrink-0">
+                            <Handshake size={16} />
+                          </div>
+                          <span className="text-gray-800 text-small font-medium">{partner.name}</span>
                         </div>
-                        <span className="text-gray-800 text-small font-medium">{partner.name}</span>
-                      </div>
-                    </td>
-                    <td className="px-5 py-4 text-gray-600 text-small">{partner.domain}</td>
-                    <td className="px-5 py-4">
-                      <span className="flex items-center gap-1.5 text-gray-600 text-small">
-                        <Globe size={14} />
-                        {partner.contact}
-                      </span>
-                    </td>
-                    <td className="px-5 py-4">
-                      <span className={`inline-block px-2.5 py-1 rounded-full text-[11px] font-semibold ${partnerStatusColorMap[partner.status]}`}>
-                        {partner.status === 'active' ? 'Actif' : 'Inactif'}
-                      </span>
-                    </td>
-                    <td className="px-5 py-4 text-right">
-                      <div className="flex items-center justify-end gap-1">
-                        <Link
-                          to={`/admin/partners/${partner.id}/edit`}
-                          className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-primary hover:bg-primary/10 transition-colors"
-                          title={t('admin.actions.edit')}
-                        >
-                          <Edit size={15} />
-                        </Link>
+                      </td>
+                      <td className="px-5 py-4 text-gray-600 text-small">{partner.domain}</td>
+                      <td className="px-5 py-4">
+                        <div className="flex flex-col gap-0.5 text-gray-600 text-small">
+                          {partner.email && (
+                            <span className="flex items-center gap-1.5">
+                              <Mail size={13} />
+                              {partner.email}
+                            </span>
+                          )}
+                          {partner.phone && (
+                            <span className="flex items-center gap-1.5">
+                              <Phone size={13} />
+                              {partner.phone}
+                            </span>
+                          )}
+                          {!partner.email && !partner.phone && (
+                            <span className="text-gray-400 italic">—</span>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-5 py-4">
                         <button
-                          className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-red hover:bg-red/10 transition-colors"
-                          title={t('admin.actions.delete')}
+                          onClick={() => handleToggleStatus(partner.id)}
+                          className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold cursor-pointer hover:opacity-80 transition-opacity ${statusColorMap[partner.status] ?? 'bg-gray-100 text-gray-500'}`}
+                          title={partner.status === 'active' ? 'Désactiver' : 'Activer'}
                         >
-                          <Trash2 size={15} />
+                          {partner.status === 'active' ? <ToggleRight size={13} /> : <ToggleLeft size={13} />}
+                          {partner.status === 'active' ? 'Actif' : 'Inactif'}
                         </button>
-                      </div>
+                      </td>
+                      <td className="px-5 py-4 text-right">
+                        <div className="flex items-center justify-end gap-1">
+                          <Link
+                            to={`/admin/partners/${partner.id}/edit`}
+                            className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-primary hover:bg-primary/10 transition-colors"
+                            title={t('admin.actions.edit')}
+                          >
+                            <Edit size={15} />
+                          </Link>
+                          <button
+                            onClick={() => handleDelete(partner.id)}
+                            className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-red hover:bg-red/10 transition-colors"
+                            title={t('admin.actions.delete')}
+                          >
+                            <Trash2 size={15} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={5} className="px-5 py-10 text-center text-gray-400 text-small">
+                      Aucun partenaire trouvé.
                     </td>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={5} className="px-5 py-10 text-center text-gray-400 text-small">
-                    Aucun partenaire trouvé.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        <div className="flex items-center justify-center gap-2 px-5 py-4 border-t border-gray-100">
-          <button className="w-9 h-9 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 transition-colors" aria-label="Précédent">
-            <ChevronsLeft size={16} />
-          </button>
-          {[1, 2].map((page) => (
-            <button
-              key={page}
-              className={`w-9 h-9 flex items-center justify-center rounded-lg text-small font-medium transition-colors ${page === 1 ? 'bg-primary text-white' : 'text-gray-600 hover:bg-gray-100'}`}
-            >
-              {page}
-            </button>
-          ))}
-          <button className="flex items-center gap-1 px-3 h-9 rounded-lg text-gray-600 text-small font-medium hover:bg-gray-100 transition-colors">
-            Suivant <ChevronRight size={14} />
-          </button>
-        </div>
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
       </motion.div>
     </div>
   )

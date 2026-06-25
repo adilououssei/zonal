@@ -1,27 +1,88 @@
-import { useState, type FormEvent } from 'react'
+import { useState, useEffect, useRef, type FormEvent } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Image as ImageIcon, Calendar } from 'lucide-react'
-import { galleryCategories } from '../../data/adminGalleryData'
+import { Image as ImageIcon, Loader2 } from 'lucide-react'
+import { api } from '../../services/api'
+import { galleryService } from '../../services/gallery'
+
+const categories = ['Environnement', 'Éducation', 'Eau', 'Agriculture', 'Social']
 
 const GalleryForm = () => {
   const navigate = useNavigate()
   const { id } = useParams()
   const isEditing = Boolean(id)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const [imagePreview, setImagePreview] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [fetching, setFetching] = useState(isEditing)
+  const [uploading, setUploading] = useState(false)
   const [title, setTitle] = useState('')
-  const [date, setDate] = useState('')
+  const [src, setSrc] = useState('')
   const [category, setCategory] = useState('')
+  const [date, setDate] = useState('')
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  useEffect(() => {
+    if (!id) return
+    const fetchItem = async () => {
+      try {
+        const item = await galleryService.getById(Number(id))
+        setTitle(item.title)
+        setSrc(item.src ?? '')
+        setCategory(item.category ?? '')
+        setDate(item.date ?? '')
+      } catch {
+        console.error('Erreur lors du chargement')
+        navigate('/admin/gallery')
+      } finally {
+        setFetching(false)
+      }
+    }
+    fetchItem()
+  }, [id, navigate])
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
-    if (file) setImagePreview(URL.createObjectURL(file))
+    if (!file) return
+
+    setUploading(true)
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+      const result = await api.upload<{ url: string }>('/api/upload', formData)
+      setSrc(result.url)
+    } catch {
+      console.error('Erreur lors de l\'upload')
+    } finally {
+      setUploading(false)
+    }
   }
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
-    navigate('/admin/gallery')
+    setLoading(true)
+
+    try {
+      const payload = { title, src: src || undefined, category: category || undefined, date: date || undefined }
+
+      if (isEditing && id) {
+        await galleryService.update(Number(id), payload as { title: string; src?: string; category?: string; date?: string })
+      } else {
+        await galleryService.create(payload as { title: string; src: string; category?: string; date?: string })
+      }
+      navigate('/admin/gallery')
+    } catch {
+      console.error('Erreur lors de l\'enregistrement')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (fetching) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+      </div>
+    )
   }
 
   return (
@@ -45,21 +106,41 @@ const GalleryForm = () => {
           <div className="space-y-6">
             <div>
               <label className="block text-small font-medium text-gray-700 mb-2">Image</label>
-              <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-gray-200 rounded-xl py-16 cursor-pointer hover:border-primary/50 hover:bg-primary/5 transition-colors overflow-hidden">
-                {imagePreview ? (
-                  <img src={imagePreview} alt="Aperçu" className="w-full h-48 object-cover rounded-lg" />
-                ) : (
-                  <>
-                    <div className="w-11 h-11 rounded-full bg-gray-100 flex items-center justify-center text-gray-400">
-                      <ImageIcon size={20} />
-                    </div>
-                    <span className="text-gray-500 text-small text-center">
-                      Cliquez pour uploader<br />ou glissez-déposez une image
-                    </span>
-                  </>
-                )}
-                <input type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
-              </label>
+              {src ? (
+                <div className="relative rounded-xl overflow-hidden">
+                  <img src={src} alt="Aperçu" className="w-full h-48 object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => { setSrc(''); if (fileInputRef.current) fileInputRef.current.value = '' }}
+                    className="absolute top-2 right-2 w-8 h-8 bg-white/80 rounded-full flex items-center justify-center text-gray-600 hover:text-red transition-colors text-lg"
+                  >
+                    &times;
+                  </button>
+                </div>
+              ) : (
+                <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-gray-200 rounded-xl py-16 cursor-pointer hover:border-primary/50 hover:bg-primary/5 transition-colors overflow-hidden">
+                  {uploading ? (
+                    <Loader2 size={24} className="animate-spin text-primary" />
+                  ) : (
+                    <>
+                      <div className="w-11 h-11 rounded-full bg-gray-100 flex items-center justify-center text-gray-400">
+                        <ImageIcon size={20} />
+                      </div>
+                      <span className="text-gray-500 text-small text-center">
+                        Cliquez pour uploader<br />ou glissez-déposez une image
+                      </span>
+                    </>
+                  )}
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleFileChange}
+                    disabled={uploading}
+                  />
+                </label>
+              )}
             </div>
           </div>
 
@@ -72,20 +153,17 @@ const GalleryForm = () => {
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Ex : Reboisement Guera"
                 className="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-small focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition"
+                required
               />
             </div>
             <div>
               <label className="block text-small font-medium text-gray-700 mb-2">Date</label>
-              <div className="relative">
-                <input
-                  type="text"
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                  placeholder="jj/mm/aaaa"
-                  className="w-full px-4 py-2.5 pr-10 rounded-lg border border-gray-200 text-small focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition"
-                />
-                <Calendar size={16} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
-              </div>
+              <input
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                className="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-small focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition"
+              />
             </div>
             <div>
               <label className="block text-small font-medium text-gray-700 mb-2">Catégorie</label>
@@ -95,7 +173,7 @@ const GalleryForm = () => {
                 className="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-small text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition cursor-pointer"
               >
                 <option value="">Sélectionnez une catégorie</option>
-                {galleryCategories.filter((c) => c !== 'Toutes').map((cat) => (
+                {categories.map((cat) => (
                   <option key={cat} value={cat}>{cat}</option>
                 ))}
               </select>
@@ -113,9 +191,10 @@ const GalleryForm = () => {
           </button>
           <button
             type="submit"
-            className="px-6 py-2.5 rounded-lg bg-primary text-white font-medium text-small hover:bg-primary-dark transition-colors"
+            disabled={loading || uploading || !src}
+            className="px-6 py-2.5 rounded-lg bg-primary text-white font-medium text-small hover:bg-primary-dark transition-colors disabled:opacity-50"
           >
-            Enregistrer
+            {loading ? 'Enregistrement...' : 'Enregistrer'}
           </button>
         </div>
       </motion.form>

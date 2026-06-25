@@ -7,6 +7,7 @@ export interface AuthContextType {
   isAdmin: boolean
   login: (email: string, password: string) => Promise<User>
   logout: () => void
+  refreshUser: () => void
 }
 
 export const AuthContext = createContext<AuthContextType | null>(null)

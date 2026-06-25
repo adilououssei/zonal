@@ -131,9 +131,13 @@ const AdminLayout = () => {
                 onClick={() => setProfileOpen(!profileOpen)}
                 className="flex items-center gap-2 text-gray-600 cursor-pointer hover:text-gray-900 transition-colors"
               >
-                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold text-small">
-                  {userInitial}
-                </div>
+                {user?.avatar ? (
+                  <img src={user.avatar} alt="" className="w-8 h-8 rounded-full object-cover" />
+                ) : (
+                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold text-small">
+                    {userInitial}
+                  </div>
+                )}
                 <span className="text-small font-medium hidden sm:inline">
                   {user?.firstName || t('admin.topbar.admin')}
                 </span>

@@ -17,6 +17,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null)
   }, [])
 
+  const refreshUser = useCallback(() => {
+    setUser(authService.getUser())
+  }, [])
+
   return (
     <AuthContext.Provider
       value={{
@@ -25,6 +29,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isAdmin: authService.isAdmin(),
         login,
         logout,
+        refreshUser,
       }}
     >
       {children}

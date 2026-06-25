@@ -18,11 +18,13 @@ const fadeUp = {
 
 const statusKey = (s: string): string => {
   const map: Record<string, string> = {
+    Tous: 'events.filters.all',
     'À venir': 'events.filters.upcoming',
     'En cours': 'events.filters.ongoing',
-    'Terminé': 'events.filters.past',
+    Passé: 'events.filters.past',
+    Terminé: 'events.filters.past',
   }
-  return map[s] ?? 'events.filters.upcoming'
+  return map[s] ?? 'events.filters.all'
 }
 
 const monthKey = (m: string): string => {
