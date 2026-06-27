@@ -12,6 +12,7 @@ export interface AdminProject {
   status: string
   createdAt: string | null
   updatedAt: string | null
+  createdBy: { id: number; name: string } | null
 }
 
 export const projectsService = {
@@ -57,6 +58,8 @@ export interface PublicProject {
 
 export const publicProjectsService = {
   getAll: () => api.get<PublicProject[]>('/api/projects', false),
+
+  getCompleted: () => api.get<PublicProject[]>('/api/projects/completed', false),
 
   getById: (id: number) => api.get<PublicProject>(`/api/projects/${id}`, false),
 }

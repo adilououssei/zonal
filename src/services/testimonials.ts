@@ -11,6 +11,7 @@ export interface AdminTestimonial {
   status: string
   createdAt: string | null
   updatedAt: string | null
+  createdBy: { id: number; name: string } | null
 }
 
 export interface PublicTestimonial {

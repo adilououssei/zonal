@@ -1,9 +1,10 @@
 import { useState, useEffect, type FormEvent } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
-import { LogIn, Eye, EyeOff, Zap } from 'lucide-react'
+import { LogIn, Eye, EyeOff } from 'lucide-react'
 import { useAuth } from '../contexts/useAuth'
+import LanguageSwitcher from '../components/ui/LanguageSwitcher'
 
 const Login = () => {
   const { t } = useTranslation()
@@ -43,19 +44,17 @@ const Login = () => {
     }
   }
 
-  const quickLogin = () => {
-    setEmail('admin@zonalong.org')
-    setPassword('admin123')
-  }
-
   return (
     <div className="h-screen relative overflow-hidden">
       <img
-        src="https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?w=1920&h=1080&fit=crop"
+        src="/images/bg_login.png"
         alt=""
         className="absolute inset-0 w-full h-full object-cover"
       />
       <div className="absolute inset-0 bg-linear-to-r from-primary-dark/95 via-primary-dark/70 to-primary-dark/40" />
+      <div className="absolute top-4 right-4 z-20">
+        <LanguageSwitcher variant="dark" />
+      </div>
 
       <div className="relative z-10 h-screen flex items-center overflow-y-auto py-6">
         <div className="w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -133,9 +132,9 @@ const Login = () => {
                     />
                     <span className="text-gray-600 text-xs">{t('login.card.rememberMe')}</span>
                   </label>
-                  <a href="#" className="text-xs text-primary hover:text-primary-dark transition-colors">
+                  <Link to="/forgot-password" className="text-xs text-primary hover:text-primary-dark transition-colors">
                     {t('login.card.forgotPassword')}
-                  </a>
+                  </Link>
                 </div>
 
                 {error && (
@@ -148,17 +147,9 @@ const Login = () => {
                   className="w-full bg-primary text-white py-2.5 rounded-lg font-semibold hover:bg-primary-dark transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <LogIn size={18} />
-                  {loading ? t('login.card.loggingIn') || 'Connexion...' : t('login.card.loginButton')}
+                  {loading ? t('login.card.loggingIn') : t('login.card.loginButton')}
                 </button>
 
-                <button
-                  type="button"
-                  onClick={quickLogin}
-                  className="w-full border-2 border-dashed border-primary/30 text-primary py-2.5 rounded-lg font-medium hover:bg-primary/5 transition-colors flex items-center justify-center gap-2 text-xs"
-                >
-                  <Zap size={16} />
-                  {t('login.card.quickLogin')}
-                </button>
               </form>
             </motion.div>
           </div>

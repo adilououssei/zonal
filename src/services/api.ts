@@ -1,3 +1,5 @@
+import i18n from '../i18n/config'
+
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000'
 
 interface RequestOptions {
@@ -23,6 +25,7 @@ class ApiService {
 
     const requestHeaders: Record<string, string> = {
       'Content-Type': 'application/json',
+      'Accept-Language': i18n.language,
       ...headers,
     }
 
@@ -68,7 +71,9 @@ class ApiService {
   }
 
   async upload<T>(path: string, formData: FormData, authenticated = true): Promise<T> {
-    const headers: Record<string, string> = {}
+    const headers: Record<string, string> = {
+      'Accept-Language': i18n.language,
+    }
 
     if (authenticated) {
       const token = this.getToken()

@@ -13,6 +13,7 @@ export interface AdminNews {
   views: number
   createdAt: string | null
   updatedAt: string | null
+  createdBy: { id: number; name: string } | null
 }
 
 export const newsService = {

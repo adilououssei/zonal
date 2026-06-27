@@ -7,9 +7,9 @@ import { publicProjectsService } from '../services/projects'
 import type { PublicProject } from '../services/projects'
 
 const statusLabelMap: Record<string, string> = {
-  ongoing: 'En cours',
-  completed: 'Terminé',
-  planned: 'Planifié',
+  ongoing: 'admin.status.ongoing',
+  completed: 'admin.status.completed',
+  planned: 'admin.status.planned',
 }
 
 const statusColorMap: Record<string, string> = {
@@ -21,24 +21,25 @@ const statusColorMap: Record<string, string> = {
 const filters = ['Tous', 'ongoing', 'completed', 'planned'] as const
 type Filter = (typeof filters)[number]
 
-const formatPeriod = (start: string | null, end: string | null): string => {
+const formatPeriod = (start: string | null, end: string | null, i18n: { language: string }): string => {
+  const locale = i18n.language === 'en' ? 'en-US' : 'fr-FR'
   const fullOpts: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'long', year: 'numeric' }
   const monthDayOpts: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'long' }
   if (start && end) {
     const s = new Date(start)
     const e = new Date(end)
     if (s.getFullYear() === e.getFullYear()) {
-      return `${s.toLocaleDateString('fr-FR', monthDayOpts)} - ${e.toLocaleDateString('fr-FR', fullOpts)}`
+      return `${s.toLocaleDateString(locale, monthDayOpts)} - ${e.toLocaleDateString(locale, fullOpts)}`
     }
-    return `${s.toLocaleDateString('fr-FR', fullOpts)} - ${e.toLocaleDateString('fr-FR', fullOpts)}`
+    return `${s.toLocaleDateString(locale, fullOpts)} - ${e.toLocaleDateString(locale, fullOpts)}`
   }
-  if (start) return new Date(start).toLocaleDateString('fr-FR', fullOpts)
-  if (end) return new Date(end).toLocaleDateString('fr-FR', fullOpts)
+  if (start) return new Date(start).toLocaleDateString(locale, fullOpts)
+  if (end) return new Date(end).toLocaleDateString(locale, fullOpts)
   return ''
 }
 
 const Projects = () => {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [projects, setProjects] = useState<PublicProject[]>([])
   const [loading, setLoading] = useState(true)
   const [activeFilter, setActiveFilter] = useState<Filter>('Tous')
@@ -55,7 +56,7 @@ const Projects = () => {
       }
     }
     fetchProjects()
-  }, [])
+  }, [i18n.language])
 
   const visibleProjects = activeFilter === 'Tous'
     ? projects
@@ -89,7 +90,7 @@ const Projects = () => {
                   : 'bg-white text-gray-600 border-gray-200 hover:border-primary hover:text-primary'
               }`}
             >
-              {f === 'Tous' ? 'Tous' : statusLabelMap[f]}
+              {f === 'Tous' ? t('projects.filter.all') : t(statusLabelMap[f])}
             </button>
           ))}
         </div>
@@ -99,7 +100,7 @@ const Projects = () => {
             <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
           </div>
         ) : visibleProjects.length === 0 ? (
-          <p className="text-center text-gray-400 py-10">Aucun projet pour le moment.</p>
+          <p className="text-center text-gray-400 py-10">{t('projects.empty')}</p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {visibleProjects.map((project, i) => (
@@ -124,7 +125,7 @@ const Projects = () => {
                     </div>
                   )}
                   <span className={`absolute top-3 left-3 px-2.5 py-1 rounded-full text-[11px] font-semibold ${statusColorMap[project.status] ?? 'bg-gray-100 text-gray-500'}`}>
-                    {statusLabelMap[project.status] ?? project.status}
+                    {t(statusLabelMap[project.status] ?? project.status)}
                   </span>
                 </div>
 
@@ -135,7 +136,7 @@ const Projects = () => {
                       {project.location}
                     </span>
                     {project.startDate && (
-                      <span>{formatPeriod(project.startDate, project.endDate)}</span>
+                      <span>{formatPeriod(project.startDate, project.endDate, i18n)}</span>
                     )}
                   </div>
 
@@ -148,7 +149,7 @@ const Projects = () => {
                   </p>
 
                   <Link to={`/projects/${project.id}`} className="inline-flex items-center gap-1.5 text-primary font-medium text-sm hover:gap-2.5 transition-all">
-                    En savoir plus
+                    {t('programs.domains.learnMore')}
                     <ArrowUpRight size={15} />
                   </Link>
                 </div>

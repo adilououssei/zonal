@@ -1,12 +1,14 @@
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
-import { type ElementType } from 'react'
+import { useState, useEffect, type ElementType } from 'react'
 import {
   CheckCircle2, Eye, Star, Award, Leaf, Users, Handshake, MapPin,
-  ChevronRight, Mail, ArrowRight
+  ChevronRight, ChevronLeft, Mail, Quote, ArrowRight
 } from 'lucide-react'
-import { aboutStats, teamMembers } from '../data/aboutData'
+import { teamMembers } from '../data/aboutData'
+import { publicStatsService, type PublicStats } from '../services/stats'
+import { publicTestimonialsService, type PublicTestimonial } from '../services/testimonials'
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -16,21 +18,39 @@ const fadeUp = {
 const statIconMap: Record<string, ElementType> = { Award, Leaf, Users, Handshake, MapPin }
 
 const About = () => {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const [realStats, setRealStats] = useState<PublicStats | null>(null)
+  const [testimonials, setTestimonials] = useState<PublicTestimonial[]>([])
+  const [activePair, setActivePair] = useState(0)
+  const pairCount = Math.ceil(testimonials.length / 2)
 
-  const translatedStats = aboutStats.map((s) => ({
-    ...s,
-    label: (() => {
-      const map: Record<string, string> = {
-        "Années d'expérience": t('about.stats.experience'),
-        'Projets réalisés': t('about.stats.projects'),
-        'Bénéficiaires': t('about.stats.beneficiaries'),
-        'Partenaires': t('about.stats.partners'),
-        'Régions couvertes': t('about.stats.regions'),
-      }
-      return map[s.label] || s.label
-    })(),
-  }))
+  useEffect(() => {
+    publicStatsService.get().then(setRealStats).catch(() => {})
+  }, [i18n.language])
+
+  useEffect(() => {
+    publicTestimonialsService.getAll()
+      .then(data => {
+        setTestimonials(data.filter(t => t.status === 'published'))
+      })
+      .catch(() => {})
+  }, [i18n.language])
+
+  useEffect(() => {
+    if (testimonials.length < 3) return
+    const timer = setInterval(() => {
+      setActivePair((prev) => (prev + 1) % pairCount)
+    }, 4000)
+    return () => clearInterval(timer)
+  }, [testimonials.length, pairCount])
+
+  const dynamicStats = [
+    { value: 15, suffix: '+', label: t('about.stats.experience'), icon: 'Award' },
+    { value: realStats?.completedProjects ?? 0, suffix: '+', label: t('about.stats.projects'), icon: 'Leaf' },
+    { value: 350, suffix: '+', label: t('about.stats.beneficiaries'), icon: 'Users' },
+    { value: realStats?.partners ?? 0, suffix: '+', label: t('about.stats.partners'), icon: 'Handshake' },
+    { value: 18, label: t('about.stats.regions'), icon: 'MapPin' },
+  ]
 
   const teamMemberKeys = ['mahamat', 'fatime', 'abakar', 'aissatou']
   const translatedTeam = teamMembers.map((m, i) => ({
@@ -144,7 +164,7 @@ const About = () => {
               </div>
               <div className="bg-white border border-gray-100 rounded-b-card shadow-xl px-6 py-6">
                 <div className="grid grid-cols-2 gap-6">
-                  {translatedStats.slice(0, 4).map((stat: (typeof translatedStats)[number], index: number) => {
+                  {dynamicStats.slice(0, 4).map((stat, index: number) => {
                     const Icon = statIconMap[stat.icon] || Users
                     return (
                       <div key={index} className="flex items-center gap-3">
@@ -164,8 +184,8 @@ const About = () => {
                     <MapPin size={22} />
                   </div>
                   <div>
-                    <div className="text-2xl font-bold text-red leading-none">{translatedStats[4].value}</div>
-                    <p className="text-gray-500 text-small mt-1">{translatedStats[4].label}</p>
+                    <div className="text-2xl font-bold text-red leading-none">{dynamicStats[4].value}</div>
+                    <p className="text-gray-500 text-small mt-1">{dynamicStats[4].label}</p>
                   </div>
                 </div>
               </div>
@@ -261,6 +281,114 @@ const About = () => {
           </div>
         </div>
       </section>
+
+      {/* Témoignages */}
+      {testimonials.length > 0 && (
+        <section className="py-20 bg-gray-50">
+          <div className="container-custom">
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.2 }}
+              variants={fadeUp}
+              transition={{ duration: 0.6 }}
+              className="text-center mb-14"
+            >
+              <span className="text-red font-semibold text-small tracking-wide">{t('about.testimonials.label')}</span>
+              <h2 className="section-title">{t('about.testimonials.title')}</h2>
+              <p className="section-subtitle">{t('about.testimonials.subtitle')}</p>
+            </motion.div>
+
+            <div className="relative max-w-5xl mx-auto">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={activePair}
+                  initial={{ opacity: 0, x: 40 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -40 }}
+                  transition={{ duration: 0.4 }}
+                  className="grid grid-cols-1 md:grid-cols-2 gap-6"
+                >
+                  {[0, 1].map((offset) => {
+                    const idx = activePair * 2 + offset
+                    if (idx >= testimonials.length) return null
+                    const t = testimonials[idx]
+                    return (
+                      <div key={t.id} className="bg-white rounded-xl shadow-md p-5 md:p-6 text-center flex flex-col justify-between">
+                        <div>
+                          <Quote size={24} className="text-primary/20 mx-auto mb-2" />
+                          <p className="text-gray-700 text-body leading-relaxed italic line-clamp-4">
+                            "{t.content}"
+                          </p>
+                        </div>
+                        <div className="mt-4">
+                          <div className="flex items-center justify-center gap-1 mb-2">
+                            {Array.from({ length: 5 }).map((_, i) => (
+                              <Star
+                                key={i}
+                                size={14}
+                                className={i < t.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-200'}
+                              />
+                            ))}
+                          </div>
+                          <div className="flex items-center justify-center gap-2">
+                            <div className="w-9 h-9 rounded-full overflow-hidden bg-gray-100 shrink-0">
+                              {t.avatar ? (
+                                <img src={t.avatar} alt={t.author} className="w-full h-full object-cover" />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center text-primary font-bold text-sm">
+                                  {t.author.charAt(0)}
+                                </div>
+                              )}
+                            </div>
+                            <div className="text-left">
+                              <h4 className="font-semibold text-gray-900 text-xs">{t.author}</h4>
+                              {t.role && (
+                                <p className="text-gray-500 text-xs">{t.role}</p>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </motion.div>
+              </AnimatePresence>
+
+              {testimonials.length > 2 && (
+                <>
+                  <button
+                    onClick={() => setActivePair((prev) => (prev - 1 + pairCount) % pairCount)}
+                    aria-label={t('carousel.prev')}
+                    className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-5 w-10 h-10 rounded-full bg-white shadow-md text-gray-600 flex items-center justify-center hover:bg-gray-50 transition-colors"
+                  >
+                    <ChevronLeft size={20} />
+                  </button>
+                  <button
+                    onClick={() => setActivePair((prev) => (prev + 1) % pairCount)}
+                    aria-label={t('carousel.next')}
+                    className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-5 w-10 h-10 rounded-full bg-white shadow-md text-gray-600 flex items-center justify-center hover:bg-gray-50 transition-colors"
+                  >
+                    <ChevronRight size={20} />
+                  </button>
+
+                  <div className="flex items-center justify-center gap-2 mt-8">
+                    {Array.from({ length: pairCount }).map((_, index) => (
+                      <button
+                        key={index}
+                        onClick={() => setActivePair(index)}
+                        className={`h-2.5 rounded-full transition-all duration-300 ${
+                          index === activePair ? 'w-6 bg-red' : 'w-2.5 bg-gray-300'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* CTA */}
       <section className="py-16 bg-primary text-white">

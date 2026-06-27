@@ -1,11 +1,13 @@
 import { useState, useEffect, useRef, type FormEvent } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import { Star, Upload, X } from 'lucide-react'
 import { testimonialsService } from '../../services/testimonials'
 import { api } from '../../services/api'
 
 const TestimonialsForm = () => {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const { id } = useParams()
   const isEditing = Boolean(id)
@@ -20,7 +22,6 @@ const TestimonialsForm = () => {
   const [rating, setRating] = useState(5)
   const [avatar, setAvatar] = useState('')
   const [status, setStatus] = useState('published')
-
   useEffect(() => {
     if (!id) return
     const fetchTestimonial = async () => {
@@ -97,10 +98,10 @@ const TestimonialsForm = () => {
     <div>
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">
-          {isEditing ? "Modifier le témoignage" : 'Ajouter un témoignage'}
+          {isEditing ? t('admin.form.editTestimonial') : t('admin.form.addTestimonial')}
         </h1>
         <p className="text-gray-500 text-small mt-1">
-          Tableau de bord &gt; Témoignages &gt; {isEditing ? 'Modifier' : 'Ajouter'}
+          {t('admin.sidebar.dashboard')} &gt; {t('admin.sidebar.testimonials')} &gt; {isEditing ? t('admin.breadcrumb.edit') : t('admin.breadcrumb.add')}
         </p>
       </div>
 
@@ -113,42 +114,41 @@ const TestimonialsForm = () => {
         <div className="space-y-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-small font-medium text-gray-700 mb-2">Nom de l'auteur</label>
+              <label className="block text-small font-medium text-gray-700 mb-2">{t('admin.labels.authorName')}</label>
               <input
                 type="text"
                 value={author}
                 onChange={(e) => setAuthor(e.target.value)}
-                placeholder="Ex : Mariam Abakar"
+                placeholder={t('admin.placeholders.authorNameEx')}
                 className="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-small focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition"
                 required
               />
             </div>
             <div>
-              <label className="block text-small font-medium text-gray-700 mb-2">Fonction / Rôle</label>
+              <label className="block text-small font-medium text-gray-700 mb-2">{t('admin.labels.functionRole')}</label>
               <input
                 type="text"
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
-                placeholder="Ex : Chef de village"
+                placeholder={t('admin.placeholders.roleEx')}
                 className="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-small focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-small font-medium text-gray-700 mb-2">Témoignage</label>
+            <label className="block text-small font-medium text-gray-700 mb-2">{t('admin.labels.testimonial')}</label>
             <textarea
               rows={5}
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              placeholder="Écrivez le témoignage..."
+              placeholder={t('admin.placeholders.writeTestimonial')}
               className="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-small focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition resize-none"
               required
             />
           </div>
-
           <div>
-            <label className="block text-small font-medium text-gray-700 mb-2">Photo (avatar)</label>
+            <label className="block text-small font-medium text-gray-700 mb-2">{t('admin.labels.photo')}</label>
             <div
               onClick={() => fileInputRef.current?.click()}
               className="relative flex items-center gap-3 px-4 py-3 rounded-lg border border-dashed border-gray-300 cursor-pointer hover:border-primary transition-colors"
@@ -170,7 +170,7 @@ const TestimonialsForm = () => {
                   <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-400">
                     <Upload size={16} />
                   </div>
-                  <span className="text-small text-gray-500">{uploading ? 'Upload...' : 'Cliquez pour ajouter une photo'}</span>
+                  <span className="text-small text-gray-500">{uploading ? t('admin.actions.uploading') : t('admin.placeholders.clickToAddPhoto')}</span>
                 </>
               )}
               <input
@@ -185,7 +185,7 @@ const TestimonialsForm = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-small font-medium text-gray-700 mb-2">Note</label>
+              <label className="block text-small font-medium text-gray-700 mb-2">{t('admin.table.rating')}</label>
               <div className="flex items-center gap-1.5">
                 {[1, 2, 3, 4, 5].map((star) => (
                   <button
@@ -203,14 +203,14 @@ const TestimonialsForm = () => {
               </div>
             </div>
             <div>
-              <label className="block text-small font-medium text-gray-700 mb-2">Statut</label>
+              <label className="block text-small font-medium text-gray-700 mb-2">{t('admin.table.status')}</label>
               <select
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
                 className="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-small text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition cursor-pointer"
               >
-                <option value="published">Publié</option>
-                <option value="draft">Brouillon</option>
+                <option value="published">{t('admin.status.published')}</option>
+                <option value="draft">{t('admin.status.draft')}</option>
               </select>
             </div>
           </div>
@@ -222,14 +222,14 @@ const TestimonialsForm = () => {
             onClick={() => navigate('/admin/testimonials')}
             className="px-5 py-2.5 rounded-lg text-gray-600 font-medium text-small border border-gray-200 hover:bg-gray-50 transition-colors"
           >
-            Annuler
+            {t('admin.actions.cancel')}
           </button>
           <button
             type="submit"
             disabled={loading}
             className="px-6 py-2.5 rounded-lg bg-primary text-white font-medium text-small hover:bg-primary-dark transition-colors disabled:opacity-50"
           >
-            {loading ? 'Enregistrement...' : 'Enregistrer'}
+            {loading ? t('admin.actions.saving') : t('admin.actions.save')}
           </button>
         </div>
       </motion.form>

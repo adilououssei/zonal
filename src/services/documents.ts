@@ -10,6 +10,7 @@ export interface AdminDocument {
   date: string | null
   createdAt: string | null
   updatedAt: string | null
+  createdBy: { id: number; name: string } | null
 }
 
 export interface PublicDocument {

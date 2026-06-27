@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import {
   Newspaper, Plus, Edit, Trash2, Search, ChevronDown,
   ChevronsLeft, ChevronRight, Eye
@@ -8,6 +9,7 @@ import {
 import { newsService, type AdminNews } from '../../services/news'
 
 const NewsList = () => {
+  const { t, i18n } = useTranslation()
   const [news, setNews] = useState<AdminNews[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
@@ -22,21 +24,21 @@ const NewsList = () => {
       const data = await newsService.getAll()
       setNews(data)
     } catch {
-      console.error('Erreur lors du chargement des articles')
+      console.error(t('admin.errors.loadError'))
     } finally {
       setLoading(false)
     }
   }, [])
 
-  useEffect(() => { fetchNews() }, [fetchNews])
+  useEffect(() => { fetchNews() }, [fetchNews, i18n.language])
 
   const handleDelete = async (id: number) => {
-    if (!confirm('Confirmer la suppression de cet article ?')) return
+    if (!confirm(t('admin.confirm.deleteNews'))) return
     try {
       await newsService.delete(id)
       setNews((prev) => prev.filter((a) => a.id !== id))
     } catch {
-      console.error('Erreur lors de la suppression')
+      console.error(t('admin.errors.deleteError'))
     }
   }
 
@@ -58,15 +60,15 @@ const NewsList = () => {
     <div>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Actualités</h1>
-          <p className="text-gray-500 text-small mt-1">Tableau de bord &gt; Actualités</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t('admin.pages.news.title')}</h1>
+          <p className="text-gray-500 text-small mt-1">{t('admin.dashboard.title')} &gt; {t('admin.sidebar.news')}</p>
         </div>
         <Link
           to="/admin/news/new"
           className="inline-flex items-center gap-2 bg-primary text-white px-4 py-2.5 rounded-lg font-medium text-small hover:bg-primary-dark transition-colors"
         >
           <Plus size={18} />
-          Ajouter un article
+          {t('admin.actions.addArticle')}
         </Link>
       </div>
 
@@ -77,7 +79,7 @@ const NewsList = () => {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Rechercher un article..."
+            placeholder={t('admin.placeholders.searchArticle')}
             className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-200 text-small focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition"
           />
         </div>
@@ -87,9 +89,9 @@ const NewsList = () => {
             onChange={(e) => setCategoryFilter(e.target.value)}
             className="appearance-none pl-4 pr-9 py-2.5 rounded-lg border border-gray-200 text-small text-gray-600 focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
           >
-            {categories.map((cat) => (
-              <option key={cat} value={cat}>{cat === 'Toutes' ? 'Catégorie: Toutes' : cat}</option>
-            ))}
+              {categories.map((cat) => (
+                <option key={cat} value={cat}>{cat === 'Toutes' ? t('admin.categories.all') : cat}</option>
+              ))}
           </select>
           <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
         </div>
@@ -98,9 +100,9 @@ const NewsList = () => {
             defaultValue="recent"
             className="appearance-none pl-4 pr-9 py-2.5 rounded-lg border border-gray-200 text-small text-gray-600 focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
           >
-            <option value="recent">Plus récentes</option>
-            <option value="oldest">Plus anciennes</option>
-            <option value="popular">Plus populaires</option>
+            <option value="recent">{t('news.sort.recent')}</option>
+            <option value="oldest">{t('news.sort.oldest')}</option>
+            <option value="popular">{t('news.sort.popular')}</option>
           </select>
           <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
         </div>
@@ -115,12 +117,12 @@ const NewsList = () => {
           <table className="w-full">
             <thead>
               <tr className="border-b border-gray-100 bg-gray-50/50">
-                <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">Image</th>
-                <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">Titre</th>
-                <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">Catégorie</th>
-                <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">Date</th>
-                <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">Vues</th>
-                <th className="text-right px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">Actions</th>
+                <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.image')}</th>
+                <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.title')}</th>
+                <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.category')}</th>
+                <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.date')}</th>
+                <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.views')}</th>
+                <th className="text-right px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.actions')}</th>
               </tr>
             </thead>
             <tbody>
@@ -155,21 +157,21 @@ const NewsList = () => {
                         <Link
                           to={`/admin/news/${article.id}`}
                           className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-blue-500 hover:bg-blue/10 transition-colors"
-                          title="Voir les détails"
+                          title={t('admin.actions.view')}
                         >
                           <Eye size={15} />
                         </Link>
                         <Link
                           to={`/admin/news/${article.id}/edit`}
                           className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-primary hover:bg-primary/10 transition-colors"
-                          title="Modifier"
+                          title={t('admin.actions.edit')}
                         >
                           <Edit size={15} />
                         </Link>
                         <button
                           onClick={() => handleDelete(article.id)}
                           className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-red hover:bg-red/10 transition-colors"
-                          title="Supprimer"
+                          title={t('admin.actions.delete')}
                         >
                           <Trash2 size={15} />
                         </button>
@@ -180,7 +182,7 @@ const NewsList = () => {
               ) : (
                 <tr>
                   <td colSpan={6} className="px-5 py-10 text-center text-gray-400 text-small">
-                    Aucun article ne correspond à votre recherche.
+                    {t('admin.empty.noSearchResults')}
                   </td>
                 </tr>
               )}
@@ -192,7 +194,7 @@ const NewsList = () => {
           <button
             onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
             className="w-9 h-9 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 transition-colors"
-            aria-label="Précédent"
+            aria-label={t('carousel.prev')}
           >
             <ChevronsLeft size={16} />
           </button>
@@ -211,7 +213,7 @@ const NewsList = () => {
             onClick={() => setCurrentPage((p) => p + 1)}
             className="flex items-center gap-1 px-3 h-9 rounded-lg text-gray-600 text-small font-medium hover:bg-gray-100 transition-colors"
           >
-            Suivant <ChevronRight size={14} />
+            {t('carousel.next')} <ChevronRight size={14} />
           </button>
         </div>
       </motion.div>

@@ -8,6 +8,11 @@ export interface User {
   lastName: string | null
   phone: string | null
   avatar: string | null
+  roleEntity: {
+    id: number
+    name: string
+    permissions: Record<string, boolean>
+  } | null
 }
 
 interface LoginResponse {

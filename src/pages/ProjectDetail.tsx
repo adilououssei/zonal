@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import {
   MapPin, ArrowLeft, ChevronRight, Calendar,
 } from 'lucide-react'
@@ -8,9 +9,9 @@ import { publicProjectsService } from '../services/projects'
 import type { PublicProject } from '../services/projects'
 
 const statusLabelMap: Record<string, string> = {
-  ongoing: 'En cours',
-  completed: 'Terminé',
-  planned: 'Planifié',
+  ongoing: 'admin.status.ongoing',
+  completed: 'admin.status.completed',
+  planned: 'admin.status.planned',
 }
 
 const statusColorMap: Record<string, string> = {
@@ -19,23 +20,24 @@ const statusColorMap: Record<string, string> = {
   planned: 'bg-blue-100 text-blue-700',
 }
 
-const formatPeriod = (start: string | null, end: string | null): string => {
+const formatPeriod = (start: string | null, end: string | null, locale: string): string => {
   const fullOpts: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'long', year: 'numeric' }
   const monthDayOpts: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'long' }
   if (start && end) {
     const s = new Date(start)
     const e = new Date(end)
     if (s.getFullYear() === e.getFullYear()) {
-      return `${s.toLocaleDateString('fr-FR', monthDayOpts)} - ${e.toLocaleDateString('fr-FR', fullOpts)}`
+      return `${s.toLocaleDateString(locale, monthDayOpts)} - ${e.toLocaleDateString(locale, fullOpts)}`
     }
-    return `${s.toLocaleDateString('fr-FR', fullOpts)} - ${e.toLocaleDateString('fr-FR', fullOpts)}`
+    return `${s.toLocaleDateString(locale, fullOpts)} - ${e.toLocaleDateString(locale, fullOpts)}`
   }
-  if (start) return new Date(start).toLocaleDateString('fr-FR', fullOpts)
-  if (end) return new Date(end).toLocaleDateString('fr-FR', fullOpts)
+  if (start) return new Date(start).toLocaleDateString(locale, fullOpts)
+  if (end) return new Date(end).toLocaleDateString(locale, fullOpts)
   return ''
 }
 
 const ProjectDetail = () => {
+  const { t, i18n } = useTranslation()
   const { id } = useParams()
   const [project, setProject] = useState<PublicProject | null>(null)
   const [loading, setLoading] = useState(true)
@@ -53,7 +55,7 @@ const ProjectDetail = () => {
       }
     }
     fetchProject()
-  }, [id])
+  }, [id, i18n.language])
 
   if (loading) {
     return (
@@ -66,8 +68,8 @@ const ProjectDetail = () => {
   if (!project) {
     return (
       <div className="container-custom py-20 text-center">
-        <p className="text-gray-500 text-lg">Projet introuvable.</p>
-        <Link to="/projects" className="text-primary font-medium mt-4 inline-block">&larr; Retour aux projets</Link>
+        <p className="text-gray-500 text-lg">{t('projects.notFound')}</p>
+        <Link to="/projects" className="text-primary font-medium mt-4 inline-block">&larr; {t('projects.backToProjects')}</Link>
       </div>
     )
   }
@@ -92,10 +94,10 @@ const ProjectDetail = () => {
           >
             <Link to="/projects" className="inline-flex items-center gap-1.5 text-gray-200 hover:text-primary-light transition-colors mb-4 text-body">
               <ArrowLeft size={16} />
-              Retour aux projets
+              {t('projects.backToProjects')}
             </Link>
             <span className={`inline-block px-3 py-1 rounded-full text-[11px] font-semibold tracking-wide mb-4 ${statusColorMap[project.status] ?? 'bg-gray-100 text-gray-500'}`}>
-              {statusLabelMap[project.status] ?? project.status}
+              {t(statusLabelMap[project.status] ?? project.status)}
             </span>
             <h1 className="text-3xl md:text-section font-bold mb-4">{project.title}</h1>
             <div className="flex flex-wrap items-center gap-4 text-gray-200 text-body">
@@ -106,7 +108,7 @@ const ProjectDetail = () => {
               {project.startDate && (
                 <span className="flex items-center gap-1.5">
                   <Calendar size={16} />
-                  {formatPeriod(project.startDate, project.endDate)}
+                  {formatPeriod(project.startDate, project.endDate, i18n.language === 'en' ? 'en-US' : 'fr-FR')}
                 </span>
               )}
             </div>
@@ -127,7 +129,7 @@ const ProjectDetail = () => {
               {project.description ? (
                 <div className="text-gray-700 leading-relaxed whitespace-pre-line">{project.description}</div>
               ) : (
-                <p className="text-gray-400 italic">Aucune description fournie.</p>
+                <p className="text-gray-400 italic">{t('projects.noDescription')}</p>
               )}
             </motion.div>
 
@@ -138,7 +140,7 @@ const ProjectDetail = () => {
                 className="inline-flex items-center gap-2 text-primary font-semibold hover:gap-3 transition-all"
               >
                 <ArrowLeft size={16} />
-                Retour à tous les projets
+                {t('projects.backToAll')}
               </Link>
             </div>
           </div>
@@ -149,9 +151,9 @@ const ProjectDetail = () => {
       <section className="pb-10">
         <div className="container-custom">
           <div className="flex items-center gap-2 text-gray-500 text-small">
-            <Link to="/" className="hover:text-primary transition-colors">Accueil</Link>
+            <Link to="/" className="hover:text-primary transition-colors">{t('projects.breadcrumb.home')}</Link>
             <ChevronRight size={14} />
-            <Link to="/projects" className="hover:text-primary transition-colors">Projets</Link>
+            <Link to="/projects" className="hover:text-primary transition-colors">{t('projects.breadcrumb.current')}</Link>
             <ChevronRight size={14} />
             <span className="text-gray-800">{project.title}</span>
           </div>

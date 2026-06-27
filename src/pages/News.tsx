@@ -6,9 +6,9 @@ import {
   Calendar, ArrowRight, ChevronRight, ChevronDown, Search, Send,
   ChevronsLeft, ChevronsRight, Mail
 } from 'lucide-react'
-import { categories } from '../data/newsData'
 import { publicNewsService } from '../services/news'
 import type { PublicNews } from '../services/news'
+import { subscribeToNewsletter } from '../services/newsletter'
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -16,11 +16,14 @@ const fadeUp = {
 }
 
 const News = () => {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [searchQuery, setSearchQuery] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const [articles, setArticles] = useState<PublicNews[]>([])
   const [loading, setLoading] = useState(true)
+  const [newsletterEmail, setNewsletterEmail] = useState('')
+  const [newsletterStatus, setNewsletterStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
+  const [newsletterMessage, setNewsletterMessage] = useState('')
 
   useEffect(() => {
     const fetchNews = async () => {
@@ -34,9 +37,37 @@ const News = () => {
       }
     }
     fetchNews()
-  }, [])
+  }, [i18n.language])
 
   const recentArticles = articles.slice(0, 4)
+
+  const categoryMap: Record<string, string> = {
+    environnement: 'admin.categories.environnement',
+    éducation: 'admin.categories.education',
+    eau: 'admin.categories.eau',
+    agriculture: 'admin.categories.agriculture',
+    social: 'admin.categories.social',
+    environment: 'admin.categories.environment',
+    education: 'admin.categories.education',
+    water: 'admin.categories.water',
+    disaster: 'admin.categories.disaster',
+    rural: 'admin.categories.rural',
+    governance: 'admin.categories.governance',
+  }
+
+  const categoryCounts = articles.reduce<Record<string, number>>((acc, a) => {
+    const cat = a.category?.toLowerCase()
+    if (cat) acc[cat] = (acc[cat] || 0) + 1
+    return acc
+  }, {})
+
+  const activeCategories = Object.entries(categoryCounts)
+    .filter(([, count]) => count > 0)
+    .map(([slug, count]) => ({
+      slug,
+      label: t(categoryMap[slug] || slug),
+      count,
+    }))
 
   return (
     <>
@@ -110,7 +141,7 @@ const News = () => {
                     <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
                   </div>
                 ) : articles.length === 0 ? (
-                  <p className="col-span-2 text-center text-gray-500 py-10">{t('news.empty', 'Aucune actualité pour le moment.')}</p>
+                  <p className="col-span-2 text-center text-gray-500 py-10">{t('news.empty')}</p>
                 ) : articles.map((article, index) => (
                   <motion.article
                     key={article.id}
@@ -213,14 +244,14 @@ const News = () => {
               <div className="card p-6">
                 <h3 className="font-semibold text-gray-900 mb-4">{t('news.sidebar.categoriesTitle')}</h3>
                 <ul className="space-y-3">
-                  {categories.map((cat) => (
+                  {activeCategories.map((cat) => (
                     <li key={cat.slug}>
                       <Link
                         to="/news"
                         className="flex items-center justify-between text-gray-600 hover:text-primary transition-colors text-body"
                       >
                         <span className="flex items-center gap-2.5">
-                          <span className={`w-2 h-2 rounded-full ${cat.color}`} />
+                          <span className="w-2 h-2 rounded-full bg-primary" />
                           {cat.label}
                         </span>
                         <span className="text-gray-400 text-small">({cat.count})</span>
@@ -265,19 +296,44 @@ const News = () => {
                 <p className="text-gray-300 text-body mb-4">
                   {t('news.newsletter.desc')}
                 </p>
-                <form className="space-y-3" onSubmit={(e) => e.preventDefault()}>
+                <form className="space-y-3" onSubmit={async (e) => {
+                  e.preventDefault()
+                  if (!newsletterEmail) return
+                  setNewsletterStatus('loading')
+                  try {
+                    const res = await subscribeToNewsletter(newsletterEmail)
+                    setNewsletterMessage(res.message)
+                    setNewsletterStatus('success')
+                    setNewsletterEmail('')
+                  } catch (err) {
+                    setNewsletterMessage(err instanceof Error ? err.message : 'Erreur lors de l\'inscription')
+                    setNewsletterStatus('error')
+                  }
+                }}>
                   <input
                     type="email"
                     required
+                    value={newsletterEmail}
+                    onChange={(e) => setNewsletterEmail(e.target.value)}
                     placeholder={t('news.newsletter.placeholder')}
                     className="w-full px-4 py-2.5 rounded-lg bg-white/10 border border-white/20 text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-light text-body"
                   />
                   <button
                     type="submit"
-                    className="w-full bg-primary hover:bg-primary-light transition-colors text-white py-2.5 rounded-lg font-medium text-body inline-flex items-center justify-center gap-2"
+                    disabled={newsletterStatus === 'loading'}
+                    className="w-full bg-primary hover:bg-primary-light transition-colors text-white py-2.5 rounded-lg font-medium text-body inline-flex items-center justify-center gap-2 disabled:opacity-60"
                   >
-                    {t('news.newsletter.button')} <Send size={16} />
+                    {newsletterStatus === 'loading' ? (
+                      <>{t('common.loading')}...</>
+                    ) : (
+                      <>{t('news.newsletter.button')} <Send size={16} /></>
+                    )}
                   </button>
+                  {newsletterMessage && (
+                    <p className={`text-sm ${newsletterStatus === 'success' ? 'text-green-300' : 'text-red-300'}`}>
+                      {newsletterMessage}
+                    </p>
+                  )}
                 </form>
               </div>
             </aside>

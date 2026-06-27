@@ -10,11 +10,13 @@ export interface AdminEvent {
   year: string
   time: string | null
   location: string
+  category?: string
   status: string
   coverImage: string | null
   gallery: string[] | null
   createdAt: string | null
   updatedAt: string | null
+  createdBy: { id: number; name: string } | null
 }
 
 export const eventsService = {
@@ -28,6 +30,8 @@ export const eventsService = {
     date: string
     time?: string
     location: string
+    category?: string
+    categoryEn?: string
     status?: string
     coverImage?: string
     gallery?: string[]
@@ -39,6 +43,8 @@ export const eventsService = {
     date: string
     time: string
     location: string
+    category: string
+    categoryEn: string
     status: string
     coverImage: string
     gallery: string[]
@@ -57,6 +63,7 @@ export interface PublicEvent {
   year: string
   time: string | null
   location: string
+  category?: string
   status: string
   image: string | null
   gallery: string[] | null

@@ -18,9 +18,9 @@ const Dashboard = () => {
   useEffect(() => {
     adminService.getDashboardStats()
       .then(setData)
-      .catch(() => setError('Erreur lors du chargement des statistiques'))
+      .catch(() => setError(t('admin.errors.loadStats')))
       .finally(() => setLoading(false))
-  }, [])
+  }, [i18n.language, t])
 
   if (loading) {
     return (
@@ -38,19 +38,19 @@ const Dashboard = () => {
           onClick={() => window.location.reload()}
           className="btn-primary px-4 py-2 rounded-lg"
         >
-          Réessayer
+          {t('admin.errors.retry')}
         </button>
       </div>
     )
   }
 
-  const { stats, recentEvents, recentNews, recentProjects, monthlyStats, contentDistribution } = data
+  const { stats, recentEvents, recentNews, monthlyStats, contentDistribution } = data
 
   const statCards = [
     { label: t('admin.dashboard.stats.projects'), value: stats.totalProjects, icon: FolderOpen, color: 'bg-emerald-500' },
     { label: t('admin.dashboard.stats.events'), value: stats.totalEvents, icon: Calendar, color: 'bg-red' },
     { label: t('admin.dashboard.stats.articles'), value: stats.totalNews, icon: Newspaper, color: 'bg-blue-500' },
-    { label: t('admin.dashboard.stats.users'), value: stats.totalUsers, icon: Users, color: 'bg-purple-500' },
+    { label: t('admin.dashboard.stats.subscribers'), value: stats.totalSubscribers, icon: Users, color: 'bg-purple-500' },
     { label: t('admin.dashboard.stats.partners'), value: stats.totalPartners, icon: Handshake, color: 'bg-orange-500' },
   ]
 
@@ -65,7 +65,7 @@ const Dashboard = () => {
     { month: 'long', year: 'numeric' }
   )
   const calendarDays = Array.from({ length: daysInMonth }, (_, i) => i + 1)
-  const leadingBlanks = Array.from({ length: firstDayOfWeek }, (_, i) => null)
+  const leadingBlanks = Array.from({ length: firstDayOfWeek }, () => null)
 
   const weekDays = t('admin.dashboard.calendarDays', { returnObjects: true }) as string[]
 
@@ -124,7 +124,7 @@ const Dashboard = () => {
                 </div>
                 <div className="min-w-0">
                   <p className="text-gray-800 text-small font-medium truncate">{item.title}</p>
-                  <p className="text-gray-400 text-xs">{item.date ?? 'Date non définie'}</p>
+                  <p className="text-gray-400 text-xs">{item.date ?? t('admin.errors.dateUndefined')}</p>
                 </div>
               </li>
             ))}
@@ -152,7 +152,7 @@ const Dashboard = () => {
                 </div>
                 <div className="min-w-0">
                   <p className="text-gray-800 text-small font-medium truncate">{item.title}</p>
-                  <p className="text-gray-400 text-xs">{item.date ?? 'Date non définie'}</p>
+                  <p className="text-gray-400 text-xs">{item.date ?? t('admin.errors.dateUndefined')}</p>
                 </div>
               </li>
             ))}

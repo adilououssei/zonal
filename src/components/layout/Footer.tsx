@@ -115,19 +115,19 @@ const Footer = () => {
           <div className="flex items-center gap-2">
             <p>{t('footer.copyright', { year: new Date().getFullYear() })}</p>
             <span className="text-white/5 hover:text-white/20 text-[10px] transition-colors hidden sm:inline">
-              — ◈ Ousseï Adilou
+              — {t('footer.credit')}
             </span>
           </div>
           <div className="flex items-center gap-6">
             <Link to="#" className="hover:text-primary-light transition-colors">{t('footer.privacy')}</Link>
-            <Link to={isAdmin ? '/admin' : '/login'} className="text-white/10 hover:text-white/40 transition-colors text-xs flex items-center gap-1" aria-label="Administration">
+            <Link to={isAdmin ? '/admin' : '/login'} className="text-white/10 hover:text-white/40 transition-colors text-xs flex items-center gap-1" aria-label={t('footer.adminAria')}>
               {isAdmin ? <LayoutDashboard size={10} /> : null}
-              {isAdmin ? 'Dashboard' : 'Admin'}
+              {isAdmin ? t('footer.dashboardLink') : t('footer.adminLink')}
             </Link>
           </div>
         </div>
         <p className="text-center text-white/5 hover:text-white/20 text-[10px] transition-colors mt-2 sm:hidden">
-          ◈ Ousseï Adilou
+          {t('footer.credit')}
         </p>
       </div>
     </footer>

@@ -1,523 +1,948 @@
 {
-  "header": {
-    "nav": {
-      "home": "Home",
-      "about": "About",
-      "programs": "Programs",
-      "projects": "Projects",
-      "news": "News",
-      "events": "Events",
-      "contact": "Contact"
+    "header": {
+        "nav": {
+            "home": "Home",
+            "about": "About",
+            "programs": "Programs",
+            "projects": "Projects",
+            "news": "News",
+            "events": "Events",
+            "contact": "Contact"
+        },
+        "topbar": {
+            "address": "N'Djamena, Chad",
+            "address2": "Rue, avenue Dedjal Allamta",
+            "email": "zonal.ch@gmail.com",
+            "phone": "+235 662 00 620",
+            "search": "Search",
+            "openMenu": "Open menu",
+            "closeMenu": "Close menu"
+        },
+        "cta": "WhatsApp",
+        "logo": "ZONAL NGO"
     },
-    "topbar": {
-      "address": "N'Djamena, Chad",
-      "address2": "Rue, avenue Dedjal Allamta",
-      "email": "zonal.ch@gmail.com",
-      "phone": "+235 662 00 620",
-      "search": "Search",
-      "openMenu": "Open menu",
-      "closeMenu": "Close menu"
+    "lang": {
+        "fr": "FR",
+        "en": "EN",
+        "ar": "AR"
     },
-    "cta": "WhatsApp",
-    "logo": "ZONAL NGO"
-  },
-  "lang": {
-    "fr": "FR",
-    "en": "EN",
-    "ar": "AR"
-  },
-  "footer": {
-    "description": "Zonal NGO for Sustainable Development works for human, social and equitable development in Chad and for future generations.",
-    "links": "Useful Links",
-    "hours": "Opening Hours",
-    "contact": "Contact",
-    "address": "N'Djamena, Chad",
-    "address2": "Rue, avenue Dedjal Allamta",
-    "phone": "+235 662 00 620",
-    "email": "zonal.ch@gmail.com",
-    "whatsapp": "Write to us on WhatsApp",
-    "copyright": "© {{year}} Zonal - All rights reserved",
-    "privacy": "Privacy Policy",
-    "schedule": {
-      "monThu": "Mon - Thu",
-      "monThuTime": "09:00 - 17:30",
-      "fri": "Friday",
-      "friTime": "08:00 - 15:00",
-      "sat": "Saturday",
-      "satStatus": "Weekend (Closed)"
-    }
-  },
-  "home": {
-    "hero": {
-      "tagline": "Zonal NGO for Sustainable Development",
-      "line1": "Act today",
-      "line2": "for a",
-      "line3": "sustainable future",
-      "subtitle": "We work for balanced human, social and environmental development in Chad.",
-      "ctaPrimary": "Discover our actions",
-      "ctaSecondary": "Contact us"
+    "footer": {
+        "description": "Zonal NGO for Sustainable Development works for human, social and equitable development in Chad and for future generations.",
+        "links": "Useful Links",
+        "hours": "Opening Hours",
+        "contact": "Contact",
+        "address": "N'Djamena, Chad",
+        "address2": "Rue, avenue Dedjal Allamta",
+        "phone": "+235 662 00 620",
+        "email": "zonal.ch@gmail.com",
+        "whatsapp": "Write to us on WhatsApp",
+        "copyright": "© {{year}} Zonal - All rights reserved",
+        "privacy": "Privacy Policy",
+        "credit": "◈ Ousseï Adilou",
+        "adminAria": "Administration",
+        "dashboardLink": "Dashboard",
+        "adminLink": "Admin",
+        "schedule": {
+            "monThu": "Mon - Thu",
+            "monThuTime": "09:00 - 17:30",
+            "fri": "Friday",
+            "friTime": "08:00 - 15:00",
+            "sat": "Saturday",
+            "satStatus": "Weekend (Closed)"
+        }
     },
-    "realisations": {
-      "title": "Our achievements",
-      "subtitle": "Discover some of our actions on the ground."
+    "home": {
+        "hero": {
+            "tagline": "Zonal NGO for Sustainable Development",
+            "line1": "Act today",
+            "line2": "for a",
+            "line3": "sustainable future",
+            "subtitle": "We work for balanced human, social and environmental development in Chad.",
+            "ctaPrimary": "Discover our actions",
+            "ctaSecondary": "Contact us"
+        },
+        "realisations": {
+            "title": "Our achievements",
+            "subtitle": "Discover some of our actions on the ground.",
+            "empty": "No achievements at the moment."
+        },
+        "events": {
+            "title": "Upcoming events",
+            "details": "View details",
+            "all": "View all events",
+            "empty": "No upcoming events at the moment."
+        },
+        "cta": {
+            "title": "Together, let's build sustainable development",
+            "text": "Join us in our mission for a better future.",
+            "button": "Join us"
+        },
+        "stats": {
+            "experience": "Years of experience",
+            "projects": "Projects completed",
+            "partners": "Partners",
+            "regions": "Regions covered",
+            "beneficiaries": "Beneficiaries"
+        },
+        "domains": {
+            "governance": {
+                "title": "Local Governance",
+                "desc": "Promoting citizen participation, transparency and good governance at local level.",
+                "points": [
+                    "Capacity building for communities",
+                    "Support for decentralization",
+                    "Promotion of peace and social cohesion"
+                ]
+            },
+            "environment": {
+                "title": "Environment & Climate",
+                "desc": "Protecting the environment, fighting deforestation and promoting adaptation to climate change.",
+                "points": [
+                    "Sustainable management of natural resources",
+                    "Biodiversity protection",
+                    "Environmental education"
+                ]
+            },
+            "rural": {
+                "title": "Rural Development",
+                "desc": "Supporting rural communities in improving their living conditions and livelihoods.",
+                "points": [
+                    "Support for sustainable agriculture",
+                    "Access to water and sanitation",
+                    "Support for local economic initiatives"
+                ]
+            },
+            "disaster": {
+                "title": "Disaster Management",
+                "desc": "Strengthening community resilience to natural hazards and crises.",
+                "points": [
+                    "Risk prevention and reduction",
+                    "Early warning and preparedness",
+                    "Humanitarian response and recovery"
+                ]
+            },
+            "education": {
+                "title": "Education & Awareness",
+                "desc": "Promoting education, training and awareness for sustainable behavior change.",
+                "points": [
+                    "Youth and adult education",
+                    "Community awareness",
+                    "Local capacity building"
+                ]
+            },
+            "water": {
+                "title": "Water & Sanitation",
+                "desc": "Improving access to drinking water and promoting hygiene and sanitation for all.",
+                "points": [
+                    "Construction of water points",
+                    "Hygiene promotion",
+                    "Community sanitation"
+                ]
+            }
+        },
+        "achievements": [
+            {
+                "title": "Reforestation Project",
+                "description": "Planting 50,000 trees in the Guera region"
+            },
+            {
+                "title": "Youth Training",
+                "description": "Training 200 young people in leadership and governance"
+            },
+            {
+                "title": "Access to drinking water",
+                "description": "Construction of 15 wells in rural communities"
+            }
+        ],
+        "eventsList": [
+            {
+                "title": "World Environment Day",
+                "location": "N'Djamena, Chad"
+            },
+            {
+                "title": "Workshop on Local Governance",
+                "location": "Abeche, Chad"
+            },
+            {
+                "title": "Reforestation Campaign",
+                "location": "Mao, Chad"
+            }
+        ]
+    },
+    "about": {
+        "hero": {
+            "title": "About us",
+            "breadcrumb": "About us"
+        },
+        "who": {
+            "label": "WHO ARE WE?",
+            "title": "Zonal NGO for Sustainable Development",
+            "desc": "Zonal NGO for Sustainable Development is a non-governmental organization based in Chad. Founded by experts in sustainable development, our mission is to drive positive change in communities through concrete and sustainable initiatives. Since our creation, we have developed recognized expertise in local governance, environmental protection, rural development, education, access to drinking water and disaster management.",
+            "missionTitle": "Our Mission",
+            "missionDesc": "Contributing to sustainable development by improving the living conditions of vulnerable communities.",
+            "visionTitle": "Our Vision",
+            "visionDesc": "A Chad where communities live in harmony with their environment in dignity and prosperity.",
+            "valuesTitle": "Our Values",
+            "valuesDesc": "Integrity, Transparency, Commitment, Solidarity, Sustainability."
+        },
+        "history": {
+            "title": "Our History",
+            "desc": "Created to meet the environmental and social challenges of Chad, Zonal NGO was born thanks to the mobilization of passionate professionals. Since its launch, the organization has multiplied field projects, gaining the trust of local communities and its partners. Each project carried out is another step towards a sustainable future."
+        },
+        "team": {
+            "title": "Our Team",
+            "subtitle": "A committed and passionate team serving sustainable development."
+        },
+        "testimonials": {
+            "label": "TESTIMONIALS",
+            "title": "What our partners say",
+            "subtitle": "They trust us and share their experience."
+        },
+        "cta": {
+            "title": "Together, let's build a sustainable future",
+            "desc": "Join us in our mission for a greener and more prosperous Chad.",
+            "button": "Contact us"
+        },
+        "stats": {
+            "experience": "Years of experience",
+            "projects": "Projects completed",
+            "beneficiaries": "Beneficiaries",
+            "partners": "Partners",
+            "regions": "Regions covered"
+        },
+        "teamMembers": {
+            "mahamat": {
+                "name": "Mahamat Ali",
+                "role": "Executive Director"
+            },
+            "fatime": {
+                "name": "Fatimé Hassana",
+                "role": "Programs Manager"
+            },
+            "abakar": {
+                "name": "Abakar Moussa",
+                "role": "Environment & Climate Manager"
+            },
+            "aissatou": {
+                "name": "Aïssatou Mbodou",
+                "role": "Monitoring & Evaluation Manager"
+            }
+        }
+    },
+    "programs": {
+        "hero": {
+            "title": "Our Programs",
+            "subtitle": "Our programs are designed to meet the specific needs of Chadian communities while preserving the environment and promoting sustainable and inclusive development."
+        },
+        "domains": {
+            "title": "Our areas of intervention",
+            "subtitle": "Zonal NGO for Sustainable Development works in six key areas for sustainable impact and positive community transformation.",
+            "learnMore": "Learn more"
+        },
+        "cta": {
+            "quote": "Together, let's build a sustainable future for generations to come.",
+            "button": "Contact us"
+        },
+        "partners": {
+            "title": "Our Partners",
+            "subtitle": "They support us in our mission for sustainable development in Chad."
+        }
+    },
+    "projects": {
+        "hero": {
+            "title": "Our Projects",
+            "subtitle": "Discover all our projects on the field and their impact on communities."
+        },
+        "breadcrumb": {
+            "home": "Home",
+            "current": "Projects"
+        },
+        "filter": {
+            "all": "All"
+        },
+        "empty": "No projects in this category at the moment.",
+        "notFound": "Project not found.",
+        "backToProjects": "Back to projects",
+        "noDescription": "No description provided.",
+        "backToAll": "Back to all projects"
+    },
+    "news": {
+        "hero": {
+            "title": "News",
+            "subtitle": "Stay informed with our latest news from the field and updates on our programs."
+        },
+        "breadcrumb": {
+            "home": "Home",
+            "current": "News"
+        },
+        "allTitle": "All news",
+        "sort": {
+            "recent": "Most recent",
+            "popular": "Most popular",
+            "oldest": "Oldest"
+        },
+        "empty": "No news at the moment.",
+        "readMore": "Read more",
+        "pagination": {
+            "prev": "Previous page",
+            "next": "Next page"
+        },
+        "sidebar": {
+            "searchTitle": "Search",
+            "searchPlaceholder": "Search news...",
+            "searchAria": "Search",
+            "categoriesTitle": "Categories",
+            "recentTitle": "Recent articles"
+        },
+        "newsletter": {
+            "title": "Stay informed!",
+            "desc": "Subscribe to our newsletter to receive our latest news.",
+            "placeholder": "Your email address",
+            "button": "Subscribe"
+        },
+        "cta": {
+            "title": "Support our action",
+            "desc": "Your support allows us to continue acting for sustainable development in Chad.",
+            "button": "Make a donation"
+        },
+        "notFound": "Article not found.",
+        "backToNews": "Back to news",
+        "views": "views",
+        "noContent": "No content.",
+        "galleryTitle": "Photo gallery",
+        "backToAll": "Back to all news",
+        "articles": [
+            {
+                "title": "Launch of a new reforestation project in Guera",
+                "excerpt": "As part of our commitment to environmental protection, we have launched a large-scale reforestation program in the Guera region.",
+                "category": "Environment",
+                "date": "March 12, 2025"
+            },
+            {
+                "title": "Leadership training for 100 young people in N'Djamena",
+                "excerpt": "Intensive training in leadership and governance was organized for 100 young people from different neighborhoods of N'Djamena.",
+                "category": "Education",
+                "date": "February 5, 2025"
+            },
+            {
+                "title": "Construction of a new water point in Abeche",
+                "excerpt": "A new drinking water borehole was inaugurated in Abeche, serving more than 500 households in the local community.",
+                "category": "Water & Sanitation",
+                "date": "January 20, 2025"
+            },
+            {
+                "title": "Workshop on natural disaster management",
+                "excerpt": "A training workshop on disaster prevention and management brought together 50 participants from local communities.",
+                "category": "Disaster Management",
+                "date": "December 15, 2024"
+            },
+            {
+                "title": "Hygiene awareness campaign in schools",
+                "excerpt": "Our team organized a hygiene awareness campaign in 20 primary schools in the Logone region.",
+                "category": "Education",
+                "date": "November 8, 2024"
+            },
+            {
+                "title": "Delivery of agricultural equipment to women's cooperatives",
+                "excerpt": "As part of our rural development program, we delivered agricultural equipment to 15 women's cooperatives in the Mayo-Kebbi region.",
+                "category": "Rural Development",
+                "date": "October 22, 2024"
+            }
+        ]
     },
     "events": {
-      "title": "Upcoming events",
-      "details": "View details",
-      "all": "View all events"
+        "hero": {
+            "title": "Our Events",
+            "subtitle": "Discover our past and upcoming events. Together, let's mobilize for a sustainable future."
+        },
+        "filters": {
+            "all": "All",
+            "upcoming": "Upcoming",
+            "ongoing": "Ongoing",
+            "past": "Past"
+        },
+        "details": "View details",
+        "allUpcoming": "View all upcoming events",
+        "empty": "No events in this category at the moment.",
+        "pastSection": {
+            "title": "Past events",
+            "desc": "Relive our past activities and discover the impact of our actions on the ground."
+        },
+        "allPast": "View all past events",
+        "notFound": "Event not found.",
+        "backToEvents": "Back to events",
+        "noDescription": "No description provided.",
+        "galleryTitle": "Photo gallery",
+        "backToAll": "Back to all events",
+        "stats": {
+            "title": "Events by category",
+            "uncategorized": "Uncategorized"
+        },
+        "newsletter": {
+            "title": "Stay informed about our activities",
+            "desc": "Subscribe to our newsletter to receive the latest news and be informed about our events.",
+            "placeholder": "Your email address",
+            "button": "Subscribe"
+        }
     },
-    "cta": {
-      "title": "Together, let's build sustainable development",
-      "text": "Join us in our mission for a better future.",
-      "button": "Join us"
+    "contact": {
+        "hero": {
+            "title": "Contact us",
+            "subtitle": "We are here to answer your questions and discuss sustainable solutions for a better future."
+        },
+        "section": {
+            "title": "Stay in touch",
+            "desc": "Do you have a question, a suggestion, or want to collaborate with us? Feel free to write to us, we will respond promptly."
+        },
+        "cards": {
+            "address": {
+                "title": "Address",
+                "lines": [
+                    "N'Djamena, Chad",
+                    "Rue, avenue Dedjal Allamta"
+                ]
+            },
+            "phone": {
+                "title": "Phone",
+                "lines": [
+                    "+235 662 00 620"
+                ]
+            },
+            "email": {
+                "title": "Email",
+                "lines": [
+                    "zonal.ch@gmail.com"
+                ]
+            },
+            "whatsapp": {
+                "title": "WhatsApp",
+                "lines": [
+                    "Write to us directly",
+                    "on WhatsApp"
+                ],
+                "button": "Open WhatsApp"
+            },
+            "hours": {
+                "title": "Opening Hours",
+                "lines": [
+                    "Mon - Thu: 09:00 - 17:30",
+                    "Friday: 08:00 - 15:00",
+                    "Saturday: Weekend (Closed)"
+                ]
+            }
+        },
+        "form": {
+            "title": "Send us a message",
+            "success": "Thank you! Your message has been sent successfully. We will respond promptly.",
+            "name": "Your full name *",
+            "email": "Your email *",
+            "subject": "Subject *",
+            "subjectPlaceholder": "Select a subject",
+            "subjectInfo": "Information request",
+            "subjectPartnership": "Partnership",
+            "subjectVolunteer": "Volunteering",
+            "subjectDonation": "Donation",
+            "subjectOther": "Other",
+            "message": "Write your message here...",
+            "submit": "Send message",
+            "sending": "Sending..."
+        },
+        "support": {
+            "support": {
+                "title": "Support & Information",
+                "desc": "Our team is available to assist you and answer all your inquiries."
+            },
+            "partnership": {
+                "title": "Partnerships",
+                "desc": "Are you an organization or company wishing to collaborate with us? Contact us!"
+            },
+            "volunteer": {
+                "title": "Become a volunteer",
+                "desc": "Join our network of volunteers and actively participate in our actions on the ground."
+            }
+        },
+        "social": "Follow us on social media"
     },
-    "stats": {
-      "experience": "Years of experience",
-      "projects": "Projects completed",
-      "partners": "Partners",
-      "regions": "Regions covered",
-      "beneficiaries": "Beneficiaries"
+    "social": {
+        "facebook": "Facebook",
+        "linkedin": "LinkedIn",
+        "youtube": "YouTube",
+        "whatsapp": "WhatsApp",
+        "email": "Email"
     },
-    "domains": {
-      "governance": {
-        "title": "Local Governance",
-        "desc": "Promoting citizen participation, transparency and good governance at local level.",
-        "points": [
-          "Capacity building for communities",
-          "Support for decentralization",
-          "Promotion of peace and social cohesion"
-        ]
-      },
-      "environment": {
-        "title": "Environment & Climate",
-        "desc": "Protecting the environment, fighting deforestation and promoting adaptation to climate change.",
-        "points": [
-          "Sustainable management of natural resources",
-          "Biodiversity protection",
-          "Environmental education"
-        ]
-      },
-      "rural": {
-        "title": "Rural Development",
-        "desc": "Supporting rural communities in improving their living conditions and livelihoods.",
-        "points": [
-          "Support for sustainable agriculture",
-          "Access to water and sanitation",
-          "Support for local economic initiatives"
-        ]
-      },
-      "disaster": {
-        "title": "Disaster Management",
-        "desc": "Strengthening community resilience to natural hazards and crises.",
-        "points": [
-          "Risk prevention and reduction",
-          "Early warning and preparedness",
-          "Humanitarian response and recovery"
-        ]
-      },
-      "education": {
-        "title": "Education & Awareness",
-        "desc": "Promoting education, training and awareness for sustainable behavior change.",
-        "points": [
-          "Youth and adult education",
-          "Community awareness",
-          "Local capacity building"
-        ]
-      },
-      "water": {
-        "title": "Water & Sanitation",
-        "desc": "Improving access to drinking water and promoting hygiene and sanitation for all.",
-        "points": [
-          "Construction of water points",
-          "Hygiene promotion",
-          "Community sanitation"
-        ]
-      }
+    "carousel": {
+        "prev": "Previous",
+        "next": "Next",
+        "slide": "Go to slide {{n}}"
     },
-    "achievements": {
-      "0": {
-        "title": "Reforestation Project",
-        "description": "Planting 50,000 trees in the Guera region"
-      },
-      "1": {
-        "title": "Youth Training",
-        "description": "Training 200 young people in leadership and governance"
-      },
-      "2": {
-        "title": "Access to drinking water",
-        "description": "Construction of 15 wells in rural communities"
-      }
+    "forgotPassword": {
+        "title": "Forgot password",
+        "subtitle": "Enter your email to receive a reset link",
+        "emailPlaceholder": "Your email address",
+        "submit": "Send",
+        "backToLogin": "Back to login",
+        "sending": "Sending..."
     },
-    "eventsList": {
-      "0": {
-        "title": "World Environment Day",
-        "location": "N'Djamena, Chad"
-      },
-      "1": {
-        "title": "Workshop on Local Governance",
-        "location": "Abeche, Chad"
-      },
-      "2": {
-        "title": "Reforestation Campaign",
-        "location": "Mao, Chad"
-      }
-    }
-  },
-  "about": {
-    "hero": {
-      "title": "About us",
-      "breadcrumb": "About us"
+    "resetPassword": {
+        "title": "New password",
+        "subtitle": "Choose a new password",
+        "passwordPlaceholder": "New password",
+        "submit": "Reset",
+        "backToLogin": "Back to login",
+        "errorLength": "Password must be at least 6 characters",
+        "invalidLink": "Invalid link.",
+        "redirecting": "Redirecting to login...",
+        "resetting": "Resetting...",
+        "success": "Password successfully reset!"
     },
-    "who": {
-      "label": "WHO ARE WE?",
-      "title": "Zonal NGO for Sustainable Development",
-      "desc": "Zonal NGO for Sustainable Development is a non-governmental organization based in Chad. Founded by experts in sustainable development, our mission is to drive positive change in communities through concrete and sustainable initiatives. Since our creation, we have developed recognized expertise in local governance, environmental protection, rural development, education, access to drinking water and disaster management.",
-      "missionTitle": "Our Mission",
-      "missionDesc": "Contributing to sustainable development by improving the living conditions of vulnerable communities.",
-      "visionTitle": "Our Vision",
-      "visionDesc": "A Chad where communities live in harmony with their environment in dignity and prosperity.",
-      "valuesTitle": "Our Values",
-      "valuesDesc": "Integrity, Transparency, Commitment, Solidarity, Sustainability."
+    "loader": {
+        "text": "LOADING"
     },
-    "history": {
-      "title": "Our History",
-      "desc": "Created to meet the environmental and social challenges of Chad, Zonal NGO was born thanks to the mobilization of passionate professionals. Since its launch, the organization has multiplied field projects, gaining the trust of local communities and its partners. Each project carried out is another step towards a sustainable future."
-    },
-    "team": {
-      "title": "Our Team",
-      "subtitle": "A committed and passionate team serving sustainable development."
-    },
-    "cta": {
-      "title": "Together, let's build a sustainable future",
-      "desc": "Join us in our mission for a greener and more prosperous Chad.",
-      "button": "Contact us"
-    },
-    "stats": {
-      "experience": "Years of experience",
-      "projects": "Projects completed",
-      "beneficiaries": "Beneficiaries",
-      "partners": "Partners",
-      "regions": "Regions covered"
-    },
-    "teamMembers": {
-      "mahamat": { "name": "Mahamat Ali", "role": "Executive Director" },
-      "fatime": { "name": "Fatimé Hassana", "role": "Programs Manager" },
-      "abakar": { "name": "Abakar Moussa", "role": "Environment & Climate Manager" },
-      "aissatou": { "name": "Aïssatou Mbodou", "role": "Monitoring & Evaluation Manager" }
-    }
-  },
-  "programs": {
-    "hero": {
-      "title": "Our Programs",
-      "subtitle": "Our programs are designed to meet the specific needs of Chadian communities while preserving the environment and promoting sustainable and inclusive development."
-    },
-    "domains": {
-      "title": "Our areas of intervention",
-      "subtitle": "Zonal NGO for Sustainable Development works in six key areas for sustainable impact and positive community transformation.",
-      "learnMore": "Learn more"
-    },
-    "cta": {
-      "quote": "Together, let's build a sustainable future for generations to come.",
-      "button": "Contact us"
-    }
-  },
-  "projects": {
-    "hero": {
-      "title": "Our Projects",
-      "subtitle": "Discover all our projects on the field and their impact on communities."
-    },
-    "breadcrumb": {
-      "home": "Home",
-      "current": "Projects"
-    },
-    "filter": {
-      "all": "All"
-    },
-    "empty": "No projects in this category at the moment."
-  },
-  "news": {
-    "hero": {
-      "title": "News",
-      "subtitle": "Stay informed with our latest news from the field and updates on our programs."
-    },
-    "breadcrumb": {
-      "home": "Home",
-      "current": "News"
-    },
-    "allTitle": "All news",
-    "sort": {
-      "recent": "Most recent",
-      "popular": "Most popular",
-      "oldest": "Oldest"
-    },
-    "readMore": "Read more",
-    "pagination": {
-      "prev": "Previous page",
-      "next": "Next page"
-    },
-    "sidebar": {
-      "searchTitle": "Search",
-      "searchPlaceholder": "Search news...",
-      "searchAria": "Search",
-      "categoriesTitle": "Categories",
-      "recentTitle": "Recent articles"
+    "errors": {
+        "subscription": "Error during subscription",
+        "sendMessage": "Error sending message",
+        "resetPassword": "Error resetting password"
     },
     "newsletter": {
-      "title": "Stay informed!",
-      "desc": "Subscribe to our newsletter to receive our latest news.",
-      "placeholder": "Your email address",
-      "button": "Subscribe"
+        "placeholder": "Your email address",
+        "button": "Subscribe"
     },
-    "cta": {
-      "title": "Support our action",
-      "desc": "Your support allows us to continue acting for sustainable development in Chad.",
-      "button": "Make a donation"
+    "months": {
+        "january": "January",
+        "february": "February",
+        "march": "March",
+        "april": "April",
+        "may": "May",
+        "june": "June",
+        "july": "July",
+        "august": "August",
+        "september": "September",
+        "october": "October",
+        "november": "November",
+        "december": "December"
     },
-    "articles": [
-      { "title": "Launch of a new reforestation project in Guera", "excerpt": "As part of our commitment to environmental protection, we have launched a large-scale reforestation program in the Guera region.", "category": "Environment", "date": "March 12, 2025" },
-      { "title": "Leadership training for 100 young people in N'Djamena", "excerpt": "Intensive training in leadership and governance was organized for 100 young people from different neighborhoods of N'Djamena.", "category": "Education", "date": "February 5, 2025" },
-      { "title": "Construction of a new water point in Abeche", "excerpt": "A new drinking water borehole was inaugurated in Abeche, serving more than 500 households in the local community.", "category": "Water & Sanitation", "date": "January 20, 2025" },
-      { "title": "Workshop on natural disaster management", "excerpt": "A training workshop on disaster prevention and management brought together 50 participants from local communities.", "category": "Disaster Management", "date": "December 15, 2024" },
-      { "title": "Hygiene awareness campaign in schools", "excerpt": "Our team organized a hygiene awareness campaign in 20 primary schools in the Logone region.", "category": "Education", "date": "November 8, 2024" },
-      { "title": "Delivery of agricultural equipment to women's cooperatives", "excerpt": "As part of our rural development program, we delivered agricultural equipment to 15 women's cooperatives in the Mayo-Kebbi region.", "category": "Rural Development", "date": "October 22, 2024" }
-    ]
-  },
-  "events": {
-    "hero": {
-      "title": "Our Events",
-      "subtitle": "Discover our past and upcoming events. Together, let's mobilize for a sustainable future."
+    "login": {
+        "hero": {
+            "title": "Act today\nfor a sustainable future",
+            "subtitle": "Log in to access your administration area."
+        },
+        "card": {
+            "title": "Admin login",
+            "email": "Email",
+            "emailPlaceholder": "admin@zonalong.org",
+            "password": "Password",
+            "passwordPlaceholder": "••••••••",
+            "rememberMe": "Remember me",
+            "forgotPassword": "Forgot password?",
+            "loginButton": "Sign in",
+            "loggingIn": "Signing in...",
+            "errorRequired": "Please fill in all fields.",
+            "errorInvalid": "Incorrect email or password."
+        },
+        "footer": "© {{year}} ZONAL NGO for Sustainable Development — Access restricted to administrators"
     },
-    "filters": {
-      "all": "All",
-      "upcoming": "Upcoming",
-      "ongoing": "Ongoing",
-      "past": "Past"
-    },
-    "details": "View details",
-    "allUpcoming": "View all upcoming events",
-    "empty": "No events in this category at the moment.",
-    "pastSection": {
-      "title": "Past events",
-      "desc": "Relive our past activities and discover the impact of our actions on the ground."
-    },
-    "allPast": "View all past events",
-    "newsletter": {
-      "title": "Stay informed about our activities",
-      "desc": "Subscribe to our newsletter to receive the latest news and be informed about our events.",
-      "placeholder": "Your email address",
-      "button": "Subscribe"
+    "admin": {
+        "sidebar": {
+            "dashboard": "Dashboard",
+            "events": "Events",
+            "news": "News",
+            "projects": "Projects",
+            "gallery": "Gallery",
+            "partners": "Partners",
+            "testimonials": "Testimonials",
+            "documents": "Documents",
+            "users": "Users",
+            "roles": "Roles & Permissions",
+            "settings": "Settings",
+            "logout": "Log out",
+            "collapse": "Collapse menu",
+            "expand": "Expand menu"
+        },
+        "topbar": {
+            "backToSite": "Back to site",
+            "admin": "Admin",
+            "myProfile": "My profile",
+            "settings": "Settings"
+        },
+        "dashboard": {
+            "title": "Dashboard",
+            "welcome": "Welcome to the ZONAL administration interface.",
+            "stats": {
+                "projects": "Projects",
+                "events": "Events",
+                "articles": "Articles",
+                "subscribers": "Subscribers",
+                "partners": "Partners"
+            },
+            "activityOverview": "Activity overview",
+            "recentEvents": "Recent events",
+            "recentArticles": "Recent articles",
+            "viewAll": "View all",
+            "calendarTitle": "June 2024",
+            "calendarDays": [
+                "Mo",
+                "Tu",
+                "We",
+                "Th",
+                "Fr",
+                "Sa",
+                "Su"
+            ],
+            "statsTitle": "Statistics",
+            "publicationsPerMonth": "Publications per month",
+            "contentDistribution": "Content distribution"
+        },
+        "pages": {
+            "events": "Manage the organization's events.",
+            "eventsDetails": "Details",
+            "news": {
+                "title": "News",
+                "edit": "Edit article",
+                "details": "Details",
+                "description": "Publish and manage the organization's news."
+            },
+            "projects": "Track the progress of the organization's projects.",
+            "gallery": "Manage the organization's photos and media.",
+            "partners": "Manage the organization's partners and collaborators.",
+            "testimonials": "Manage beneficiary and partner testimonials.",
+            "documents": "Manage the organization's documents and files.",
+            "users": "Manage users and their access to the platform.",
+            "roles": "Manage user roles and permissions.",
+            "settings": "Configure the organization's general settings."
+        },
+        "table": {
+            "image": "Image",
+            "title": "Title",
+            "event": "Event",
+            "date": "Date",
+            "location": "Location",
+            "status": "Status",
+            "actions": "Actions",
+            "category": "Category",
+            "views": "Views",
+            "project": "Project",
+            "budget": "Budget",
+            "partner": "Partner",
+            "domain": "Domain",
+            "contact": "Contact",
+            "name": "Name",
+            "type": "Type",
+            "size": "Size",
+            "user": "User",
+            "email": "Email",
+            "role": "Role",
+            "author": "Author",
+            "rating": "Rating",
+            "phone": "Phone",
+            "lastLogin": "Last login",
+            "permissions": "Permissions"
+        },
+        "status": {
+            "upcoming": "Upcoming",
+            "ongoing": "Ongoing",
+            "completed": "Completed",
+            "planned": "Planned",
+            "active": "Active",
+            "inactive": "Inactive",
+            "published": "Published",
+            "draft": "Draft",
+            "all": "All",
+            "filterAll": "Status: All",
+            "uploading": "Uploading..."
+        },
+        "labels": {
+            "projectImage": "Project image",
+            "coverImage": "Cover image",
+            "preview": "Preview",
+            "projectTitle": "Project title",
+            "eventTitle": "Event title",
+            "description": "Description",
+            "startDate": "Start date",
+            "endDate": "End date",
+            "time": "Time",
+            "gallery": "Photo gallery",
+            "images": "Images ({{count}})",
+            "mainImage": "Main image",
+            "albumTitle": "Album title",
+            "partnerName": "Partner name",
+            "phone": "Phone",
+            "logo": "Logo",
+            "file": "File",
+            "uploading": "Uploading...",
+            "documentName": "Document name",
+            "fileType": "File type",
+            "maxFileSize": "PDF, DOCX, XLSX, PPTX - Max 15 MB",
+            "email": "Email",
+            "password": "Password",
+            "newPasswordOptional": "New password (optional)",
+            "firstName": "First name",
+            "lastName": "Last name",
+            "role": "Role",
+            "roleName": "Role name",
+            "permissions": "Permissions",
+            "authorName": "Author name",
+            "functionRole": "Function / Role",
+            "testimonial": "Testimonial",
+            "photo": "Photo",
+            "selectRole": "Select a role",
+            "footerPresentation": "Footer Presentation",
+            "copyright": "Copyright",
+            "articleTitle": "Article title",
+            "author": "Author",
+            "clickToUpload": "Click to upload",
+            "content": "Content",
+            "dragDropFile": "or drag and drop a file",
+            "dragDropImage": "or drag and drop an image",
+            "excerpt": "Excerpt",
+            "galleryImage": "Image {{index}}",
+            "galleryPhoto": "Photo {{index}}",
+            "photoGallery": "Photo gallery",
+            "photoN": "Photo {{n}}",
+            "publishDate": "Publication date"
+        },
+        "actions": {
+            "addEvent": "Add an event",
+            "addArticle": "New article",
+            "addProject": "New project",
+            "addImage": "Add images",
+            "addPartner": "Add a partner",
+            "addTestimonial": "Add a testimonial",
+            "addDocument": "Add a document",
+            "addUser": "Add a user",
+            "addRole": "New role",
+            "save": "Save",
+            "edit": "Edit",
+            "delete": "Delete",
+            "view": "View",
+            "download": "Download",
+            "cancel": "Cancel",
+            "create": "Create",
+            "saving": "Saving...",
+            "uploading": "Uploading...",
+            "activate": "Activate",
+            "deactivate": "Deactivate",
+            "remove": "Remove",
+            "backToNews": "Back to news"
+        },
+        "settings": {
+            "generalInfo": "General Information",
+            "coordinates": "Contact Details",
+            "orgName": "Organization Name",
+            "slogan": "Slogan",
+            "description": "Description",
+            "phone": "Phone",
+            "address": "Address",
+            "contact": "Contact",
+            "contactInfo": "Contact Information",
+            "email": "Email",
+            "primaryEmail": "Primary email",
+            "secondaryPhone": "Secondary phone",
+            "whatsapp": "WhatsApp number",
+            "googleMapsIframe": "Google Maps link (iframe)",
+            "changeLogo": "Change logo",
+            "uploading": "Uploading...",
+            "logo": "Logo"
+        },
+        "profile": {
+            "title": "My Profile",
+            "subtitle": "Manage your personal information and password.",
+            "role": "Super Administrator",
+            "personalInfo": "Personal Information",
+            "fullName": "Full Name",
+            "email": "Email",
+            "phone": "Phone",
+            "location": "Location",
+            "bio": "Biography",
+            "bioPlaceholder": "Tell us about yourself in a few lines...",
+            "changePassword": "Change Password",
+            "currentPassword": "Current Password",
+            "newPassword": "New Password",
+            "confirmPassword": "Confirm Password",
+            "confirmNewPassword": "Confirm new password",
+            "tabs": {
+                "info": "Information",
+                "password": "Change Password",
+                "sessions": "Active Sessions"
+            },
+            "profilePhoto": "Profile photo",
+            "changePhoto": "Change photo",
+            "uploading": "Uploading...",
+            "updated": "Information updated.",
+            "passwordUpdated": "Password updated.",
+            "activeSessions": "Active Sessions",
+            "sessionDescription": "List of devices currently connected to your account.",
+            "currentSession": "Current session",
+            "currentLocation": "{{location}} · {{time}}",
+            "sampleLocation": "N'Djamena, Chad · Now"
+        },
+        "confirm": {
+            "deleteProject": "Confirm deletion of this project?",
+            "deleteItem": "Confirm deletion?",
+            "deleteEvent": "Confirm deletion of this event?",
+            "deleteTestimonial": "Confirm deletion?",
+            "deleteUser": "Delete {{name}}?",
+            "deleteRole": "Delete role \"{{name}}\"?",
+            "deleteNews": "Confirm deletion of this article?"
+        },
+        "placeholders": {
+            "searchProject": "Search projects...",
+            "searchEvent": "Search an event...",
+            "searchImage": "Search images...",
+            "searchPartner": "Search partners...",
+            "searchDocument": "Search documents...",
+            "projectTitleEx": "E.g.: Guera reforestation project",
+            "projectDescription": "Describe the project...",
+            "eventTitle": "E.g.: World Environment Day",
+            "eventDescription": "Write the event description...",
+            "location": "E.g.: N'Djamena, Chad",
+            "locationEx": "E.g.: N'Djamena, Chad",
+            "budgetEx": "E.g.: 25,000,000 F CFA",
+            "selectCategory": "Select a category",
+            "albumTitleEx": "E.g.: Guera reforestation",
+            "partnerNameEx": "E.g.: UNDP",
+            "domainEx": "E.g.: Development",
+            "emailEx": "contact@partner.org",
+            "phoneEx": "+235 00 00 00 00",
+            "documentNameEx": "E.g.: Annual report 2024",
+            "clickToUpload": "Click to upload",
+            "dragDropImage": "or drag and drop an image",
+            "dragDropFile": "or drag and drop a file",
+            "searchTestimonial": "Search testimonial...",
+            "searchUser": "Search user...",
+            "authorNameEx": "E.g.: Mariam Abakar",
+            "roleEx": "E.g.: Village chief",
+            "writeTestimonial": "Write the testimonial...",
+            "clickToAddPhoto": "Click to add a photo",
+            "searchArticle": "Search articles...",
+            "articleTitleExample": "E.g.: Launch of reforestation project",
+            "authorName": "Author name",
+            "content": "Write the article content...",
+            "excerpt": "Article excerpt..."
+        },
+        "filters": {
+            "statusAll": "Status: All",
+            "categoryAll": "Category: All",
+            "typeAll": "Type: All",
+            "dateAll": "Date: All",
+            "thisMonth": "This month",
+            "thisWeek": "This week"
+        },
+        "categories": {
+            "environnement": "Environment",
+            "éducation": "Education",
+            "eau": "Water",
+            "agriculture": "Agriculture",
+            "social": "Social",
+            "environment": "Environment & Climate",
+            "education": "Education & Awareness",
+            "water": "Water & Sanitation",
+            "disaster": "Disaster Management",
+            "rural": "Rural Development",
+            "governance": "Local Governance",
+            "other": "Other",
+            "customPlaceholder": "Enter a category...",
+            "backToSelect": "Back",
+            "all": "All"
+        },
+        "empty": {
+            "noSearchResults": "No projects match your search.",
+            "noResults": "No events match your search.",
+            "noImages": "No images found.",
+            "noPartners": "No partners found.",
+            "noDocuments": "No documents found.",
+            "testimonials": "No testimonial found.",
+            "users": "No user found.",
+            "noContent": "No content."
+        },
+        "errors": {
+            "loadEvents": "Error loading events",
+            "deleteEvent": "Error during deletion",
+            "loadEvent": "Error loading the event",
+            "uploadCover": "Error uploading the cover image",
+            "uploadGallery": "Error uploading gallery images",
+            "saveEvent": "Error saving the event",
+            "generic": "Error",
+            "allFieldsRequired": "All fields are required.",
+            "passwordLength": "Password must be at least 6 characters.",
+            "passwordMismatch": "Passwords do not match.",
+            "loadStats": "Error loading statistics",
+            "dateUndefined": "Date not set",
+            "retry": "Retry",
+            "loadError": "Error loading",
+            "deleteError": "Error deleting",
+            "saveError": "Error saving",
+            "uploadError": "Error uploading",
+            "articleNotFound": "Article not found.",
+            "updateProfile": "Error updating profile",
+            "uploadPhoto": "Error uploading photo"
+        },
+        "tooltip": {
+            "viewDetails": "View details"
+        },
+        "pagination": {
+            "previous": "Previous",
+            "next": "Next"
+        },
+        "form": {
+            "add": "Add",
+            "editProject": "Edit project",
+            "addProject": "Add a project",
+            "editEvent": "Edit event",
+            "editAlbum": "Edit album",
+            "addAlbum": "Add an album",
+            "editPartner": "Edit partner",
+            "addPartner": "Add a partner",
+            "editDocument": "Edit document",
+            "addDocument": "Add a document",
+            "addUser": "Add a user",
+            "editUser": "Edit user",
+            "addRole": "Add a role",
+            "editRole": "Edit role",
+            "addTestimonial": "Add a testimonial",
+            "editTestimonial": "Edit testimonial",
+            "availableModules": "Available modules"
+        },
+        "breadcrumb": {
+            "edit": "Edit",
+            "add": "Add"
+        },
+        "alt": {
+            "preview": "Preview",
+            "gallery": "Gallery {{n}}"
+        },
+        "format": {
+            "bold": "bold text",
+            "italic": "italic text",
+            "underline": "underlined text",
+            "link": "url",
+            "list": "item",
+            "orderedList": "item",
+            "quote": "quote"
+        },
+        "detail": {
+            "backToEvents": "Back to events",
+            "noDescription": "No description.",
+            "notFound": "Event not found.",
+            "photo": "Photo {{n}}"
+        },
+        "documents": {
+            "categories": {
+                "rapports": "Reports",
+                "propositions": "Proposals",
+                "finances": "Finances",
+                "réunions": "Meetings",
+                "conventions": "Conventions",
+                "stratégie": "Strategy"
+            }
+        },
+        "legend": "Legend:",
+        "permissions": {
+            "allowed": "Allowed",
+            "denied": "Denied"
+        },
+        "loading": "Loading...",
+        "common": {
+            "loading": "Loading..."
+        }
     }
-  },
-  "contact": {
-    "hero": {
-      "title": "Contact us",
-      "subtitle": "We are here to answer your questions and discuss sustainable solutions for a better future."
-    },
-    "section": {
-      "title": "Stay in touch",
-      "desc": "Do you have a question, a suggestion, or want to collaborate with us? Feel free to write to us, we will respond promptly."
-    },
-    "cards": {
-      "address": { "title": "Address", "lines": ["N'Djamena, Chad", "Rue, avenue Dedjal Allamta"] },
-      "phone": { "title": "Phone", "lines": ["+235 662 00 620"] },
-      "email": { "title": "Email", "lines": ["zonal.ch@gmail.com"] },
-      "whatsapp": { "title": "WhatsApp", "lines": ["Write to us directly", "on WhatsApp"], "button": "Open WhatsApp" },
-      "hours": { "title": "Opening Hours", "lines": ["Mon - Thu: 09:00 - 17:30", "Friday: 08:00 - 15:00", "Saturday: Weekend (Closed)"] }
-    },
-    "form": {
-      "title": "Send us a message",
-      "success": "Thank you! Your message has been sent successfully. We will respond promptly.",
-      "name": "Your full name *",
-      "email": "Your email *",
-      "subject": "Subject *",
-      "subjectPlaceholder": "Select a subject",
-      "subjectInfo": "Information request",
-      "subjectPartnership": "Partnership",
-      "subjectVolunteer": "Volunteering",
-      "subjectDonation": "Donation",
-      "subjectOther": "Other",
-      "message": "Write your message here...",
-      "submit": "Send message"
-    },
-    "support": {
-      "support": { "title": "Support & Information", "desc": "Our team is available to assist you and answer all your inquiries." },
-      "partnership": { "title": "Partnerships", "desc": "Are you an organization or company wishing to collaborate with us? Contact us!" },
-      "volunteer": { "title": "Become a volunteer", "desc": "Join our network of volunteers and actively participate in our actions on the ground." }
-    },
-    "social": "Follow us on social media"
-  },
-  "social": {
-    "facebook": "Facebook",
-    "linkedin": "LinkedIn",
-    "youtube": "YouTube",
-    "whatsapp": "WhatsApp",
-    "email": "Email"
-  },
-  "carousel": {
-    "prev": "Previous",
-    "next": "Next",
-    "slide": "Go to slide {{n}}"
-  },
-  "newsletter": {
-    "placeholder": "Your email address",
-    "button": "Subscribe"
-  },
-  "months": {
-    "january": "January",
-    "february": "February",
-    "march": "March",
-    "april": "April",
-    "may": "May",
-    "june": "June",
-    "july": "July",
-    "august": "August",
-    "september": "September",
-    "october": "October",
-    "november": "November",
-    "december": "December"
-  },
-  "login": {
-    "hero": {
-      "title": "Act today\nfor a sustainable future",
-      "subtitle": "Log in to access your administration area."
-    },
-    "card": {
-      "title": "Admin login",
-      "email": "Email",
-      "emailPlaceholder": "admin@zonalong.org",
-      "password": "Password",
-      "passwordPlaceholder": "••••••••",
-      "rememberMe": "Remember me",
-      "forgotPassword": "Forgot password?",
-      "loginButton": "Sign in",
-      "quickLogin": "Quick login (admin)",
-      "errorRequired": "Please fill in all fields.",
-      "errorInvalid": "Incorrect email or password."
-    },
-    "footer": "© {{year}} ZONAL NGO for Sustainable Development — Access restricted to administrators"
-  },
-  "admin": {
-    "sidebar": {
-      "dashboard": "Dashboard",
-      "events": "Events",
-      "news": "News",
-      "projects": "Projects",
-      "gallery": "Gallery",
-      "partners": "Partners",
-      "testimonials": "Testimonials",
-      "documents": "Documents",
-      "users": "Users",
-      "roles": "Roles & Permissions",
-      "settings": "Settings",
-      "logout": "Log out"
-    },
-    "topbar": {
-      "backToSite": "Back to site",
-      "admin": "Admin",
-      "myProfile": "My profile",
-      "settings": "Settings"
-    },
-    "dashboard": {
-      "title": "Dashboard",
-      "welcome": "Welcome to the ZONAL administration interface.",
-      "stats": {
-        "projects": "Projects",
-        "events": "Events",
-        "articles": "Articles",
-        "users": "Users",
-        "partners": "Partners"
-      },
-      "activityOverview": "Activity overview",
-      "recentEvents": "Recent events",
-      "recentArticles": "Recent articles",
-      "viewAll": "View all",
-      "calendarTitle": "June 2024",
-      "calendarDays": ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"],
-      "statsTitle": "Statistics",
-      "publicationsPerMonth": "Publications per month",
-      "contentDistribution": "Content distribution"
-    },
-    "pages": {
-      "events": "Manage the organization's events.",
-      "news": "Publish and manage the organization's news.",
-      "projects": "Track the progress of the organization's projects.",
-      "gallery": "Manage the organization's photos and media.",
-      "partners": "Manage the organization's partners and collaborators.",
-      "testimonials": "Manage beneficiary and partner testimonials.",
-      "documents": "Manage the organization's documents and files.",
-      "users": "Manage users and their access to the platform.",
-      "roles": "Manage user roles and permissions.",
-      "settings": "Configure the organization's general settings."
-    },
-    "table": {
-      "title": "Title",
-      "event": "Event",
-      "date": "Date",
-      "location": "Location",
-      "status": "Status",
-      "actions": "Actions",
-      "category": "Category",
-      "views": "Views",
-      "project": "Project",
-      "budget": "Budget",
-      "partner": "Partner",
-      "domain": "Domain",
-      "contact": "Contact",
-      "name": "Name",
-      "type": "Type",
-      "size": "Size",
-      "user": "User",
-      "email": "Email",
-      "role": "Role"
-    },
-    "status": {
-      "upcoming": "Upcoming",
-      "ongoing": "Ongoing",
-      "completed": "Completed",
-      "planned": "Planned",
-      "active": "Active",
-      "inactive": "Inactive"
-    },
-    "actions": {
-      "addEvent": "Add an event",
-      "addArticle": "New article",
-      "addProject": "New project",
-      "addImage": "Add images",
-      "addPartner": "Add a partner",
-      "addTestimonial": "Add a testimonial",
-      "addDocument": "Add a document",
-      "addUser": "Add a user",
-      "addRole": "New role",
-      "save": "Save",
-      "edit": "Edit",
-      "delete": "Delete",
-      "view": "View",
-      "download": "Download"
-    },
-    "settings": {
-      "generalInfo": "General Information",
-      "coordinates": "Contact Details",
-      "orgName": "Organization Name",
-      "slogan": "Slogan",
-      "description": "Description",
-      "phone": "Phone",
-      "address": "Address"
-    },
-    "profile": {
-      "title": "My Profile",
-      "subtitle": "Manage your personal information and password.",
-      "role": "Super Administrator",
-      "personalInfo": "Personal Information",
-      "fullName": "Full Name",
-      "email": "Email",
-      "phone": "Phone",
-      "location": "Location",
-      "bio": "Biography",
-      "bioPlaceholder": "Tell us about yourself in a few lines...",
-      "changePassword": "Change Password",
-      "currentPassword": "Current Password",
-      "newPassword": "New Password",
-      "confirmPassword": "Confirm Password"
-    }
-  }
 }

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
 import {
   Calendar, MapPin, Clock, ArrowLeft, Edit, Trash2,
@@ -13,12 +14,12 @@ const statusStyles: Record<string, string> = {
   'Terminé': 'bg-gray-100 text-gray-500',
 }
 
-const monthNames = [
-  'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
-  'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre',
-]
-
 const EventDetail = () => {
+  const { t } = useTranslation()
+  const monthNames = [
+    t('months.january'), t('months.february'), t('months.march'), t('months.april'), t('months.may'), t('months.june'),
+    t('months.july'), t('months.august'), t('months.september'), t('months.october'), t('months.november'), t('months.december'),
+  ]
   const { id } = useParams()
   const navigate = useNavigate()
   const [event, setEvent] = useState<AdminEvent | null>(null)
@@ -31,22 +32,22 @@ const EventDetail = () => {
         const data = await eventsService.getById(Number(id))
         setEvent(data)
       } catch {
-        console.error('Erreur lors du chargement de l\'événement')
+        console.error(t('admin.errors.loadEvent'))
         navigate('/admin/events')
       } finally {
         setLoading(false)
       }
     }
     fetchEvent()
-  }, [id, navigate])
+  }, [id, navigate, t])
 
   const handleDelete = async () => {
-    if (!confirm('Confirmer la suppression de cet événement ?')) return
+    if (!confirm(t('admin.confirm.deleteEvent'))) return
     try {
       await eventsService.delete(Number(id))
       navigate('/admin/events')
     } catch {
-      console.error('Erreur lors de la suppression')
+      console.error(t('admin.errors.deleteEvent'))
     }
   }
 
@@ -60,7 +61,7 @@ const EventDetail = () => {
 
   if (!event) {
     return (
-      <div className="text-center py-20 text-gray-500">Événement introuvable.</div>
+      <div className="text-center py-20 text-gray-500">{t('admin.detail.notFound')}</div>
     )
   }
 
@@ -72,10 +73,10 @@ const EventDetail = () => {
         <div>
           <Link to="/admin/events" className="inline-flex items-center gap-1.5 text-gray-500 hover:text-primary transition-colors text-small mb-2">
             <ArrowLeft size={16} />
-            Retour aux événements
+            {t('admin.detail.backToEvents')}
           </Link>
           <h1 className="text-2xl font-bold text-gray-900">{event.title}</h1>
-          <p className="text-gray-500 text-small mt-1">Tableau de bord &gt; Événements &gt; Détails</p>
+          <p className="text-gray-500 text-small mt-1">{t('admin.dashboard.title')} &gt; {t('admin.sidebar.events')} &gt; {t('admin.pages.eventsDetails')}</p>
         </div>
         <div className="flex items-center gap-2">
           <Link
@@ -83,14 +84,14 @@ const EventDetail = () => {
             className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-primary text-white font-medium text-small hover:bg-primary-dark transition-colors"
           >
             <Edit size={16} />
-            Modifier
+            {t('admin.actions.edit')}
           </Link>
           <button
             onClick={handleDelete}
             className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-red text-red font-medium text-small hover:bg-red/10 transition-colors"
           >
             <Trash2 size={16} />
-            Supprimer
+            {t('admin.actions.delete')}
           </button>
         </div>
       </div>
@@ -112,21 +113,21 @@ const EventDetail = () => {
             {/* Main info */}
             <div className="lg:col-span-2 space-y-6">
               <div>
-                <h2 className="text-lg font-semibold text-gray-900 mb-2">Description</h2>
+                <h2 className="text-lg font-semibold text-gray-900 mb-2">{t('admin.settings.description')}</h2>
                   {event.description ? (
                   <div className="text-gray-600 leading-relaxed" dangerouslySetInnerHTML={{ __html: event.description }} />
                 ) : (
-                  <p className="text-gray-400 italic">Aucune description.</p>
+                  <p className="text-gray-400 italic">{t('admin.detail.noDescription')}</p>
                 )}
               </div>
 
               {event.gallery && event.gallery.length > 0 && (
                 <div>
-                  <h2 className="text-lg font-semibold text-gray-900 mb-3">Galerie photos</h2>
+                  <h2 className="text-lg font-semibold text-gray-900 mb-3">{t('admin.labels.gallery')}</h2>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                     {event.gallery.map((src, i) => (
                       <div key={i} className="aspect-video rounded-lg overflow-hidden">
-                        <img src={src} alt={`Photo ${i + 1}`} className="w-full h-full object-cover" />
+                        <img src={src} alt={t('admin.detail.photo', { n: i + 1 })} className="w-full h-full object-cover" />
                       </div>
                     ))}
                   </div>
@@ -138,7 +139,7 @@ const EventDetail = () => {
             <div className="space-y-4">
               <div className="bg-gray-50 rounded-lg p-4 space-y-3">
                 <div>
-                  <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Statut</label>
+                  <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">{t('admin.table.status')}</label>
                   <div className="mt-1">
                     <span className={`inline-block px-2.5 py-1 rounded-full text-[11px] font-semibold ${statusStyles[event.status] ?? 'bg-gray-100 text-gray-500'}`}>
                       {event.status}
@@ -146,7 +147,7 @@ const EventDetail = () => {
                   </div>
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Date</label>
+                  <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">{t('admin.table.date')}</label>
                   <p className="flex items-center gap-1.5 text-gray-800 text-small mt-1">
                     <Calendar size={14} className="text-primary" />
                     {eventDate.getDate()} {monthNames[eventDate.getMonth()]} {eventDate.getFullYear()}
@@ -154,7 +155,7 @@ const EventDetail = () => {
                 </div>
                 {event.time && (
                   <div>
-                    <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Heure</label>
+                    <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">{t('admin.labels.time')}</label>
                     <p className="flex items-center gap-1.5 text-gray-800 text-small mt-1">
                       <Clock size={14} className="text-primary" />
                       {event.time}
@@ -162,7 +163,7 @@ const EventDetail = () => {
                   </div>
                 )}
                 <div>
-                  <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Lieu</label>
+                  <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">{t('admin.table.location')}</label>
                   <p className="flex items-center gap-1.5 text-gray-800 text-small mt-1">
                     <MapPin size={14} className="text-primary" />
                     {event.location}

@@ -1,4 +1,7 @@
+import { useTranslation } from 'react-i18next'
+
 const Loader = () => {
+  const { t } = useTranslation()
   return (
     <div className="fixed inset-0 z-100 flex items-center justify-center bg-white/80 backdrop-blur-sm">
       <div className="relative">
@@ -6,7 +9,7 @@ const Loader = () => {
           Z
         </div>
         <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 text-primary text-sm font-medium tracking-wider animate-pulse">
-          CHARGEMENT
+          {t('loader.text')}
         </div>
       </div>
     </div>

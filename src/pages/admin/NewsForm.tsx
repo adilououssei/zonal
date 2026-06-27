@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, type FormEvent } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../contexts/useAuth'
 import {
   Image as ImageIcon, Bold, Italic, Underline, Link2, List, ListOrdered,
@@ -8,8 +9,22 @@ import {
 } from 'lucide-react'
 import { api } from '../../services/api'
 import { newsService } from '../../services/news'
+import CategorySelect from '../../components/ui/CategorySelect'
+
+const newsCatKey = (cat: string) => {
+  const map: Record<string, string> = {
+    'Environnement': 'environment',
+    'Éducation': 'education',
+    'Eau & Assainissement': 'water',
+    'Gestion des catastrophes': 'disaster',
+    'Développement rural': 'rural',
+    'Gouvernance locale': 'governance',
+  }
+  return `admin.categories.${map[cat] || cat}`
+}
 
 const NewsForm = () => {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const { id } = useParams()
   const { user } = useAuth()
@@ -29,7 +44,6 @@ const NewsForm = () => {
   const [date, setDate] = useState(new Date().toISOString().split('T')[0])
   const [author, setAuthor] = useState(user ? `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() : '')
   const [gallery, setGallery] = useState<string[]>([])
-
   useEffect(() => {
     if (!id) return
     const fetchNews = async () => {
@@ -44,7 +58,7 @@ const NewsForm = () => {
         setCoverPreview(article.coverImage)
         setGallery(article.gallery ?? [])
       } catch {
-        console.error('Erreur lors du chargement de l\'article')
+        console.error(t('admin.errors.loadError'))
         navigate('/admin/news')
       } finally {
         setFetching(false)
@@ -63,7 +77,7 @@ const NewsForm = () => {
       const result = await api.upload<{ url: string }>('/api/upload', formData)
       setCoverPreview(result.url)
     } catch {
-      console.error('Erreur lors de l\'upload de la couverture')
+      console.error(t('admin.errors.uploadError'))
     } finally {
       setUploadingCover(false)
     }
@@ -83,7 +97,7 @@ const NewsForm = () => {
       }
       setGallery((prev) => [...prev, ...urls])
     } catch {
-      console.error('Erreur lors de l\'upload de la galerie')
+      console.error(t('admin.errors.uploadError'))
     } finally {
       setUploadingGallery(false)
       if (galleryInputRef.current) galleryInputRef.current.value = ''
@@ -126,7 +140,7 @@ const NewsForm = () => {
       }
       navigate('/admin/news')
     } catch {
-      console.error('Erreur lors de l\'enregistrement')
+      console.error(t('admin.errors.saveError'))
     } finally {
       setLoading(false)
     }
@@ -153,14 +167,13 @@ const NewsForm = () => {
   }
 
   const formatActions: { icon: typeof Bold; action: () => void }[] = [
-    { icon: Bold, action: () => applyFormat('<b>', '</b>', 'texte en gras') },
-    { icon: Italic, action: () => applyFormat('<i>', '</i>', 'texte en italique') },
-    { icon: Underline, action: () => applyFormat('<u>', '</u>', 'texte souligné') },
-    { icon: Link2, action: () => applyFormat('<a href="', '">', 'url') },
-    { icon: List, action: () => applyFormat('<ul>\n<li>', '</li>\n</ul>', 'item') },
-    { icon: ListOrdered, action: () => applyFormat('<ol>\n<li>', '</ol>\n</li>', 'item') },
-    { icon: AlignLeft, action: () => {} },
-    { icon: Quote, action: () => applyFormat('<blockquote>', '</blockquote>', 'citation') },
+    { icon: Bold, action: () => applyFormat('<b>', '</b>', t('admin.format.bold')) },
+    { icon: Italic, action: () => applyFormat('<i>', '</i>', t('admin.format.italic')) },
+    { icon: Underline, action: () => applyFormat('<u>', '</u>', t('admin.format.underline')) },
+    { icon: Link2, action: () => applyFormat('<a href="', '">', t('admin.format.link')) },
+    { icon: List, action: () => applyFormat('<ul>\n<li>', '</li>\n</ul>', t('admin.format.list')) },
+    { icon: ListOrdered, action: () => applyFormat('<ol>\n<li>', '</ol>\n</li>', t('admin.format.orderedList')) },
+    { icon: Quote, action: () => applyFormat('<blockquote>', '</blockquote>', t('admin.format.quote')) },
   ]
 
   if (fetching) {
@@ -175,10 +188,10 @@ const NewsForm = () => {
     <div>
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">
-          {isEditing ? "Modifier l'article" : 'Ajouter un article'}
+          {isEditing ? t('admin.pages.news.edit') : t('admin.actions.addArticle')}
         </h1>
         <p className="text-gray-500 text-small mt-1">
-          Tableau de bord &gt; Actualités &gt; {isEditing ? 'Modifier' : 'Ajouter'}
+          {t('admin.dashboard.title')} &gt; {t('admin.sidebar.news')} &gt; {isEditing ? t('admin.actions.edit') : t('admin.actions.addArticle')}
         </p>
       </div>
 
@@ -191,10 +204,10 @@ const NewsForm = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <div className="space-y-6">
             <div>
-              <label className="block text-small font-medium text-gray-700 mb-2">Image de couverture</label>
+              <label className="block text-small font-medium text-gray-700 mb-2">{t('admin.labels.coverImage')}</label>
               {coverPreview ? (
                 <div className="relative rounded-xl overflow-hidden mb-2">
-                  <img src={coverPreview} alt="Aperçu" className="w-full h-40 object-cover" />
+                  <img src={coverPreview} alt={t('admin.labels.preview')} className="w-full h-40 object-cover" />
                   <button
                     type="button"
                     onClick={() => { setCoverPreview(null); if (coverInputRef.current) coverInputRef.current.value = '' }}
@@ -213,7 +226,7 @@ const NewsForm = () => {
                         <ImageIcon size={20} />
                       </div>
                       <span className="text-gray-500 text-small text-center">
-                        Cliquez pour uploader<br />ou glissez-déposez une image
+                        {t('admin.placeholders.clickToUpload')}<br />{t('admin.placeholders.dragDropImage')}
                       </span>
                     </>
                   )}
@@ -223,30 +236,28 @@ const NewsForm = () => {
             </div>
 
             <div>
-              <label className="block text-small font-medium text-gray-700 mb-2">Titre de l'article</label>
+              <label className="block text-small font-medium text-gray-700 mb-2">{t('admin.labels.articleTitle')}</label>
               <input
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder="Ex : Lancement d'un nouveau projet de reboisement"
+                placeholder={t('admin.placeholders.articleTitleExample')}
                 className="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-small focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition"
                 required
               />
             </div>
-
             <div>
-              <label className="block text-small font-medium text-gray-700 mb-2">Extrait</label>
+              <label className="block text-small font-medium text-gray-700 mb-2">{t('admin.labels.excerpt')}</label>
               <textarea
                 rows={3}
                 value={excerpt}
                 onChange={(e) => setExcerpt(e.target.value)}
-                placeholder="Petit résumé de l'article..."
+                placeholder={t('admin.placeholders.excerpt')}
                 className="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-small focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition resize-none"
               />
             </div>
-
             <div>
-              <label className="block text-small font-medium text-gray-700 mb-2">Contenu</label>
+              <label className="block text-small font-medium text-gray-700 mb-2">{t('admin.labels.content')}</label>
               <div className="border border-gray-200 rounded-lg overflow-hidden">
                 <div className="flex items-center gap-1 px-2 py-1.5 border-b border-gray-100 bg-gray-50/60">
                   {formatActions.map(({ icon: Icon, action }, i) => (
@@ -265,7 +276,7 @@ const NewsForm = () => {
                   rows={8}
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
-                  placeholder="Rédigez le contenu de l'article..."
+                  placeholder={t('admin.placeholders.content')}
                   className="w-full px-4 py-3 text-small focus:outline-none resize-none"
                 />
               </div>
@@ -273,26 +284,16 @@ const NewsForm = () => {
           </div>
 
           <div className="space-y-6">
-            <div>
-              <label className="block text-small font-medium text-gray-700 mb-2">Catégorie</label>
-              <select
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-small text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition cursor-pointer"
-                required
-              >
-                <option value="">Sélectionnez une catégorie</option>
-                <option value="Environnement">Environnement</option>
-                <option value="Éducation">Éducation</option>
-                <option value="Eau & Assainissement">Eau & Assainissement</option>
-                <option value="Gestion des catastrophes">Gestion des catastrophes</option>
-                <option value="Développement rural">Développement rural</option>
-                <option value="Gouvernance locale">Gouvernance locale</option>
-              </select>
-            </div>
+            <CategorySelect
+              value={category}
+              onChange={setCategory}
+              options={['Environnement', 'Éducation', 'Eau & Assainissement', 'Gestion des catastrophes', 'Développement rural', 'Gouvernance locale']}
+              optionKey={newsCatKey}
+              required
+            />
 
             <div>
-              <label className="block text-small font-medium text-gray-700 mb-2">Date de publication</label>
+              <label className="block text-small font-medium text-gray-700 mb-2">{t('admin.labels.publishDate')}</label>
               <div className="relative">
                 <input
                   type="date"
@@ -305,32 +306,31 @@ const NewsForm = () => {
             </div>
 
             <div>
-              <label className="block text-small font-medium text-gray-700 mb-2">Auteur</label>
+              <label className="block text-small font-medium text-gray-700 mb-2">{t('admin.labels.author')}</label>
               <input
                 type="text"
                 value={author}
                 onChange={(e) => setAuthor(e.target.value)}
-                placeholder="Nom de l'auteur"
+                placeholder={t('admin.placeholders.authorName')}
                 className="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-small focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition"
               />
             </div>
-
             <div>
-              <label className="block text-small font-medium text-gray-700 mb-2">Galerie photos</label>
+              <label className="block text-small font-medium text-gray-700 mb-2">{t('admin.labels.photoGallery')}</label>
               <label className="flex items-center justify-center gap-2 border-2 border-dashed border-gray-200 rounded-xl py-6 cursor-pointer hover:border-primary/50 hover:bg-primary/5 transition-colors text-primary font-medium text-small">
                 {uploadingGallery ? (
                   <Loader2 size={16} className="animate-spin" />
                 ) : (
                   <Plus size={16} />
                 )}
-                {uploadingGallery ? 'Upload en cours...' : 'Ajouter des images'}
+                {uploadingGallery ? t('admin.status.uploading') : t('admin.actions.addImage')}
                 <input ref={galleryInputRef} type="file" accept="image/*" multiple className="hidden" onChange={handleGalleryChange} disabled={uploadingGallery} />
               </label>
               {gallery.length > 0 && (
                 <div className="grid grid-cols-4 gap-2 mt-3">
                   {gallery.map((src, i) => (
                     <div key={i} className="relative group">
-                      <img src={src} alt={`Galerie ${i + 1}`} className="w-full aspect-square object-cover rounded-lg" />
+                      <img src={src} alt={t('admin.labels.galleryImage', { index: i + 1 })} className="w-full aspect-square object-cover rounded-lg" />
                       <button
                         type="button"
                         onClick={() => removeFromGallery(i)}
@@ -352,14 +352,14 @@ const NewsForm = () => {
             onClick={() => navigate('/admin/news')}
             className="px-5 py-2.5 rounded-lg text-gray-600 font-medium text-small border border-gray-200 hover:bg-gray-50 transition-colors"
           >
-            Annuler
+            {t('admin.actions.cancel')}
           </button>
           <button
             type="submit"
             disabled={loading}
             className="px-6 py-2.5 rounded-lg bg-primary text-white font-medium text-small hover:bg-primary-dark transition-colors disabled:opacity-50"
           >
-            {loading ? 'Enregistrement...' : 'Enregistrer'}
+            {loading ? t('admin.actions.saving') : t('admin.actions.save')}
           </button>
         </div>
       </motion.form>

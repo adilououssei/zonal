@@ -12,7 +12,7 @@ const statusColorMap: Record<string, string> = {
 }
 
 const Partners = () => {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [partners, setPartners] = useState<AdminPartner[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
@@ -30,7 +30,7 @@ const Partners = () => {
     }
   }, [])
 
-  useEffect(() => { fetchPartners() }, [fetchPartners])
+  useEffect(() => { fetchPartners() }, [fetchPartners, i18n.language])
 
   const handleToggleStatus = async (id: number) => {
     try {
@@ -42,7 +42,7 @@ const Partners = () => {
   }
 
   const handleDelete = async (id: number) => {
-    if (!confirm('Confirmer la suppression ?')) return
+    if (!confirm(t('admin.confirm.deleteItem'))) return
     try {
       await partnersService.delete(id)
       setPartners((prev) => prev.filter((p) => p.id !== id))
@@ -80,7 +80,7 @@ const Partners = () => {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Rechercher un partenaire..."
+            placeholder={t('admin.placeholders.searchPartner')}
             className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-200 text-small focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition"
           />
         </div>
@@ -90,9 +90,9 @@ const Partners = () => {
             onChange={(e) => setStatusFilter(e.target.value)}
             className="appearance-none pl-4 pr-9 py-2.5 rounded-lg border border-gray-200 text-small text-gray-600 focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
           >
-            <option value="Tous">Statut: Tous</option>
-            <option value="active">Actif</option>
-            <option value="inactive">Inactif</option>
+            <option value="Tous">{t('admin.filters.statusAll')}</option>
+            <option value="active">{t('admin.status.active')}</option>
+            <option value="inactive">{t('admin.status.inactive')}</option>
           </select>
           <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
         </div>
@@ -155,10 +155,10 @@ const Partners = () => {
                         <button
                           onClick={() => handleToggleStatus(partner.id)}
                           className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold cursor-pointer hover:opacity-80 transition-opacity ${statusColorMap[partner.status] ?? 'bg-gray-100 text-gray-500'}`}
-                          title={partner.status === 'active' ? 'Désactiver' : 'Activer'}
+                          title={partner.status === 'active' ? t('admin.actions.deactivate') : t('admin.actions.activate')}
                         >
                           {partner.status === 'active' ? <ToggleRight size={13} /> : <ToggleLeft size={13} />}
-                          {partner.status === 'active' ? 'Actif' : 'Inactif'}
+                          {partner.status === 'active' ? t('admin.status.active') : t('admin.status.inactive')}
                         </button>
                       </td>
                       <td className="px-5 py-4 text-right">
@@ -184,7 +184,7 @@ const Partners = () => {
                 ) : (
                   <tr>
                     <td colSpan={5} className="px-5 py-10 text-center text-gray-400 text-small">
-                      Aucun partenaire trouvé.
+                      {t('admin.empty.noPartners')}
                     </td>
                   </tr>
                 )}

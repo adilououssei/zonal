@@ -10,6 +10,7 @@ export interface AdminPartner {
   status: string
   createdAt: string | null
   updatedAt: string | null
+  createdBy: { id: number; name: string } | null
 }
 
 export const partnersService = {

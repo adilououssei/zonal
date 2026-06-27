@@ -6,8 +6,11 @@ export interface GalleryItem {
   src: string
   category: string
   date: string | null
+  images: string[] | null
+  imageCount: number
   createdAt: string | null
   updatedAt: string | null
+  createdBy: { id: number; name: string } | null
 }
 
 export interface PublicGalleryItem {
@@ -16,6 +19,8 @@ export interface PublicGalleryItem {
   src: string
   category: string
   date: string | null
+  images: string[] | null
+  imageCount: number
 }
 
 export const galleryService = {
@@ -26,6 +31,7 @@ export const galleryService = {
   create: (data: {
     title: string
     src: string
+    images?: string[]
     category?: string
     date?: string
   }) => api.post<GalleryItem>('/api/admin/gallery', data),
@@ -33,6 +39,7 @@ export const galleryService = {
   update: (id: number, data: Partial<{
     title: string
     src: string
+    images: string[]
     category: string
     date: string
   }>) => api.put<GalleryItem>(`/api/admin/gallery/${id}`, data),

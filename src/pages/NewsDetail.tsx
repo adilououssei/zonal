@@ -1,16 +1,12 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import {
   Calendar, User, ChevronRight, ArrowLeft, Eye,
 } from 'lucide-react'
 import { publicNewsService } from '../services/news'
 import type { PublicNews } from '../services/news'
-
-const monthNames = [
-  'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
-  'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre',
-]
 
 const categoryColors: Record<string, string> = {
   'Environnement': 'bg-emerald-100 text-emerald-700',
@@ -22,6 +18,7 @@ const categoryColors: Record<string, string> = {
 }
 
 const NewsDetail = () => {
+  const { t, i18n } = useTranslation()
   const { id } = useParams()
   const [article, setArticle] = useState<PublicNews | null>(null)
   const [loading, setLoading] = useState(true)
@@ -39,7 +36,7 @@ const NewsDetail = () => {
       }
     }
     fetchNews()
-  }, [id])
+  }, [id, i18n.language])
 
   if (loading) {
     return (
@@ -52,8 +49,8 @@ const NewsDetail = () => {
   if (!article) {
     return (
       <div className="container-custom py-20 text-center">
-        <p className="text-gray-500 text-lg">Article introuvable.</p>
-        <Link to="/news" className="text-primary font-medium mt-4 inline-block">&larr; Retour aux actualités</Link>
+        <p className="text-gray-500 text-lg">{t('news.notFound')}</p>
+        <Link to="/news" className="text-primary font-medium mt-4 inline-block">&larr; {t('news.backToNews')}</Link>
       </div>
     )
   }
@@ -80,7 +77,7 @@ const NewsDetail = () => {
           >
             <Link to="/news" className="inline-flex items-center gap-1.5 text-gray-200 hover:text-primary-light transition-colors mb-4 text-body">
               <ArrowLeft size={16} />
-              Retour aux actualités
+              {t('news.backToNews')}
             </Link>
             <span className={`inline-block px-3 py-1 rounded-full text-[11px] font-semibold tracking-wide mb-4 ${categoryColors[article.category] ?? 'bg-primary/10 text-primary'}`}>
               {article.category}
@@ -89,7 +86,7 @@ const NewsDetail = () => {
             <div className="flex flex-wrap items-center gap-4 text-gray-200 text-body">
               <span className="flex items-center gap-1.5">
                 <Calendar size={16} />
-                {articleDate.getDate()} {monthNames[articleDate.getMonth()]} {articleDate.getFullYear()}
+                {articleDate.getDate()} {t('months.' + ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'][articleDate.getMonth()])} {articleDate.getFullYear()}
               </span>
               {article.author && (
                 <span className="flex items-center gap-1.5">
@@ -99,7 +96,7 @@ const NewsDetail = () => {
               )}
               <span className="flex items-center gap-1.5">
                 <Eye size={16} />
-                {article.views} vues
+                {article.views} {t('news.views')}
               </span>
             </div>
           </motion.div>
@@ -132,7 +129,7 @@ const NewsDetail = () => {
               {article.content ? (
                 <div className="text-gray-700 leading-relaxed" dangerouslySetInnerHTML={{ __html: article.content }} />
               ) : (
-                <p className="text-gray-400 italic">Aucun contenu.</p>
+                <p className="text-gray-400 italic">{t('news.noContent')}</p>
               )}
             </motion.div>
 
@@ -144,11 +141,11 @@ const NewsDetail = () => {
                 transition={{ duration: 0.6, delay: 0.2 }}
                 className="mt-12"
               >
-                <h2 className="text-xl font-bold text-gray-900 mb-6">Galerie photos</h2>
+                <h2 className="text-xl font-bold text-gray-900 mb-6">{t('news.galleryTitle')}</h2>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                   {article.gallery.map((src, i) => (
                     <div key={i} className="aspect-video rounded-xl overflow-hidden">
-                      <img src={src} alt={`Photo ${i + 1}`} className="w-full h-full object-cover" />
+                      <img src={src} alt={t('admin.labels.photoN', { n: i + 1 })} className="w-full h-full object-cover" />
                     </div>
                   ))}
                 </div>
@@ -162,7 +159,7 @@ const NewsDetail = () => {
                 className="inline-flex items-center gap-2 text-primary font-semibold hover:gap-3 transition-all"
               >
                 <ArrowLeft size={16} />
-                Retour à toutes les actualités
+                {t('news.backToAll')}
               </Link>
             </div>
           </div>
@@ -173,9 +170,9 @@ const NewsDetail = () => {
       <section className="pb-10">
         <div className="container-custom">
           <div className="flex items-center gap-2 text-gray-500 text-small">
-            <Link to="/" className="hover:text-primary transition-colors">Accueil</Link>
+            <Link to="/" className="hover:text-primary transition-colors">{t('news.breadcrumb.home')}</Link>
             <ChevronRight size={14} />
-            <Link to="/news" className="hover:text-primary transition-colors">Actualités</Link>
+            <Link to="/news" className="hover:text-primary transition-colors">{t('news.breadcrumb.current')}</Link>
             <ChevronRight size={14} />
             <span className="text-gray-800">{article.title}</span>
           </div>

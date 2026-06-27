@@ -8,12 +8,20 @@ import {
 } from 'lucide-react'
 import { publicEventsService } from '../services/events'
 import type { PublicEvent } from '../services/events'
+import { subscribeToNewsletter } from '../services/newsletter'
 
 type EventStatus = 'Tous' | 'À venir' | 'En cours' | 'Passé'
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
   visible: { opacity: 1, y: 0 }
+}
+
+const getExcerpt = (html: string | null, maxLength = 150): string => {
+  if (!html) return ''
+  const text = html.replace(/<[^>]*>/g, '')
+  if (text.length <= maxLength) return text
+  return text.substring(0, maxLength).trimEnd() + '...'
 }
 
 const statusKey = (s: string): string => {
@@ -45,12 +53,15 @@ const filters: { value: EventStatus; icon: typeof Calendar }[] = [
 ]
 
 const Events = () => {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [activeFilter, setActiveFilter] = useState<EventStatus>('Tous')
   const [allEvents, setAllEvents] = useState<PublicEvent[]>([])
   const [pastEvents, setPastEvents] = useState<PublicEvent[]>([])
   const [loading, setLoading] = useState(true)
   const pastScrollRef = useRef<HTMLDivElement>(null)
+  const [newsletterEmail, setNewsletterEmail] = useState('')
+  const [newsletterStatus, setNewsletterStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
+  const [newsletterMessage, setNewsletterMessage] = useState('')
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -68,7 +79,7 @@ const Events = () => {
       }
     }
     fetchEvents()
-  }, [])
+  }, [i18n.language])
 
   const visibleEvents = allEvents.filter((e) => {
     if (activeFilter === 'Tous') return true
@@ -200,7 +211,7 @@ const Events = () => {
                         <Clock size={16} className="text-primary shrink-0" />
                         <span>{event.time}</span>
                       </div>
-                      <p className="text-gray-600 text-body mb-4">{event.description}</p>
+                      <p className="text-gray-600 text-body mb-4">{getExcerpt(event.description)}</p>
                       <Link to={`/events/${event.id}`} className="text-primary font-semibold text-body inline-flex items-center gap-1.5 hover:gap-2.5 transition-all">
                         {t('events.details')} <ArrowRight size={16} />
                       </Link>
@@ -305,16 +316,44 @@ const Events = () => {
                 {t('events.newsletter.desc')}
               </p>
             </div>
-            <form className="flex w-full md:w-auto gap-3" onSubmit={(e) => e.preventDefault()}>
+            <form className="flex w-full md:w-auto gap-3" onSubmit={async (e) => {
+              e.preventDefault()
+              if (!newsletterEmail) return
+              setNewsletterStatus('loading')
+              try {
+                const res = await subscribeToNewsletter(newsletterEmail)
+                setNewsletterMessage(res.message)
+                setNewsletterStatus('success')
+                setNewsletterEmail('')
+              } catch (err) {
+                    setNewsletterMessage(err instanceof Error ? err.message : t('errors.subscription'))
+                setNewsletterStatus('error')
+              }
+            }}>
               <input
                 type="email"
                 placeholder={t('events.newsletter.placeholder')}
                 required
+                value={newsletterEmail}
+                onChange={(e) => setNewsletterEmail(e.target.value)}
                 className="flex-1 md:w-64 px-5 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-body"
               />
-              <button type="submit" className="btn-primary flex items-center gap-2 whitespace-nowrap">
-                {t('events.newsletter.button')} <Send size={16} />
+              <button
+                type="submit"
+                disabled={newsletterStatus === 'loading'}
+                className="btn-primary flex items-center gap-2 whitespace-nowrap disabled:opacity-60"
+              >
+                {newsletterStatus === 'loading' ? (
+                  <>{t('common.loading')}...</>
+                ) : (
+                  <>{t('events.newsletter.button')} <Send size={16} /></>
+                )}
               </button>
+              {newsletterMessage && (
+                <p className={`text-sm w-full md:w-auto ${newsletterStatus === 'success' ? 'text-green-600' : 'text-red-600'}`}>
+                  {newsletterMessage}
+                </p>
+              )}
             </form>
           </motion.div>
         </div>

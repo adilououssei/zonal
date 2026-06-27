@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import { Plus, Edit, Trash2, Star, Search, ChevronDown } from 'lucide-react'
 import { testimonialsService } from '../../services/testimonials'
 import type { AdminTestimonial } from '../../services/testimonials'
@@ -10,12 +11,13 @@ const statusColorMap: Record<string, string> = {
   draft: 'bg-gray-100 text-gray-500',
 }
 
-const formatDate = (d: string | null) => {
-  if (!d) return '—'
-  return new Date(d + 'T00:00:00').toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })
-}
-
 const Testimonials = () => {
+  const { t, i18n } = useTranslation()
+
+  const formatDate = (d: string | null) => {
+    if (!d) return '—'
+    return new Date(d + 'T00:00:00').toLocaleDateString(i18n.language === 'en' ? 'en-US' : 'fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })
+  }
   const [testimonials, setTestimonials] = useState<AdminTestimonial[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
@@ -33,10 +35,10 @@ const Testimonials = () => {
     }
   }, [])
 
-  useEffect(() => { fetchTestimonials() }, [fetchTestimonials])
+  useEffect(() => { fetchTestimonials() }, [fetchTestimonials, i18n.language])
 
   const handleDelete = async (id: number) => {
-    if (!confirm('Confirmer la suppression ?')) return
+    if (!confirm(t('admin.confirm.deleteTestimonial'))) return
     try {
       await testimonialsService.delete(id)
       setTestimonials((prev) => prev.filter((t) => t.id !== id))
@@ -55,15 +57,15 @@ const Testimonials = () => {
     <div>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Témoignages</h1>
-          <p className="text-gray-500 text-small mt-1">Tableau de bord &gt; Témoignages</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t('admin.sidebar.testimonials')}</h1>
+          <p className="text-gray-500 text-small mt-1">{t('admin.sidebar.dashboard')} &gt; {t('admin.sidebar.testimonials')}</p>
         </div>
         <Link
           to="/admin/testimonials/new"
           className="inline-flex items-center gap-2 bg-primary text-white px-4 py-2.5 rounded-lg font-medium text-small hover:bg-primary-dark transition-colors"
         >
           <Plus size={18} />
-          Ajouter un témoignage
+          {t('admin.actions.addTestimonial')}
         </Link>
       </div>
 
@@ -74,7 +76,7 @@ const Testimonials = () => {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Rechercher un témoignage..."
+            placeholder={t('admin.placeholders.searchTestimonial')}
             className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-200 text-small focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition"
           />
         </div>
@@ -84,9 +86,9 @@ const Testimonials = () => {
             onChange={(e) => setStatusFilter(e.target.value)}
             className="appearance-none pl-4 pr-9 py-2.5 rounded-lg border border-gray-200 text-small text-gray-600 focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
           >
-            <option value="Tous">Statut: Tous</option>
-            <option value="published">Publié</option>
-            <option value="draft">Brouillon</option>
+            <option value="Tous">{t('admin.status.filterAll')}</option>
+            <option value="published">{t('admin.status.published')}</option>
+            <option value="draft">{t('admin.status.draft')}</option>
           </select>
           <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
         </div>
@@ -106,12 +108,12 @@ const Testimonials = () => {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-gray-100 bg-gray-50/50">
-                  <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">Auteur</th>
-                  <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">Fonction</th>
-                  <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">Note</th>
-                  <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">Date</th>
-                  <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">Statut</th>
-                  <th className="text-right px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">Actions</th>
+                  <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.author')}</th>
+                  <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.role')}</th>
+                  <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.rating')}</th>
+                  <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.date')}</th>
+                  <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.status')}</th>
+                  <th className="text-right px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.actions')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -137,7 +139,7 @@ const Testimonials = () => {
                       <td className="px-5 py-4 text-gray-600 text-small">{formatDate(item.date)}</td>
                       <td className="px-5 py-4">
                         <span className={`inline-block px-2.5 py-1 rounded-full text-[11px] font-semibold ${statusColorMap[item.status] ?? 'bg-gray-100 text-gray-500'}`}>
-                          {item.status === 'published' ? 'Publié' : 'Brouillon'}
+                          {item.status === 'published' ? t('admin.status.published') : t('admin.status.draft')}
                         </span>
                       </td>
                       <td className="px-5 py-4 text-right">
@@ -145,14 +147,14 @@ const Testimonials = () => {
                           <Link
                             to={`/admin/testimonials/${item.id}/edit`}
                             className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-primary hover:bg-primary/10 transition-colors"
-                            title="Modifier"
+                            title={t('admin.actions.edit')}
                           >
                             <Edit size={15} />
                           </Link>
                           <button
                             onClick={() => handleDelete(item.id)}
                             className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-red hover:bg-red/10 transition-colors"
-                            title="Supprimer"
+                            title={t('admin.actions.delete')}
                           >
                             <Trash2 size={15} />
                           </button>
@@ -163,7 +165,7 @@ const Testimonials = () => {
                 ) : (
                   <tr>
                     <td colSpan={6} className="px-5 py-10 text-center text-gray-400 text-small">
-                      Aucun témoignage trouvé.
+                      {t('admin.empty.testimonials')}
                     </td>
                   </tr>
                 )}

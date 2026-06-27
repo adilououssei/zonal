@@ -1,7 +1,8 @@
 import { useState, useEffect, type FormEvent } from 'react'
 import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import { Plus, Edit, Trash2, Search, ChevronsLeft, ChevronRight } from 'lucide-react'
-import { adminService, type AdminUser } from '../../services/admin'
+import { adminService, type AdminUser, type Role } from '../../services/admin'
 
 const avatarColors = ['bg-purple-50 text-purple-500', 'bg-blue-50 text-blue-500', 'bg-emerald-50 text-emerald-600', 'bg-orange-50 text-orange-500']
 
@@ -11,26 +12,31 @@ const userStatusColorMap: Record<string, string> = {
 }
 
 const Users = () => {
+  const { t, i18n } = useTranslation()
   const [users, setUsers] = useState<AdminUser[]>([])
   const [searchQuery, setSearchQuery] = useState('')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
+  const [roles, setRoles] = useState<Role[]>([])
   const [modalOpen, setModalOpen] = useState(false)
   const [editingUser, setEditingUser] = useState<AdminUser | null>(null)
-  const [formData, setFormData] = useState({ email: '', password: '', firstName: '', lastName: '', phone: '' })
+  const [formData, setFormData] = useState({ email: '', password: '', firstName: '', lastName: '', phone: '', roleId: '' })
 
   useEffect(() => {
     let cancelled = false
-    adminService.getUsers().then((data) => {
-      if (!cancelled) setUsers(data)
+    Promise.all([
+      adminService.getUsers(),
+      adminService.getRoles(),
+    ]).then(([usersData, rolesData]) => {
+      if (!cancelled) { setUsers(usersData); setRoles(rolesData) }
     }).catch((err) => {
-      if (!cancelled) setError(err instanceof Error ? err.message : 'Erreur')
+      if (!cancelled) setError(err instanceof Error ? err.message : t('admin.errors.generic'))
     }).finally(() => {
       if (!cancelled) setLoading(false)
     })
     return () => { cancelled = true }
-  }, [])
+  }, [i18n.language])
 
   const reloadUsers = async () => {
     try {
@@ -38,7 +44,7 @@ const Users = () => {
       const data = await adminService.getUsers()
       setUsers(data)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur')
+      setError(err instanceof Error ? err.message : t('admin.errors.generic'))
     } finally {
       setLoading(false)
     }
@@ -52,7 +58,7 @@ const Users = () => {
 
   const openCreateModal = () => {
     setEditingUser(null)
-    setFormData({ email: '', password: '', firstName: '', lastName: '', phone: '' })
+    setFormData({ email: '', password: '', firstName: '', lastName: '', phone: '', roleId: '' })
     setModalOpen(true)
   }
 
@@ -64,6 +70,7 @@ const Users = () => {
       firstName: user.firstName || '',
       lastName: user.lastName || '',
       phone: user.phone || '',
+      roleId: String(user.roleEntity?.id ?? ''),
     })
     setModalOpen(true)
   }
@@ -71,30 +78,31 @@ const Users = () => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     try {
+      const roleId = formData.roleId ? Number(formData.roleId) : undefined
       if (editingUser) {
-        const payload: Record<string, unknown> = { email: formData.email }
+        const payload: Record<string, unknown> = { email: formData.email, roleId }
         if (formData.firstName) payload.firstName = formData.firstName
         if (formData.lastName) payload.lastName = formData.lastName
         if (formData.phone) payload.phone = formData.phone
         if (formData.password) payload.password = formData.password
         await adminService.updateUser(editingUser.id, payload as Parameters<typeof adminService.updateUser>[1])
       } else {
-        await adminService.createUser({ ...formData, password: formData.password } as Parameters<typeof adminService.createUser>[0])
+        await adminService.createUser({ ...formData, password: formData.password, roleId } as Parameters<typeof adminService.createUser>[0])
       }
       setModalOpen(false)
       reloadUsers()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur')
+      setError(err instanceof Error ? err.message : t('admin.errors.generic'))
     }
   }
 
   const handleDelete = async (user: AdminUser) => {
-    if (!confirm(`Supprimer ${user.name} ?`)) return
+    if (!confirm(t('admin.confirm.deleteUser', { name: user.name }))) return
     try {
       await adminService.deleteUser(user.id)
       reloadUsers()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur')
+      setError(err instanceof Error ? err.message : t('admin.errors.generic'))
     }
   }
 
@@ -103,7 +111,7 @@ const Users = () => {
       await adminService.toggleUserStatus(user.id)
       reloadUsers()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur')
+      setError(err instanceof Error ? err.message : t('admin.errors.generic'))
     }
   }
 
@@ -111,15 +119,15 @@ const Users = () => {
     <div>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Utilisateurs</h1>
-          <p className="text-gray-500 text-small mt-1">Tableau de bord &gt; Utilisateurs</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t('admin.sidebar.users')}</h1>
+          <p className="text-gray-500 text-small mt-1">{t('admin.sidebar.dashboard')} &gt; {t('admin.sidebar.users')}</p>
         </div>
         <button
           onClick={openCreateModal}
           className="inline-flex items-center gap-2 bg-primary text-white px-4 py-2.5 rounded-lg font-medium text-small hover:bg-primary-dark transition-colors"
         >
           <Plus size={18} />
-          Ajouter un utilisateur
+          {t('admin.actions.addUser')}
         </button>
       </div>
 
@@ -129,7 +137,7 @@ const Users = () => {
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Rechercher un utilisateur..."
+          placeholder={t('admin.placeholders.searchUser')}
           className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-200 text-small focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition"
         />
       </div>
@@ -147,19 +155,19 @@ const Users = () => {
         className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"
       >
         {loading ? (
-          <div className="p-8 text-center text-gray-400">Chargement...</div>
+          <div className="p-8 text-center text-gray-400">{t('admin.loading')}</div>
         ) : (
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="border-b border-gray-100 bg-gray-50/50">
-                <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">Nom</th>
-                <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">Email</th>
-                <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">Téléphone</th>
-                <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">Rôle</th>
-                <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">Statut</th>
-                <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">Dernière connexion</th>
-                <th className="text-right px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">Actions</th>
+                <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.name')}</th>
+                <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.email')}</th>
+                <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.phone')}</th>
+                <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.role')}</th>
+                <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.status')}</th>
+                <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.lastLogin')}</th>
+                <th className="text-right px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.actions')}</th>
               </tr>
             </thead>
             <tbody>
@@ -190,14 +198,14 @@ const Users = () => {
                         <button
                           onClick={() => openEditModal(user)}
                           className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-primary hover:bg-primary/10 transition-colors"
-                          title="Modifier"
+                          title={t('admin.actions.edit')}
                         >
                           <Edit size={15} />
                         </button>
                         <button
                           onClick={() => handleDelete(user)}
                           className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-red hover:bg-red/10 transition-colors"
-                          title="Supprimer"
+                          title={t('admin.actions.delete')}
                         >
                           <Trash2 size={15} />
                         </button>
@@ -208,7 +216,7 @@ const Users = () => {
               ) : (
                 <tr>
                   <td colSpan={7} className="px-5 py-10 text-center text-gray-400 text-small">
-                    Aucun utilisateur trouvé.
+                    {t('admin.empty.users')}
                   </td>
                 </tr>
               )}
@@ -218,7 +226,7 @@ const Users = () => {
         )}
 
         <div className="flex items-center justify-center gap-2 px-5 py-4 border-t border-gray-100">
-          <button className="w-9 h-9 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 transition-colors" aria-label="Précédent">
+          <button className="w-9 h-9 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 transition-colors" aria-label={t('carousel.prev')}>
             <ChevronsLeft size={16} />
           </button>
           {[1].map((page) => (
@@ -230,7 +238,7 @@ const Users = () => {
             </button>
           ))}
           <button className="flex items-center gap-1 px-3 h-9 rounded-lg text-gray-600 text-small font-medium hover:bg-gray-100 transition-colors">
-            Suivant <ChevronRight size={14} />
+            {t('carousel.next')} <ChevronRight size={14} />
           </button>
         </div>
       </motion.div>
@@ -244,11 +252,11 @@ const Users = () => {
             onClick={(e) => e.stopPropagation()}
           >
             <h2 className="text-lg font-bold text-gray-900 mb-4">
-              {editingUser ? 'Modifier' : 'Ajouter'} un utilisateur
+              {editingUser ? t('admin.form.editUser') : t('admin.form.addUser')}
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-small font-medium text-gray-700 mb-1">Email</label>
+                <label className="block text-small font-medium text-gray-700 mb-1">{t('admin.labels.email')}</label>
                 <input
                   type="email" required
                   value={formData.email}
@@ -258,7 +266,7 @@ const Users = () => {
               </div>
               {!editingUser && (
                 <div>
-                  <label className="block text-small font-medium text-gray-700 mb-1">Mot de passe</label>
+                  <label className="block text-small font-medium text-gray-700 mb-1">{t('admin.labels.password')}</label>
                   <input
                     type="password" required
                     value={formData.password}
@@ -269,7 +277,7 @@ const Users = () => {
               )}
               {editingUser && (
                 <div>
-                  <label className="block text-small font-medium text-gray-700 mb-1">Nouveau mot de passe (optionnel)</label>
+                  <label className="block text-small font-medium text-gray-700 mb-1">{t('admin.labels.newPasswordOptional')}</label>
                   <input
                     type="password"
                     value={formData.password}
@@ -280,7 +288,7 @@ const Users = () => {
               )}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-small font-medium text-gray-700 mb-1">Prénom</label>
+                  <label className="block text-small font-medium text-gray-700 mb-1">{t('admin.labels.firstName')}</label>
                   <input
                     type="text"
                     value={formData.firstName}
@@ -289,7 +297,7 @@ const Users = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-small font-medium text-gray-700 mb-1">Nom</label>
+                  <label className="block text-small font-medium text-gray-700 mb-1">{t('admin.labels.lastName')}</label>
                   <input
                     type="text"
                     value={formData.lastName}
@@ -299,7 +307,7 @@ const Users = () => {
                 </div>
               </div>
               <div>
-                <label className="block text-small font-medium text-gray-700 mb-1">Téléphone</label>
+                <label className="block text-small font-medium text-gray-700 mb-1">{t('admin.labels.phone')}</label>
                 <input
                   type="text"
                   value={formData.phone}
@@ -307,19 +315,32 @@ const Users = () => {
                   className="w-full px-3.5 py-2.5 rounded-lg border border-gray-200 text-small focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                 />
               </div>
+              <div>
+                <label className="block text-small font-medium text-gray-700 mb-1">{t('admin.labels.role')}</label>
+                <select
+                  value={formData.roleId}
+                  onChange={(e) => setFormData({ ...formData, roleId: e.target.value })}
+                  className="w-full px-3.5 py-2.5 rounded-lg border border-gray-200 text-small text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition cursor-pointer"
+                >
+                  <option value="">{t('admin.labels.selectRole')}</option>
+                  {roles.map((r) => (
+                    <option key={r.id} value={r.id}>{r.name}</option>
+                  ))}
+                </select>
+              </div>
               <div className="flex gap-3 pt-2">
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
                   className="flex-1 px-4 py-2.5 rounded-lg border border-gray-200 text-gray-600 text-small font-medium hover:bg-gray-50 transition-colors"
                 >
-                  Annuler
+                  {t('admin.actions.cancel')}
                 </button>
                 <button
                   type="submit"
                   className="flex-1 px-4 py-2.5 rounded-lg bg-primary text-white text-small font-medium hover:bg-primary-dark transition-colors"
                 >
-                  {editingUser ? 'Enregistrer' : 'Créer'}
+                  {editingUser ? t('admin.actions.save') : t('admin.actions.create')}
                 </button>
               </div>
             </form>

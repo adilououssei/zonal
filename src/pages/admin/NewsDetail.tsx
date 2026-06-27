@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import {
   Calendar, User, Eye, ArrowLeft, Edit, Trash2,
 } from 'lucide-react'
@@ -16,12 +17,13 @@ const categoryColors: Record<string, string> = {
   'Gouvernance locale': 'bg-purple-100 text-purple-700',
 }
 
-const monthNames = [
-  'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
-  'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre',
-]
-
 const NewsDetail = () => {
+  const { t } = useTranslation()
+  const monthNames = [
+    t('months.january'), t('months.february'), t('months.march'), t('months.april'),
+    t('months.may'), t('months.june'), t('months.july'), t('months.august'),
+    t('months.september'), t('months.october'), t('months.november'), t('months.december'),
+  ]
   const { id } = useParams()
   const navigate = useNavigate()
   const [article, setArticle] = useState<AdminNews | null>(null)
@@ -34,7 +36,7 @@ const NewsDetail = () => {
         const data = await newsService.getById(Number(id))
         setArticle(data)
       } catch {
-        console.error('Erreur lors du chargement de l\'article')
+        console.error(t('admin.errors.loadError'))
         navigate('/admin/news')
       } finally {
         setLoading(false)
@@ -44,12 +46,12 @@ const NewsDetail = () => {
   }, [id, navigate])
 
   const handleDelete = async () => {
-    if (!confirm('Confirmer la suppression de cet article ?')) return
+    if (!confirm(t('admin.confirm.deleteNews'))) return
     try {
       await newsService.delete(Number(id))
       navigate('/admin/news')
     } catch {
-      console.error('Erreur lors de la suppression')
+      console.error(t('admin.errors.deleteError'))
     }
   }
 
@@ -63,7 +65,7 @@ const NewsDetail = () => {
 
   if (!article) {
     return (
-      <div className="text-center py-20 text-gray-500">Article introuvable.</div>
+      <div className="text-center py-20 text-gray-500">{t('admin.errors.articleNotFound')}</div>
     )
   }
 
@@ -75,10 +77,10 @@ const NewsDetail = () => {
         <div>
           <Link to="/admin/news" className="inline-flex items-center gap-1.5 text-gray-500 hover:text-primary transition-colors text-small mb-2">
             <ArrowLeft size={16} />
-            Retour aux actualités
+            {t('admin.actions.backToNews')}
           </Link>
           <h1 className="text-2xl font-bold text-gray-900">{article.title}</h1>
-          <p className="text-gray-500 text-small mt-1">Tableau de bord &gt; Actualités &gt; Détails</p>
+          <p className="text-gray-500 text-small mt-1">{t('admin.dashboard.title')} &gt; {t('admin.sidebar.news')} &gt; {t('admin.pages.news.details')}</p>
         </div>
         <div className="flex items-center gap-2">
           <Link
@@ -86,14 +88,14 @@ const NewsDetail = () => {
             className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-primary text-white font-medium text-small hover:bg-primary-dark transition-colors"
           >
             <Edit size={16} />
-            Modifier
+            {t('admin.actions.edit')}
           </Link>
           <button
             onClick={handleDelete}
             className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-red text-red font-medium text-small hover:bg-red/10 transition-colors"
           >
             <Trash2 size={16} />
-            Supprimer
+            {t('admin.actions.delete')}
           </button>
         </div>
       </div>
@@ -116,27 +118,27 @@ const NewsDetail = () => {
             <div className="lg:col-span-2 space-y-6">
               {article.excerpt && (
                 <div>
-                  <h2 className="text-lg font-semibold text-gray-900 mb-2">Extrait</h2>
+                  <h2 className="text-lg font-semibold text-gray-900 mb-2">{t('admin.labels.excerpt')}</h2>
                   <p className="text-gray-600 leading-relaxed italic border-l-4 border-primary pl-4">{article.excerpt}</p>
                 </div>
               )}
 
               <div>
-                <h2 className="text-lg font-semibold text-gray-900 mb-2">Contenu</h2>
+                <h2 className="text-lg font-semibold text-gray-900 mb-2">{t('admin.labels.content')}</h2>
                 {article.content ? (
                   <div className="text-gray-600 leading-relaxed" dangerouslySetInnerHTML={{ __html: article.content }} />
                 ) : (
-                  <p className="text-gray-400 italic">Aucun contenu.</p>
+                  <p className="text-gray-400 italic">{t('admin.empty.noContent')}</p>
                 )}
               </div>
 
               {article.gallery && article.gallery.length > 0 && (
                 <div>
-                  <h2 className="text-lg font-semibold text-gray-900 mb-3">Galerie photos</h2>
+                  <h2 className="text-lg font-semibold text-gray-900 mb-3">{t('admin.labels.photoGallery')}</h2>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                     {article.gallery.map((src, i) => (
                       <div key={i} className="aspect-video rounded-lg overflow-hidden">
-                        <img src={src} alt={`Photo ${i + 1}`} className="w-full h-full object-cover" />
+                        <img src={src} alt={t('admin.labels.galleryPhoto', { index: i + 1 })} className="w-full h-full object-cover" />
                       </div>
                     ))}
                   </div>
@@ -148,7 +150,7 @@ const NewsDetail = () => {
             <div className="space-y-4">
               <div className="bg-gray-50 rounded-lg p-4 space-y-3">
                 <div>
-                  <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Catégorie</label>
+                  <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">{t('admin.table.category')}</label>
                   <div className="mt-1">
                     <span className={`inline-block px-2.5 py-1 rounded-full text-[11px] font-semibold ${categoryColors[article.category] ?? 'bg-primary/10 text-primary'}`}>
                       {article.category}
@@ -156,7 +158,7 @@ const NewsDetail = () => {
                   </div>
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Date</label>
+                  <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">{t('admin.table.date')}</label>
                   <p className="flex items-center gap-1.5 text-gray-800 text-small mt-1">
                     <Calendar size={14} className="text-primary" />
                     {articleDate.getDate()} {monthNames[articleDate.getMonth()]} {articleDate.getFullYear()}
@@ -164,7 +166,7 @@ const NewsDetail = () => {
                 </div>
                 {article.author && (
                   <div>
-                    <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Auteur</label>
+                    <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">{t('admin.labels.author')}</label>
                     <p className="flex items-center gap-1.5 text-gray-800 text-small mt-1">
                       <User size={14} className="text-primary" />
                       {article.author}
@@ -172,7 +174,7 @@ const NewsDetail = () => {
                   </div>
                 )}
                 <div>
-                  <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Vues</label>
+                  <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">{t('admin.table.views')}</label>
                   <p className="flex items-center gap-1.5 text-gray-800 text-small mt-1">
                     <Eye size={14} className="text-primary" />
                     {article.views}

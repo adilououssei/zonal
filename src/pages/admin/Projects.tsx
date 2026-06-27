@@ -13,7 +13,7 @@ import { statusLabelMap, statusColorMap } from '../../data/adminProjectsData'
 const statusFilters: ('Tous' | string)[] = ['Tous', 'ongoing', 'completed', 'planned']
 
 const Projects = () => {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [projects, setProjects] = useState<AdminProject[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
@@ -31,10 +31,10 @@ const Projects = () => {
     }
   }, [])
 
-  useEffect(() => { fetchProjects() }, [fetchProjects])
+  useEffect(() => { fetchProjects() }, [fetchProjects, i18n.language])
 
   const handleDelete = async (id: number) => {
-    if (!confirm('Confirmer la suppression de ce projet ?')) return
+    if (!confirm(t('admin.confirm.deleteProject'))) return
     try {
       await projectsService.delete(id)
       setProjects((prev) => prev.filter((p) => p.id !== id))
@@ -80,7 +80,7 @@ const Projects = () => {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Rechercher un projet..."
+            placeholder={t('admin.placeholders.searchProject')}
             className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-200 text-small focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition"
           />
         </div>
@@ -91,7 +91,7 @@ const Projects = () => {
             className="appearance-none pl-4 pr-9 py-2.5 rounded-lg border border-gray-200 text-small text-gray-600 focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
           >
             {statusFilters.map((s) => (
-              <option key={s} value={s}>{s === 'Tous' ? 'Statut: Tous' : statusLabelMap[s]}</option>
+              <option key={s} value={s}>{s === 'Tous' ? `${t('admin.table.status')}: ${t('projects.filter.all')}` : statusLabelMap[s]}</option>
             ))}
           </select>
           <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
@@ -161,7 +161,7 @@ const Projects = () => {
               ) : (
                 <tr>
                   <td colSpan={5} className="px-5 py-10 text-center text-gray-400 text-small">
-                    Aucun projet ne correspond à votre recherche.
+                    {t('admin.empty.noSearchResults')}
                   </td>
                 </tr>
               )}
@@ -170,7 +170,7 @@ const Projects = () => {
         </div>
 
         <div className="flex items-center justify-center gap-2 px-5 py-4 border-t border-gray-100">
-          <button className="w-9 h-9 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 transition-colors" aria-label="Précédent">
+            <button className="w-9 h-9 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 transition-colors" aria-label={t('admin.pagination.previous')}>
             <ChevronsLeft size={16} />
           </button>
           {[1, 2, 3].map((page) => (
@@ -182,7 +182,7 @@ const Projects = () => {
             </button>
           ))}
           <button className="flex items-center gap-1 px-3 h-9 rounded-lg text-gray-600 text-small font-medium hover:bg-gray-100 transition-colors">
-            Suivant <ChevronRight size={14} />
+            {t('admin.pagination.next')} <ChevronRight size={14} />
           </button>
         </div>
       </motion.div>

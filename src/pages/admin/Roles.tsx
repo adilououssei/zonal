@@ -1,5 +1,6 @@
 import { useState, useEffect, type ElementType, type FormEvent } from 'react'
 import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import {
   Plus, Edit, Trash2, Check, X, LayoutDashboard, Calendar, Newspaper,
   FolderOpen, Users, Settings, Image as ImageIcon, Handshake,
@@ -13,6 +14,7 @@ const iconMap: Record<string, ElementType> = {
 }
 
 const Roles = () => {
+  const { t, i18n } = useTranslation()
   const [roles, setRoles] = useState<Role[]>([])
   const [modules, setModules] = useState<PermissionModule[]>([])
   const [loading, setLoading] = useState(true)
@@ -31,12 +33,12 @@ const Roles = () => {
     ]).then(([rolesData, modulesData]) => {
       if (!cancelled) { setRoles(rolesData); setModules(modulesData) }
     }).catch((err) => {
-      if (!cancelled) setError(err instanceof Error ? err.message : 'Erreur')
+      if (!cancelled) setError(err instanceof Error ? err.message : t('admin.errors.generic'))
     }).finally(() => {
       if (!cancelled) setLoading(false)
     })
     return () => { cancelled = true }
-  }, [])
+  }, [i18n.language])
 
   const reloadData = async () => {
     try {
@@ -48,7 +50,7 @@ const Roles = () => {
       setRoles(rolesData)
       setModules(modulesData)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur')
+      setError(err instanceof Error ? err.message : t('admin.errors.generic'))
     } finally {
       setLoading(false)
     }
@@ -88,17 +90,17 @@ const Roles = () => {
       setModalOpen(false)
       reloadData()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur')
+      setError(err instanceof Error ? err.message : t('admin.errors.generic'))
     }
   }
 
   const handleDelete = async (role: Role) => {
-    if (!confirm(`Supprimer le rôle "${role.name}" ?`)) return
+    if (!confirm(t('admin.confirm.deleteRole', { name: role.name }))) return
     try {
       await adminService.deleteRole(role.id)
       reloadData()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur')
+      setError(err instanceof Error ? err.message : t('admin.errors.generic'))
     }
   }
 
@@ -106,15 +108,15 @@ const Roles = () => {
     <div>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Rôles & Permissions</h1>
-          <p className="text-gray-500 text-small mt-1">Tableau de bord &gt; Rôles & Permissions</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t('admin.sidebar.roles')}</h1>
+          <p className="text-gray-500 text-small mt-1">{t('admin.sidebar.dashboard')} &gt; {t('admin.sidebar.roles')}</p>
         </div>
         <button
           onClick={openCreateModal}
           className="inline-flex items-center gap-2 bg-primary text-white px-4 py-2.5 rounded-lg font-medium text-small hover:bg-primary-dark transition-colors"
         >
           <Plus size={18} />
-          Ajouter un rôle
+          {t('admin.actions.addRole')}
         </button>
       </div>
 
@@ -126,7 +128,7 @@ const Roles = () => {
       )}
 
       {loading ? (
-        <div className="p-8 text-center text-gray-400">Chargement...</div>
+        <div className="p-8 text-center text-gray-400">{t('admin.loading')}</div>
       ) : (
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -137,11 +139,11 @@ const Roles = () => {
           <table className="w-full">
             <thead>
               <tr>
-                <th className="text-left pb-4 text-gray-600 text-xs font-semibold tracking-wider">Rôle</th>
+                <th className="text-left pb-4 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.role')}</th>
                 <th colSpan={modules.length} className="pb-4 text-center text-gray-600 text-xs font-semibold tracking-wider">
-                  Permissions
+                  {t('admin.table.permissions')}
                 </th>
-                <th className="text-right pb-4 text-gray-600 text-xs font-semibold tracking-wider">Actions</th>
+                <th className="text-right pb-4 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.actions')}</th>
               </tr>
             </thead>
             <tbody>
@@ -168,14 +170,14 @@ const Roles = () => {
                       <button
                         onClick={() => openEditModal(role)}
                         className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-primary hover:bg-primary/10 transition-colors"
-                        title="Modifier"
+                        title={t('admin.actions.edit')}
                       >
                         <Edit size={15} />
                       </button>
                       <button
                         onClick={() => handleDelete(role)}
                         className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-red hover:bg-red/10 transition-colors"
-                        title="Supprimer"
+                        title={t('admin.actions.delete')}
                       >
                         <Trash2 size={15} />
                       </button>
@@ -188,18 +190,18 @@ const Roles = () => {
         </div>
 
         <div className="flex items-center gap-6 mt-5 pt-5 border-t border-gray-100 text-small text-gray-600">
-          <span className="text-gray-500 font-medium">Légende :</span>
+          <span className="text-gray-500 font-medium">{t('admin.legend')}</span>
           <span className="flex items-center gap-2">
             <span className="w-5 h-5 rounded-md bg-primary text-white flex items-center justify-center">
               <Check size={12} />
             </span>
-            Autorisé
+            {t('admin.permissions.allowed')}
           </span>
           <span className="flex items-center gap-2">
             <span className="w-5 h-5 rounded-md bg-gray-100 text-gray-300 flex items-center justify-center">
               <X size={12} />
             </span>
-            Non autorisé
+            {t('admin.permissions.denied')}
           </span>
         </div>
       </motion.div>
@@ -211,7 +213,7 @@ const Roles = () => {
         transition={{ delay: 0.1 }}
         className="bg-white rounded-xl shadow-sm border border-gray-100 p-5"
       >
-        <h3 className="font-semibold text-gray-900 text-body mb-4">Modules disponibles</h3>
+        <h3 className="font-semibold text-gray-900 text-body mb-4">{t('admin.form.availableModules')}</h3>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
           {modules.map((mod) => {
             const Icon = iconMap[mod.icon] || LayoutDashboard
@@ -236,11 +238,11 @@ const Roles = () => {
             onClick={(e) => e.stopPropagation()}
           >
             <h2 className="text-lg font-bold text-gray-900 mb-4">
-              {editingRole ? 'Modifier' : 'Ajouter'} un rôle
+              {editingRole ? t('admin.form.editRole') : t('admin.form.addRole')}
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-small font-medium text-gray-700 mb-1">Nom du rôle</label>
+                <label className="block text-small font-medium text-gray-700 mb-1">{t('admin.labels.roleName')}</label>
                 <input
                   type="text" required
                   value={roleName}
@@ -249,7 +251,7 @@ const Roles = () => {
                 />
               </div>
               <div>
-                <label className="block text-small font-medium text-gray-700 mb-2">Permissions</label>
+                <label className="block text-small font-medium text-gray-700 mb-2">{t('admin.labels.permissions')}</label>
                 <div className="grid grid-cols-2 gap-2">
                   {modules.map((mod) => {
                     const Icon = iconMap[mod.icon] || LayoutDashboard
@@ -279,13 +281,13 @@ const Roles = () => {
                   onClick={() => setModalOpen(false)}
                   className="flex-1 px-4 py-2.5 rounded-lg border border-gray-200 text-gray-600 text-small font-medium hover:bg-gray-50 transition-colors"
                 >
-                  Annuler
+                  {t('admin.actions.cancel')}
                 </button>
                 <button
                   type="submit"
                   className="flex-1 px-4 py-2.5 rounded-lg bg-primary text-white text-small font-medium hover:bg-primary-dark transition-colors"
                 >
-                  {editingRole ? 'Enregistrer' : 'Créer'}
+                  {editingRole ? t('admin.actions.save') : t('admin.actions.create')}
                 </button>
               </div>
             </form>

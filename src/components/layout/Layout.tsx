@@ -17,12 +17,11 @@ const Layout = () => {
   }, [location.pathname])
 
   useEffect(() => {
-    if (navigation.state === 'loading') {
-      const timer = setTimeout(() => setShowLoader(true), 150)
-      return () => { clearTimeout(timer); setShowLoader(false) }
-    } else {
-      setShowLoader(false)
-    }
+    const timer = setTimeout(
+      () => setShowLoader(navigation.state === 'loading'),
+      navigation.state === 'loading' ? 150 : 0
+    )
+    return () => clearTimeout(timer)
   }, [navigation.state])
 
   return (

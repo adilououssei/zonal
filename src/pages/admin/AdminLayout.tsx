@@ -4,8 +4,9 @@ import { useTranslation } from 'react-i18next'
 import {
   LayoutDashboard, Calendar, Newspaper, FolderOpen, Image as ImageIcon,
   Handshake, MessageSquare, FileText, Users, Shield, Settings,
-  LogOut, ChevronDown, Menu, X, User
+  LogOut, ChevronDown, Menu, X, User, PanelLeftClose, PanelLeftOpen
 } from 'lucide-react'
+import LanguageSwitcher from '../../components/ui/LanguageSwitcher'
 import { useAuth } from '../../contexts/useAuth'
 import Loader from '../../components/ui/Loader'
 
@@ -15,6 +16,7 @@ const AdminLayout = () => {
   const navigate = useNavigate()
   const { user, isAuthenticated, logout } = useAuth()
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [collapsed, setCollapsed] = useState(false)
   const [profileOpen, setProfileOpen] = useState(false)
   const profileRef = useRef<HTMLDivElement>(null)
 
@@ -22,11 +24,18 @@ const AdminLayout = () => {
   const [showLoader, setShowLoader] = useState(false)
 
   useEffect(() => {
+    let timer: ReturnType<typeof setTimeout> | null = null
+
     if (navigation.state === 'loading') {
-      const timer = setTimeout(() => setShowLoader(true), 150)
-      return () => { clearTimeout(timer); setShowLoader(false) }
+      timer = setTimeout(() => setShowLoader(true), 150)
     } else {
-      setShowLoader(false)
+      timer = setTimeout(() => setShowLoader(false), 0)
+    }
+
+    return () => {
+      if (timer !== null) {
+        clearTimeout(timer)
+      }
     }
   }, [navigation.state])
 
@@ -53,19 +62,24 @@ const AdminLayout = () => {
 
   const userInitial = user?.firstName?.charAt(0)?.toUpperCase() || user?.email?.charAt(0)?.toUpperCase() || 'A'
 
-  const navItems = [
-    { path: '/admin', label: t('admin.sidebar.dashboard'), icon: LayoutDashboard, end: true },
-    { path: '/admin/events', label: t('admin.sidebar.events'), icon: Calendar },
-    { path: '/admin/news', label: t('admin.sidebar.news'), icon: Newspaper },
-    { path: '/admin/projects', label: t('admin.sidebar.projects'), icon: FolderOpen },
-    { path: '/admin/gallery', label: t('admin.sidebar.gallery'), icon: ImageIcon },
-    { path: '/admin/partners', label: t('admin.sidebar.partners'), icon: Handshake },
-    { path: '/admin/testimonials', label: t('admin.sidebar.testimonials'), icon: MessageSquare },
-    { path: '/admin/documents', label: t('admin.sidebar.documents'), icon: FileText },
-    { path: '/admin/users', label: t('admin.sidebar.users'), icon: Users },
-    { path: '/admin/roles', label: t('admin.sidebar.roles'), icon: Shield },
-    { path: '/admin/settings', label: t('admin.sidebar.settings'), icon: Settings },
+  const allNavItems = [
+    { path: '/admin', label: t('admin.sidebar.dashboard'), icon: LayoutDashboard, permission: 'dashboard', end: true },
+    { path: '/admin/events', label: t('admin.sidebar.events'), icon: Calendar, permission: 'events' },
+    { path: '/admin/news', label: t('admin.sidebar.news'), icon: Newspaper, permission: 'news' },
+    { path: '/admin/projects', label: t('admin.sidebar.projects'), icon: FolderOpen, permission: 'projects' },
+    { path: '/admin/gallery', label: t('admin.sidebar.gallery'), icon: ImageIcon, permission: 'gallery' },
+    { path: '/admin/partners', label: t('admin.sidebar.partners'), icon: Handshake, permission: 'partners' },
+    { path: '/admin/testimonials', label: t('admin.sidebar.testimonials'), icon: MessageSquare, permission: 'testimonials' },
+    { path: '/admin/documents', label: t('admin.sidebar.documents'), icon: FileText, permission: 'documents' },
+    { path: '/admin/users', label: t('admin.sidebar.users'), icon: Users, permission: 'users' },
+    { path: '/admin/roles', label: t('admin.sidebar.roles'), icon: Shield, permission: 'roles' },
+    { path: '/admin/settings', label: t('admin.sidebar.settings'), icon: Settings, permission: 'settings' },
   ]
+
+  const navItems = allNavItems.filter((item) => {
+    if (!user?.roleEntity?.permissions) return true
+    return user.roleEntity.permissions[item.permission] !== false
+  })
 
   const isActive = (path: string, end?: boolean) =>
     end ? location.pathname === path : location.pathname.startsWith(path)
@@ -74,14 +88,36 @@ const AdminLayout = () => {
     <>
       {showLoader && <Loader />}
       <div className="min-h-screen flex bg-gray-50">
-      <aside className={`fixed inset-y-0 left-0 z-40 w-64 bg-primary-dark text-white transform transition-transform duration-300 lg:translate-x-0 lg:z-auto ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-        <div className="flex items-center h-16 px-5 border-b border-white/10">
-          <img src="/images/logoOrigin.png" alt="ZONAL" className="h-20 w-auto" />
+      <aside className={`fixed inset-y-0 left-0 z-40 bg-primary-dark text-white transform transition-all duration-300 lg:translate-x-0 lg:z-auto ${collapsed ? 'w-16' : 'w-64'} ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        <div className={`flex items-center h-16 px-3 border-b border-white/10 ${collapsed ? 'justify-center' : ''}`}>
+          {collapsed ? (
+            <img src="/images/logoOrigin.png" alt="ZONAL" className="h-22 w-auto" />
+          ) : (
+            <>
+              <img src="/images/logoOrigin.png" alt="ZONAL" className="h-22 w-auto" />
+              <button
+                onClick={() => setCollapsed(true)}
+                className="ml-auto text-white/40 hover:text-white transition-colors cursor-pointer hidden lg:block"
+                title={t('admin.sidebar.collapse')}
+              >
+                <PanelLeftClose size={18} />
+              </button>
+            </>
+          )}
+          {collapsed && (
+            <button
+              onClick={() => setCollapsed(false)}
+              className="absolute -right-3 top-4 text-white/40 hover:text-white transition-colors cursor-pointer hidden lg:block"
+              title={t('admin.sidebar.expand')}
+            >
+              <PanelLeftOpen size={18} />
+            </button>
+          )}
           <button onClick={() => setSidebarOpen(false)} className="lg:hidden ml-auto">
             <X size={20} />
           </button>
         </div>
-        <nav className="p-4 space-y-1 overflow-y-auto" style={{ height: 'calc(100vh - 4rem)' }}>
+        <nav className="p-3 space-y-1 overflow-y-auto sidebar-scroll" style={{ height: 'calc(100vh - 4rem)' }}>
           {navItems.map((item) => {
             const Icon = item.icon
             return (
@@ -89,24 +125,30 @@ const AdminLayout = () => {
                 key={item.path}
                 to={item.path}
                 onClick={() => setSidebarOpen(false)}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-small transition-colors ${
+                className={`flex items-center gap-3 rounded-lg text-small transition-colors ${
+                  collapsed ? 'justify-center px-2 py-2.5' : 'px-3 py-2.5'
+                } ${
                   isActive(item.path, item.end)
                     ? 'bg-white/15 text-white font-medium'
                     : 'text-white/60 hover:text-white hover:bg-white/10'
                 }`}
+                title={collapsed ? item.label : undefined}
               >
                 <Icon size={18} />
-                {item.label}
+                {!collapsed && item.label}
               </Link>
             )
           })}
-          <div className="pt-3 mt-3 border-t border-white/10">
+          <div className={`pt-3 mt-3 border-t border-white/10 ${collapsed ? 'flex justify-center' : ''}`}>
             <button
               onClick={handleLogout}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-small text-white/60 hover:text-white hover:bg-white/10 transition-colors w-full text-left cursor-pointer"
+              className={`flex items-center gap-3 rounded-lg text-small text-white/60 hover:text-white hover:bg-white/10 transition-colors cursor-pointer ${
+                collapsed ? 'justify-center px-2 py-2.5' : 'px-3 py-2.5 w-full text-left'
+              }`}
+              title={collapsed ? t('admin.sidebar.logout') : undefined}
             >
               <LogOut size={18} />
-              {t('admin.sidebar.logout')}
+              {!collapsed && t('admin.sidebar.logout')}
             </button>
           </div>
         </nav>
@@ -116,7 +158,7 @@ const AdminLayout = () => {
         <div className="fixed inset-0 bg-black/50 z-30 lg:hidden" onClick={() => setSidebarOpen(false)} />
       )}
 
-      <div className="flex-1 flex flex-col min-w-0 lg:ml-64">
+      <div className={`flex-1 flex flex-col min-w-0 ${collapsed ? 'lg:ml-16' : 'lg:ml-64'}`}>
         <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 lg:px-6 shrink-0">
           <button onClick={() => setSidebarOpen(true)} className="lg:hidden text-gray-600">
             <Menu size={24} />
@@ -126,6 +168,9 @@ const AdminLayout = () => {
             <Link to="/" className="text-gray-400 hover:text-primary text-small transition-colors">
               {t('admin.topbar.backToSite')}
             </Link>
+            <div className="text-gray-400">
+              <LanguageSwitcher />
+            </div>
             <div className="relative" ref={profileRef}>
               <button
                 onClick={() => setProfileOpen(!profileOpen)}

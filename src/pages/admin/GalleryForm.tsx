@@ -1,13 +1,14 @@
 import { useState, useEffect, useRef, type FormEvent } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Image as ImageIcon, Loader2 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
+import { Image as ImageIcon, Loader2, Star } from 'lucide-react'
 import { api } from '../../services/api'
 import { galleryService } from '../../services/gallery'
-
-const categories = ['Environnement', 'Éducation', 'Eau', 'Agriculture', 'Social']
+import CategorySelect from '../../components/ui/CategorySelect'
 
 const GalleryForm = () => {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const { id } = useParams()
   const isEditing = Boolean(id)
@@ -17,7 +18,7 @@ const GalleryForm = () => {
   const [fetching, setFetching] = useState(isEditing)
   const [uploading, setUploading] = useState(false)
   const [title, setTitle] = useState('')
-  const [src, setSrc] = useState('')
+  const [images, setImages] = useState<string[]>([])
   const [category, setCategory] = useState('')
   const [date, setDate] = useState('')
 
@@ -27,7 +28,7 @@ const GalleryForm = () => {
       try {
         const item = await galleryService.getById(Number(id))
         setTitle(item.title)
-        setSrc(item.src ?? '')
+        setImages(item.images ?? (item.src ? [item.src] : []))
         setCategory(item.category ?? '')
         setDate(item.date ?? '')
       } catch {
@@ -40,21 +41,30 @@ const GalleryForm = () => {
     fetchItem()
   }, [id, navigate])
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
+  const handleFilesChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files
+    if (!files || files.length === 0) return
 
     setUploading(true)
+    const uploaded: string[] = []
     try {
-      const formData = new FormData()
-      formData.append('file', file)
-      const result = await api.upload<{ url: string }>('/api/upload', formData)
-      setSrc(result.url)
+      for (const file of Array.from(files)) {
+        const formData = new FormData()
+        formData.append('file', file)
+        const result = await api.upload<{ url: string }>('/api/upload', formData)
+        uploaded.push(result.url)
+      }
+      setImages((prev) => [...prev, ...uploaded])
     } catch {
       console.error('Erreur lors de l\'upload')
     } finally {
       setUploading(false)
+      if (fileInputRef.current) fileInputRef.current.value = ''
     }
+  }
+
+  const removeImage = (index: number) => {
+    setImages((prev) => prev.filter((_, i) => i !== index))
   }
 
   const handleSubmit = async (e: FormEvent) => {
@@ -62,12 +72,13 @@ const GalleryForm = () => {
     setLoading(true)
 
     try {
-      const payload = { title, src: src || undefined, category: category || undefined, date: date || undefined }
+      const src = images[0] || ''
+      const payload = { title, src, images, category: category || undefined, date: date || undefined }
 
       if (isEditing && id) {
-        await galleryService.update(Number(id), payload as { title: string; src?: string; category?: string; date?: string })
+        await galleryService.update(Number(id), payload as Parameters<typeof galleryService.update>[1])
       } else {
-        await galleryService.create(payload as { title: string; src: string; category?: string; date?: string })
+        await galleryService.create(payload as Parameters<typeof galleryService.create>[0])
       }
       navigate('/admin/gallery')
     } catch {
@@ -89,10 +100,10 @@ const GalleryForm = () => {
     <div>
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">
-          {isEditing ? "Modifier l'image" : 'Ajouter une image'}
+          {isEditing ? t('admin.form.editAlbum') : t('admin.form.addAlbum')}
         </h1>
         <p className="text-gray-500 text-small mt-1">
-          Tableau de bord &gt; Galerie &gt; {isEditing ? 'Modifier' : 'Ajouter'}
+          {t('admin.sidebar.dashboard')} &gt; {t('admin.sidebar.gallery')} &gt; {isEditing ? t('admin.actions.edit') : t('admin.form.add')}
         </p>
       </div>
 
@@ -105,59 +116,68 @@ const GalleryForm = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <div className="space-y-6">
             <div>
-              <label className="block text-small font-medium text-gray-700 mb-2">Image</label>
-              {src ? (
-                <div className="relative rounded-xl overflow-hidden">
-                  <img src={src} alt="Aperçu" className="w-full h-48 object-cover" />
-                  <button
-                    type="button"
-                    onClick={() => { setSrc(''); if (fileInputRef.current) fileInputRef.current.value = '' }}
-                    className="absolute top-2 right-2 w-8 h-8 bg-white/80 rounded-full flex items-center justify-center text-gray-600 hover:text-red transition-colors text-lg"
-                  >
-                    &times;
-                  </button>
+              <label className="block text-small font-medium text-gray-700 mb-2">{t('admin.labels.images', { count: images.length })}</label>
+              {images.length > 0 && (
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-3">
+                  {images.map((url, i) => (
+                    <div key={i} className="relative rounded-lg overflow-hidden group aspect-4/3">
+                      <img src={url} alt="" className="w-full h-full object-cover" />
+                      {i === 0 && (
+                        <div className="absolute top-1 left-1 bg-yellow-400 text-white rounded-full w-5 h-5 flex items-center justify-center" title={t('admin.labels.mainImage')}>
+                          <Star size={10} className="fill-white" />
+                        </div>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => removeImage(i)}
+                        className="absolute top-1 right-1 w-6 h-6 bg-black/50 rounded-full flex items-center justify-center text-white hover:bg-red transition-colors text-sm opacity-0 group-hover:opacity-100"
+                      >
+                        &times;
+                      </button>
+                    </div>
+                  ))}
                 </div>
-              ) : (
-                <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-gray-200 rounded-xl py-16 cursor-pointer hover:border-primary/50 hover:bg-primary/5 transition-colors overflow-hidden">
-                  {uploading ? (
-                    <Loader2 size={24} className="animate-spin text-primary" />
-                  ) : (
-                    <>
-                      <div className="w-11 h-11 rounded-full bg-gray-100 flex items-center justify-center text-gray-400">
-                        <ImageIcon size={20} />
-                      </div>
-                      <span className="text-gray-500 text-small text-center">
-                        Cliquez pour uploader<br />ou glissez-déposez une image
-                      </span>
-                    </>
-                  )}
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleFileChange}
-                    disabled={uploading}
-                  />
-                </label>
               )}
+              <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-gray-200 rounded-xl py-8 cursor-pointer hover:border-primary/50 hover:bg-primary/5 transition-colors overflow-hidden">
+                {uploading ? (
+                  <Loader2 size={22} className="animate-spin text-primary" />
+                ) : (
+                  <>
+                    <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-400">
+                      <ImageIcon size={18} />
+                    </div>
+                    <span className="text-gray-500 text-xs text-center">
+                      {t('admin.actions.addImage')}
+                    </span>
+                  </>
+                )}
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  className="hidden"
+                  onChange={handleFilesChange}
+                  disabled={uploading}
+                />
+              </label>
             </div>
           </div>
 
           <div className="space-y-6">
             <div>
-              <label className="block text-small font-medium text-gray-700 mb-2">Titre</label>
+              <label className="block text-small font-medium text-gray-700 mb-2">{t('admin.labels.albumTitle')}</label>
               <input
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder="Ex : Reboisement Guera"
+                placeholder={t('admin.placeholders.albumTitleEx')}
                 className="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-small focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition"
                 required
               />
             </div>
             <div>
-              <label className="block text-small font-medium text-gray-700 mb-2">Date</label>
+              <label className="block text-small font-medium text-gray-700 mb-2">{t('admin.table.date')}</label>
               <input
                 type="date"
                 value={date}
@@ -165,19 +185,12 @@ const GalleryForm = () => {
                 className="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-small focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition"
               />
             </div>
-            <div>
-              <label className="block text-small font-medium text-gray-700 mb-2">Catégorie</label>
-              <select
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-small text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition cursor-pointer"
-              >
-                <option value="">Sélectionnez une catégorie</option>
-                {categories.map((cat) => (
-                  <option key={cat} value={cat}>{cat}</option>
-                ))}
-              </select>
-            </div>
+            <CategorySelect
+              value={category}
+              onChange={setCategory}
+              options={['Environnement', 'Éducation', 'Eau', 'Agriculture', 'Social']}
+              optionKey={(cat) => `admin.categories.${cat.toLowerCase()}`}
+            />
           </div>
         </div>
 
@@ -187,14 +200,14 @@ const GalleryForm = () => {
             onClick={() => navigate('/admin/gallery')}
             className="px-5 py-2.5 rounded-lg text-gray-600 font-medium text-small border border-gray-200 hover:bg-gray-50 transition-colors"
           >
-            Annuler
+            {t('admin.actions.cancel')}
           </button>
           <button
             type="submit"
-            disabled={loading || uploading || !src}
+            disabled={loading || uploading || images.length === 0}
             className="px-6 py-2.5 rounded-lg bg-primary text-white font-medium text-small hover:bg-primary-dark transition-colors disabled:opacity-50"
           >
-            {loading ? 'Enregistrement...' : 'Enregistrer'}
+            {loading ? t('admin.actions.saving') : t('admin.actions.save')}
           </button>
         </div>
       </motion.form>

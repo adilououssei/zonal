@@ -10,6 +10,11 @@ export interface AdminUser {
   avatar: string | null
   roles: string[]
   role: string
+  roleEntity: {
+    id: number
+    name: string
+    permissions: Record<string, boolean>
+  } | null
   isActive: boolean
   status: 'Actif' | 'Inactif'
   lastLogin: string | null
@@ -40,6 +45,7 @@ export interface AdminEvent {
   gallery: string[] | null
   createdAt: string | null
   updatedAt: string | null
+  createdBy: { id: number; name: string } | null
 }
 
 export interface PermissionModule {
@@ -58,6 +64,7 @@ export interface DashboardStats {
     totalGallery: number
     totalTestimonials: number
     totalDocuments: number
+    totalSubscribers: number
   }
   recentEvents: {
     id: number
@@ -90,10 +97,10 @@ export const adminService = {
 
   getUser: (id: number) => api.get<AdminUser>(`/api/admin/users/${id}`),
 
-  createUser: (data: Partial<AdminUser> & { email: string; password: string }) =>
+  createUser: (data: Partial<AdminUser> & { email: string; password: string; roleId?: number }) =>
     api.post<AdminUser>('/api/admin/users', data),
 
-  updateUser: (id: number, data: Partial<AdminUser> & { password?: string }) =>
+  updateUser: (id: number, data: Partial<AdminUser> & { password?: string; roleId?: number }) =>
     api.put<AdminUser>(`/api/admin/users/${id}`, data),
 
   deleteUser: (id: number) => api.delete<{ message: string }>(`/api/admin/users/${id}`),

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
+import { api } from '../services/api'
 import {
   MapPin, Phone, Mail, MessageCircle, Clock,
   ChevronRight, Send, Headset, Handshake, Users
@@ -14,7 +15,27 @@ const fadeUp = {
 
 const Contact = () => {
   const { t } = useTranslation()
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [subject, setSubject] = useState('')
+  const [message, setMessage] = useState('')
   const [submitted, setSubmitted] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError('')
+    setLoading(true)
+    try {
+      await api.post<{ message: string }>('/api/contact', { name, email, subject, message }, false)
+      setSubmitted(true)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t('errors.sendMessage'))
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const contactCards = [
     {
@@ -70,11 +91,6 @@ const Contact = () => {
     { icon: 'youtube', label: t('social.youtube'), href: '#' },
     { icon: 'whatsapp', label: t('social.whatsapp'), href: 'https://wa.me/23566200620' },
   ]
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    setSubmitted(true)
-  }
 
   return (
     <>
@@ -198,12 +214,16 @@ const Contact = () => {
                   <input
                     type="text"
                     required
+                    value={name}
+                    onChange={e => setName(e.target.value)}
                     placeholder={t('contact.form.name')}
                     className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition"
                   />
                   <input
                     type="email"
                     required
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
                     placeholder={t('contact.form.email')}
                     className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition"
                   />
@@ -211,7 +231,8 @@ const Contact = () => {
                     <label className="block text-gray-500 text-small mb-1.5">{t('contact.form.subject')}</label>
                     <select
                       required
-                      defaultValue=""
+                      value={subject}
+                      onChange={e => setSubject(e.target.value)}
                       className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition text-gray-600"
                     >
                       <option value="" disabled>{t('contact.form.subjectPlaceholder')}</option>
@@ -225,12 +246,15 @@ const Contact = () => {
                   <textarea
                     rows={5}
                     required
+                    value={message}
+                    onChange={e => setMessage(e.target.value)}
                     placeholder={t('contact.form.message')}
                     className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition resize-none"
                   />
-                  <button type="submit" className="btn-red w-full justify-center flex items-center gap-2">
+                  {error && <p className="text-red text-sm">{error}</p>}
+                  <button type="submit" disabled={loading} className="btn-red w-full justify-center flex items-center gap-2 disabled:opacity-60">
                     <Send size={18} />
-                    {t('contact.form.submit')}
+                    {loading ? t('contact.form.sending') : t('contact.form.submit')}
                   </button>
                 </form>
               )}

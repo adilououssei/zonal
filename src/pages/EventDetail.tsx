@@ -1,16 +1,12 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import {
   Calendar, MapPin, Clock, ArrowLeft, ChevronRight,
 } from 'lucide-react'
 import { publicEventsService } from '../services/events'
 import type { PublicEvent } from '../services/events'
-
-const monthNames = [
-  'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
-  'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre',
-]
 
 const statusStyles: Record<string, string> = {
   'À venir': 'bg-emerald-100 text-emerald-700',
@@ -19,6 +15,7 @@ const statusStyles: Record<string, string> = {
 }
 
 const EventDetail = () => {
+  const { t, i18n } = useTranslation()
   const { id } = useParams()
   const [event, setEvent] = useState<PublicEvent | null>(null)
   const [loading, setLoading] = useState(true)
@@ -36,7 +33,7 @@ const EventDetail = () => {
       }
     }
     fetchEvent()
-  }, [id])
+  }, [id, i18n.language])
 
   if (loading) {
     return (
@@ -49,8 +46,8 @@ const EventDetail = () => {
   if (!event) {
     return (
       <div className="container-custom py-20 text-center">
-        <p className="text-gray-500 text-lg">Événement introuvable.</p>
-        <Link to="/events" className="text-primary font-medium mt-4 inline-block">&larr; Retour aux événements</Link>
+        <p className="text-gray-500 text-lg">{t('events.notFound')}</p>
+        <Link to="/events" className="text-primary font-medium mt-4 inline-block">&larr; {t('events.backToEvents')}</Link>
       </div>
     )
   }
@@ -77,7 +74,7 @@ const EventDetail = () => {
           >
             <Link to="/events" className="inline-flex items-center gap-1.5 text-gray-200 hover:text-primary-light transition-colors mb-4 text-body">
               <ArrowLeft size={16} />
-              Retour aux événements
+              {t('events.backToEvents')}
             </Link>
             <span className={`inline-block px-3 py-1 rounded-full text-[11px] font-semibold tracking-wide mb-4 ${statusStyles[event.status] ?? 'bg-gray-100 text-gray-500'}`}>
               {event.status}
@@ -86,7 +83,7 @@ const EventDetail = () => {
             <div className="flex flex-wrap items-center gap-4 text-gray-200 text-body">
               <span className="flex items-center gap-1.5">
                 <Calendar size={16} />
-                {eventDate.getDate()} {monthNames[eventDate.getMonth()]} {eventDate.getFullYear()}
+                {eventDate.getDate()} {t('months.' + ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'][eventDate.getMonth()])} {eventDate.getFullYear()}
               </span>
               {event.time && (
                 <span className="flex items-center gap-1.5">
@@ -116,7 +113,7 @@ const EventDetail = () => {
               {event.description ? (
                 <div className="text-gray-700 leading-relaxed" dangerouslySetInnerHTML={{ __html: event.description }} />
               ) : (
-                <p className="text-gray-400 italic">Aucune description fournie.</p>
+                <p className="text-gray-400 italic">{t('events.noDescription')}</p>
               )}
             </motion.div>
 
@@ -128,11 +125,11 @@ const EventDetail = () => {
                 transition={{ duration: 0.6, delay: 0.2 }}
                 className="mt-12"
               >
-                <h2 className="text-xl font-bold text-gray-900 mb-6">Galerie photos</h2>
+                <h2 className="text-xl font-bold text-gray-900 mb-6">{t('events.galleryTitle')}</h2>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                   {event.gallery.map((src, i) => (
                     <div key={i} className="aspect-video rounded-xl overflow-hidden">
-                      <img src={src} alt={`Photo ${i + 1}`} className="w-full h-full object-cover" />
+                      <img src={src} alt={t('admin.labels.photoN', { n: i + 1 })} className="w-full h-full object-cover" />
                     </div>
                   ))}
                 </div>
@@ -146,7 +143,7 @@ const EventDetail = () => {
                 className="inline-flex items-center gap-2 text-primary font-semibold hover:gap-3 transition-all"
               >
                 <ArrowLeft size={16} />
-                Retour à tous les événements
+                {t('events.backToAll')}
               </Link>
             </div>
           </div>
@@ -157,9 +154,9 @@ const EventDetail = () => {
       <section className="pb-10">
         <div className="container-custom">
           <div className="flex items-center gap-2 text-gray-500 text-small">
-            <Link to="/" className="hover:text-primary transition-colors">Accueil</Link>
+            <Link to="/" className="hover:text-primary transition-colors">{t('header.nav.home')}</Link>
             <ChevronRight size={14} />
-            <Link to="/events" className="hover:text-primary transition-colors">Événements</Link>
+            <Link to="/events" className="hover:text-primary transition-colors">{t('header.nav.events')}</Link>
             <ChevronRight size={14} />
             <span className="text-gray-800">{event.title}</span>
           </div>

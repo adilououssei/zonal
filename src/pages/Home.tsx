@@ -6,7 +6,12 @@ import {
   Users, Leaf, TreePine, ShieldCheck, GraduationCap, Droplets,
   ArrowRight, ArrowDown, TrendingUp, MapPin, ChevronLeft, ChevronRight
 } from 'lucide-react'
-import { achievements, upcomingEvents } from '../data/homeData'
+import { publicStatsService } from '../services/stats'
+import type { PublicStats } from '../services/stats'
+import { publicProjectsService } from '../services/projects'
+import type { PublicProject } from '../services/projects'
+import { publicEventsService } from '../services/events'
+import type { PublicEvent } from '../services/events'
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -68,15 +73,55 @@ const statusTranslation: Record<string, string> = {
 }
 
 const Home = () => {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const statsRef = useRef<HTMLDivElement | null>(null)
   const [statsInView, setStatsInView] = useState(false)
   const [activeSlide, setActiveSlide] = useState(0)
+  const [realStats, setRealStats] = useState<PublicStats | null>(null)
+  const [allProjects, setAllProjects] = useState<PublicProject[]>([])
+  const [upcomingEvents, setUpcomingEvents] = useState<PublicEvent[]>([])
+  const [loadingRealisations, setLoadingRealisations] = useState(true)
+  const [loadingEvents, setLoadingEvents] = useState(true)
+
+  useEffect(() => {
+    publicStatsService.get()
+      .then(setRealStats)
+      .catch(() => console.error('Erreur chargement stats'))
+  }, [i18n.language])
+
+  useEffect(() => {
+    Promise.all([
+      publicProjectsService.getCompleted(),
+      publicProjectsService.getAll(),
+    ])
+      .then(([completed, all]) => {
+        const ongoing = all.filter(p => p.status === 'ongoing' || p.status === 'en cours')
+        const merged = [...completed]
+        for (const p of ongoing) {
+          if (!merged.some(m => m.id === p.id)) {
+            merged.push(p)
+          }
+        }
+        setAllProjects(merged)
+        setLoadingRealisations(false)
+      })
+      .catch(() => { setLoadingRealisations(false); console.error('Erreur chargement réalisations') })
+  }, [i18n.language])
+
+  useEffect(() => {
+    publicEventsService.getUpcoming()
+      .then(data => { setUpcomingEvents(data); setLoadingEvents(false) })
+      .catch(() => { setLoadingEvents(false); console.error('Erreur chargement événements') })
+  }, [i18n.language])
+
+  const projectsCount = realStats?.completedProjects ?? 0
+  const partnersCount = realStats?.partners ?? 0
+  const displayProjects = allProjects.slice(0, 6)
 
   const translatedStats = [
     { value: 15, suffix: '+', label: t('home.stats.experience') },
-    { value: 120, suffix: '+', label: t('home.stats.projects') },
-    { value: 45, suffix: '+', label: t('home.stats.partners') },
+    { value: projectsCount, suffix: '+', label: t('home.stats.projects') },
+    { value: partnersCount, suffix: '+', label: t('home.stats.partners') },
     { value: 18, label: t('home.stats.regions') },
     { value: 350, suffix: '+', label: t('home.stats.beneficiaries') },
   ]
@@ -86,20 +131,6 @@ const Home = () => {
     { icon: 'Leaf', title: t('home.domains.environment.title'), description: t('home.domains.environment.desc') },
     { icon: 'ShieldCheck', title: t('home.domains.disaster.title'), description: t('home.domains.disaster.desc') },
   ]
-
-  const translatedAchievements = achievements.map((a, i) => ({
-    ...a,
-    title: t(`home.achievements.${i}.title`),
-    description: t(`home.achievements.${i}.description`),
-  }))
-
-  const translatedUpcomingEvents = upcomingEvents.map((e, i) => ({
-    ...e,
-    status: t(statusTranslation[e.status] || e.status),
-    month: t(monthKey(e.month)),
-    title: t(`home.eventsList.${i}.title`),
-    location: t(`home.eventsList.${i}.location`),
-  }))
 
   useEffect(() => {
     const el = statsRef.current
@@ -119,8 +150,8 @@ const Home = () => {
     return () => observer.disconnect()
   }, [])
 
-  const nextSlide = () => setActiveSlide((prev) => (prev + 1) % achievements.length)
-  const prevSlide = () => setActiveSlide((prev) => (prev - 1 + achievements.length) % achievements.length)
+  const nextSlide = () => setActiveSlide((prev) => (prev + 1) % Math.max(displayProjects.length, 1))
+  const prevSlide = () => setActiveSlide((prev) => (prev - 1 + Math.max(displayProjects.length, 1)) % Math.max(displayProjects.length, 1))
 
   return (
     <>
@@ -237,65 +268,77 @@ const Home = () => {
             <p className="section-subtitle">{t('home.realisations.subtitle')}</p>
           </motion.div>
 
-          <div className="relative">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <AnimatePresence mode="popLayout">
-                {translatedAchievements.map((item, index) => (
-                  <motion.div
-                    key={index}
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true, amount: 0.1 }}
-                    variants={fadeUp}
-                    transition={{ duration: 0.5, delay: index * 0.1 }}
-                    className="card overflow-hidden group"
-                  >
-                    <div className="aspect-4/3 overflow-hidden">
-                      <img
-                        src={item.image}
-                        alt={item.title}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
-                    </div>
-                    <div className="p-6">
-                      <h3 className="text-xl font-semibold text-gray-900 mb-2">{item.title}</h3>
-                      <p className="text-gray-600 text-body">{item.description}</p>
-                    </div>
-                  </motion.div>
-                ))}
-              </AnimatePresence>
+          {loadingRealisations ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
             </div>
+          ) : displayProjects.length > 0 ? (
+            <div className="relative">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <AnimatePresence mode="popLayout">
+                  {displayProjects.map((project, index) => (
+                    <motion.div
+                      key={project.id}
+                      initial="hidden"
+                      whileInView="visible"
+                      viewport={{ once: true, amount: 0.1 }}
+                      variants={fadeUp}
+                      transition={{ duration: 0.5, delay: index * 0.1 }}
+                      className="card overflow-hidden group"
+                    >
+                      <div className="aspect-4/3 overflow-hidden">
+                        <img
+                          src={project.image ?? '/images/hero-event.png'}
+                          alt={project.title}
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                      </div>
+                      <div className="p-6">
+                        <h3 className="text-xl font-semibold text-gray-900 mb-2">{project.title}</h3>
+                        <p className="text-gray-600 text-body mb-3 line-clamp-3">{project.description}</p>
+                        <div className="flex items-center gap-1.5 text-gray-500 text-small">
+                          <MapPin size={14} />
+                          <span>{project.location}</span>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+              </div>
 
-            {/* Flèches de navigation */}
-            <button
-              onClick={prevSlide}
-              aria-label={t('carousel.prev')}
-              className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-6 w-11 h-11 rounded-full bg-primary text-white items-center justify-center shadow-lg hover:bg-primary-dark transition-colors"
-            >
-              <ChevronLeft size={22} />
-            </button>
-            <button
-              onClick={nextSlide}
-              aria-label={t('carousel.next')}
-              className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-6 w-11 h-11 rounded-full bg-primary text-white items-center justify-center shadow-lg hover:bg-primary-dark transition-colors"
-            >
-              <ChevronRight size={22} />
-            </button>
-          </div>
-
-          {/* Dots */}
-          <div className="flex items-center justify-center gap-2 mt-8">
-            {achievements.map((_, index) => (
               <button
-                key={index}
-                onClick={() => setActiveSlide(index)}
-                aria-label={t('carousel.slide', { n: index + 1 })}
-                className={`h-2.5 rounded-full transition-all duration-300 ${
-                  index === activeSlide ? 'w-6 bg-red' : 'w-2.5 bg-gray-300'
-                }`}
-              />
-            ))}
-          </div>
+                onClick={prevSlide}
+                aria-label={t('carousel.prev')}
+                className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-6 w-11 h-11 rounded-full bg-primary text-white items-center justify-center shadow-lg hover:bg-primary-dark transition-colors"
+              >
+                <ChevronLeft size={22} />
+              </button>
+              <button
+                onClick={nextSlide}
+                aria-label={t('carousel.next')}
+                className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-6 w-11 h-11 rounded-full bg-primary text-white items-center justify-center shadow-lg hover:bg-primary-dark transition-colors"
+              >
+                <ChevronRight size={22} />
+              </button>
+            </div>
+          ) : (
+            <p className="text-center text-gray-500 py-8">{t('home.realisations.empty')}</p>
+          )}
+
+          {displayProjects.length > 0 && (
+            <div className="flex items-center justify-center gap-2 mt-8">
+              {displayProjects.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setActiveSlide(index)}
+                  aria-label={t('carousel.slide', { n: index + 1 })}
+                  className={`h-2.5 rounded-full transition-all duration-300 ${
+                    index === activeSlide ? 'w-6 bg-red' : 'w-2.5 bg-gray-300'
+                  }`}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -313,42 +356,50 @@ const Home = () => {
             <h2 className="section-title">{t('home.events.title')}</h2>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
-            {translatedUpcomingEvents.map((event, index) => (
-              <motion.div
-                key={index}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, amount: 0.1 }}
-                variants={fadeUp}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="card overflow-hidden group flex flex-row"
-              >
-                <div className="relative w-2/5 shrink-0 overflow-hidden">
-                  <img
-                    src={event.image}
-                    alt={event.title}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                  <div className="absolute top-2 left-2 bg-white rounded-lg px-2 py-1.5 text-center shadow-md leading-none">
-                    <div className="text-red font-bold text-sm">{event.day}</div>
-                    <div className="text-gray-500 text-[9px] font-semibold tracking-wide">{event.month}</div>
+          {loadingEvents ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+            </div>
+          ) : upcomingEvents.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
+              {upcomingEvents.map((event, index) => (
+                <motion.div
+                  key={event.id}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true, amount: 0.1 }}
+                  variants={fadeUp}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  className="card overflow-hidden group flex flex-row"
+                >
+                  <div className="relative w-2/5 shrink-0 overflow-hidden">
+                    <img
+                      src={event.image ?? '/images/hero-event.png'}
+                      alt={event.title}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                    <div className="absolute top-2 left-2 bg-white rounded-lg px-2 py-1.5 text-center shadow-md leading-none">
+                      <div className="text-red font-bold text-sm">{event.day}</div>
+                      <div className="text-gray-500 text-[9px] font-semibold tracking-wide">{t(monthKey(event.month ?? ''))}</div>
+                    </div>
                   </div>
-                </div>
-                <div className="p-4 w-3/5 flex flex-col justify-center">
-                  <span className="text-red text-xs font-semibold">{event.status}</span>
-                  <h3 className="text-sm font-semibold text-gray-900 mt-0.5 mb-1.5 leading-snug">{event.title}</h3>
-                  <div className="flex items-center gap-1 text-gray-500 text-xs mb-2">
-                    <MapPin size={12} className="text-primary-light shrink-0" />
-                    <span>{event.location}</span>
+                  <div className="p-4 w-3/5 flex flex-col justify-center">
+                    <span className="text-red text-xs font-semibold">{t(statusTranslation[event.status] ?? event.status)}</span>
+                    <h3 className="text-sm font-semibold text-gray-900 mt-0.5 mb-1.5 leading-snug">{event.title}</h3>
+                    <div className="flex items-center gap-1 text-gray-500 text-xs mb-2">
+                      <MapPin size={12} className="text-primary-light shrink-0" />
+                      <span>{event.location}</span>
+                    </div>
+                    <Link to={`/events/${event.id}`} className="text-primary font-semibold text-xs inline-flex items-center gap-1 hover:gap-2 transition-all">
+                      {t('home.events.details')} <ArrowRight size={13} />
+                    </Link>
                   </div>
-                  <Link to="/events" className="text-primary font-semibold text-xs inline-flex items-center gap-1 hover:gap-2 transition-all">
-                    {t('home.events.details')} <ArrowRight size={13} />
-                  </Link>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+                </motion.div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-center text-gray-500 py-8">{t('home.events.empty')}</p>
+          )}
 
           <div className="text-center">
             <Link to="/events" className="btn-red inline-flex items-center gap-2">

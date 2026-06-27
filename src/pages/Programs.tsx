@@ -1,11 +1,15 @@
 import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
-import { type ElementType } from 'react'
+import { type ElementType, useState, useEffect, useRef } from 'react'
 import {
   Users, Leaf, TreePine, ShieldCheck, GraduationCap, Droplets,
-  CheckCircle2, ChevronRight, ArrowRight
+  CheckCircle2, ChevronRight, ArrowRight, Handshake, Calendar
 } from 'lucide-react'
+import { publicStatsService } from '../services/stats'
+import type { PublicStats } from '../services/stats'
+import { publicPartnersService } from '../services/publicPartners'
+import type { PublicPartner } from '../services/publicPartners'
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -18,14 +22,32 @@ const iconMap: Record<string, ElementType> = {
 
 const Programs = () => {
   const { t } = useTranslation()
+  const [stats, setStats] = useState<PublicStats | null>(null)
+  const [partners, setPartners] = useState<PublicPartner[]>([])
+  const [isPaused, setIsPaused] = useState(false)
 
-  const translatedStats = [
-    { value: 15, suffix: '+', label: t('home.stats.experience') },
-    { value: 120, suffix: '+', label: t('home.stats.projects') },
-    { value: 350, suffix: '+', label: t('home.stats.beneficiaries') },
-    { value: 45, suffix: '+', label: t('home.stats.partners') },
-    { value: 18, label: t('home.stats.regions') },
-  ]
+  useEffect(() => {
+    publicStatsService.get().then(setStats).catch(() => {})
+    publicPartnersService.getAll().then(setPartners).catch(() => {})
+  }, [])
+
+  const statsData = stats
+    ? [
+        { value: stats.completedProjects, suffix: '+', label: t('home.stats.projects') },
+        { value: stats.partners, suffix: '+', label: t('home.stats.partners') },
+        { value: stats.testimonials, suffix: '+', label: t('admin.sidebar.testimonials') },
+        { value: stats.events, suffix: '+', label: t('admin.sidebar.events') },
+        { value: 18, label: t('home.stats.regions') },
+      ]
+    : [
+        { value: 15, suffix: '+', label: t('home.stats.experience') },
+        { value: 120, suffix: '+', label: t('home.stats.projects') },
+        { value: 350, suffix: '+', label: t('home.stats.beneficiaries') },
+        { value: 45, suffix: '+', label: t('home.stats.partners') },
+        { value: 18, label: t('home.stats.regions') },
+      ]
+
+  const statIcons = [Users, ShieldCheck, Handshake, Calendar, Users]
 
   const domains = [
     {
@@ -189,8 +211,8 @@ const Programs = () => {
       <section className="pb-20">
         <div className="container-custom">
           <div className="bg-gray-50 rounded-card px-6 md:px-10 py-10 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
-            {translatedStats.map((stat, index) => {
-              const StatIcon = [Users, Leaf, ShieldCheck, Users, Users][index] || Users
+            {statsData.map((stat, index) => {
+              const StatIcon = statIcons[index] || Users
               return (
                 <motion.div
                   key={index}
@@ -211,6 +233,50 @@ const Programs = () => {
           </div>
         </div>
       </section>
+
+      {/* Partenaires */}
+      {partners.length > 0 && (
+        <section className="pb-20">
+          <div className="container-custom">
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.2 }}
+              variants={fadeUp}
+              transition={{ duration: 0.6 }}
+              className="text-center mb-10"
+            >
+              <h2 className="section-title">{t('programs.partners.title')}</h2>
+              <p className="section-subtitle">{t('programs.partners.subtitle')}</p>
+            </motion.div>
+            <div
+              className="overflow-hidden"
+              onMouseEnter={() => setIsPaused(true)}
+              onMouseLeave={() => setIsPaused(false)}
+            >
+              <div className={`flex gap-10 partners-track ${isPaused ? 'paused' : ''}`}>
+                {[...partners, ...partners].map((partner, index) => (
+                  <div
+                    key={`${partner.id}-${index}`}
+                    className="flex-none w-36 h-20 flex items-center justify-center bg-white rounded-xl border border-gray-100 p-3 hover:shadow-md transition-shadow"
+                    title={partner.name}
+                  >
+                    {partner.logo ? (
+                      <img
+                        src={partner.logo}
+                        alt={partner.name}
+                        className="max-w-full max-h-full object-contain"
+                      />
+                    ) : (
+                      <span className="text-gray-400 text-small font-medium text-center leading-tight">{partner.name}</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Citation / CTA */}
       <section className="pb-20">

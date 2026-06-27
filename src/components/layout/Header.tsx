@@ -4,14 +4,16 @@ import { motion, LayoutGroup } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import {
   MapPin, Phone, Mail, MessageCircle,
-  Menu, X, Search, ChevronDown
+  Menu, X, Search, LayoutDashboard
 } from 'lucide-react'
+import LanguageSwitcher from '../ui/LanguageSwitcher'
+import { useAuth } from '../../contexts/useAuth'
 
 const Header = () => {
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
+  const { isAuthenticated } = useAuth()
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const [isLangOpen, setIsLangOpen] = useState(false)
   const location = useLocation()
 
   useEffect(() => {
@@ -20,15 +22,6 @@ const Header = () => {
     }
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
-
-  useEffect(() => {
-    const handleClick = (e: MouseEvent) => {
-      const target = e.target as HTMLElement
-      if (!target.closest('#lang-selector')) setIsLangOpen(false)
-    }
-    document.addEventListener('mousedown', handleClick)
-    return () => document.removeEventListener('mousedown', handleClick)
   }, [])
 
   const navLinks = [
@@ -42,13 +35,6 @@ const Header = () => {
   ]
 
   const isActive = (path: string) => location.pathname === path
-
-  const languages = [
-    { code: 'fr', label: 'FR', flag: 'https://flagcdn.com/w20/fr.png' },
-    { code: 'en', label: 'EN', flag: 'https://flagcdn.com/w20/gb.png' },
-  ]
-
-  const currentLang = languages.find(l => l.code === i18n.language) || languages[0]
 
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
@@ -76,32 +62,7 @@ const Header = () => {
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <div id="lang-selector" className="relative">
-              <button
-                onClick={() => setIsLangOpen(!isLangOpen)}
-                className="flex items-center gap-1.5 text-white text-small cursor-pointer hover:opacity-80 transition-opacity"
-              >
-                <img src={currentLang.flag} alt={currentLang.label} className="w-5 h-3.5 rounded-sm object-cover" />
-                <span>{currentLang.label}</span>
-                <ChevronDown size={12} className={`transition-transform ${isLangOpen ? 'rotate-180' : ''}`} />
-              </button>
-              {isLangOpen && (
-                <div className="absolute top-full right-0 mt-1 bg-white rounded-lg shadow-xl py-1 min-w-25 z-50">
-                  {languages.map((lang) => (
-                    <button
-                      key={lang.code}
-                      onClick={() => { i18n.changeLanguage(lang.code); setIsLangOpen(false) }}
-                      className={`flex items-center gap-2 w-full px-3 py-2 text-small text-left hover:bg-gray-100 transition-colors ${
-                        i18n.language === lang.code ? 'text-primary font-semibold' : 'text-gray-700'
-                      }`}
-                    >
-                      <img src={lang.flag} alt={lang.label} className="w-5 h-3.5 rounded-sm object-cover" />
-                      {lang.label}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+            <LanguageSwitcher variant="dark" />
             <div className="flex items-center gap-3">
               <a href="#" aria-label={t('social.facebook')} className="hover:text-primary-light transition-colors">
                 <img src="/images/icons/facebook.png" alt={t('social.facebook')} className="w-5.5 h-5.5" />
@@ -152,6 +113,15 @@ const Header = () => {
           </nav>
 
           <div className="hidden lg:flex items-center gap-5">
+            {isAuthenticated && (
+              <Link
+                to="/admin"
+                className="inline-flex items-center gap-1.5 text-gray-500 hover:text-primary transition-colors text-small font-medium"
+              >
+                <LayoutDashboard size={16} />
+                Dashboard
+              </Link>
+            )}
             <button aria-label={t('header.topbar.search')} className="text-gray-500 hover:text-primary transition-colors">
               <Search size={20} />
             </button>

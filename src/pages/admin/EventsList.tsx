@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
 import {
   Calendar, MapPin, Plus, Edit, Trash2, Search, ChevronDown,
@@ -19,6 +20,7 @@ const statusColorMap: Record<string, string> = {
 }
 
 const EventsList = () => {
+  const { t, i18n } = useTranslation()
   const [events, setEvents] = useState<AdminEvent[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
@@ -31,7 +33,7 @@ const EventsList = () => {
       const data = await eventsService.getAll()
       setEvents(data)
     } catch {
-      console.error('Erreur lors du chargement des événements')
+      console.error(t('admin.errors.loadEvents'))
     } finally {
       setLoading(false)
     }
@@ -39,15 +41,15 @@ const EventsList = () => {
 
   useEffect(() => {
     fetchEvents()
-  }, [fetchEvents])
+  }, [fetchEvents, i18n.language])
 
   const handleDelete = async (id: number) => {
-    if (!confirm('Confirmer la suppression de cet événement ?')) return
+    if (!confirm(t('admin.confirm.deleteEvent'))) return
     try {
       await eventsService.delete(id)
       setEvents((prev) => prev.filter((e) => e.id !== id))
     } catch {
-      console.error('Erreur lors de la suppression')
+      console.error(t('admin.errors.deleteEvent'))
     }
   }
 
@@ -84,15 +86,15 @@ const EventsList = () => {
     <div>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Événements</h1>
-          <p className="text-gray-500 text-small mt-1">Tableau de bord &gt; Événements</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t('admin.sidebar.events')}</h1>
+          <p className="text-gray-500 text-small mt-1">{t('admin.dashboard.title')} &gt; {t('admin.sidebar.events')}</p>
         </div>
         <Link
           to="/admin/events/new"
           className="inline-flex items-center gap-2 bg-primary text-white px-4 py-2.5 rounded-lg font-medium text-small hover:bg-primary-dark transition-colors"
         >
           <Plus size={18} />
-          Ajouter un événement
+          {t('admin.actions.addEvent')}
         </Link>
       </div>
 
@@ -103,7 +105,7 @@ const EventsList = () => {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Rechercher un événement..."
+            placeholder={t('admin.placeholders.searchEvent')}
             className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-200 text-small focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition"
           />
         </div>
@@ -114,7 +116,7 @@ const EventsList = () => {
             className="appearance-none pl-4 pr-9 py-2.5 rounded-lg border border-gray-200 text-small text-gray-600 focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
           >
             {statusFilters.map((s) => (
-              <option key={s} value={s}>{s === 'Tous' ? 'Statut: Tous' : s}</option>
+              <option key={s} value={s}>{s === 'Tous' ? t('admin.filters.statusAll') : s === 'À venir' ? t('admin.status.upcoming') : s === 'En cours' ? t('admin.status.ongoing') : t('admin.status.completed')}</option>
             ))}
           </select>
           <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
@@ -125,9 +127,9 @@ const EventsList = () => {
             onChange={(e) => setDateFilter(e.target.value as 'toutes' | 'month' | 'week')}
             className="appearance-none pl-4 pr-9 py-2.5 rounded-lg border border-gray-200 text-small text-gray-600 focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
           >
-            <option value="toutes">Date: Toutes</option>
-            <option value="month">Ce mois-ci</option>
-            <option value="week">Cette semaine</option>
+            <option value="toutes">{t('admin.filters.dateAll')}</option>
+            <option value="month">{t('admin.filters.thisMonth')}</option>
+            <option value="week">{t('admin.filters.thisWeek')}</option>
           </select>
           <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
         </div>
@@ -142,12 +144,12 @@ const EventsList = () => {
           <table className="w-full">
             <thead>
               <tr className="border-b border-gray-100 bg-gray-50/50">
-                <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">Image</th>
-                <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">Titre</th>
-                <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">Date</th>
-                <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">Lieu</th>
-                <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">Statut</th>
-                <th className="text-right px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">Actions</th>
+                <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.image')}</th>
+                <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.title')}</th>
+                <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.date')}</th>
+                <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.location')}</th>
+                <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.status')}</th>
+                <th className="text-right px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.actions')}</th>
               </tr>
             </thead>
             <tbody>
@@ -182,21 +184,21 @@ const EventsList = () => {
                         <Link
                           to={`/admin/events/${event.id}`}
                           className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-blue-500 hover:bg-blue/10 transition-colors"
-                          title="Voir les détails"
+                          title={t('admin.tooltip.viewDetails')}
                         >
                           <Eye size={15} />
                         </Link>
                         <Link
                           to={`/admin/events/${event.id}/edit`}
                           className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-primary hover:bg-primary/10 transition-colors"
-                          title="Modifier"
+                          title={t('admin.actions.edit')}
                         >
                           <Edit size={15} />
                         </Link>
                         <button
                           onClick={() => handleDelete(event.id)}
                           className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-red hover:bg-red/10 transition-colors"
-                          title="Supprimer"
+                          title={t('admin.actions.delete')}
                         >
                           <Trash2 size={15} />
                         </button>
@@ -207,7 +209,7 @@ const EventsList = () => {
               ) : (
                 <tr>
                   <td colSpan={6} className="px-5 py-10 text-center text-gray-400 text-small">
-                    Aucun événement ne correspond à votre recherche.
+                    {t('admin.empty.noResults')}
                   </td>
                 </tr>
               )}
@@ -216,7 +218,7 @@ const EventsList = () => {
         </div>
 
         <div className="flex items-center justify-center gap-2 px-5 py-4 border-t border-gray-100">
-          <button className="w-9 h-9 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 transition-colors" aria-label="Précédent">
+          <button className="w-9 h-9 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 transition-colors" aria-label={t('carousel.prev')}>
             <ChevronsLeft size={16} />
           </button>
           {[1, 2, 3].map((page) => (
@@ -230,7 +232,7 @@ const EventsList = () => {
             </button>
           ))}
           <button className="flex items-center gap-1 px-3 h-9 rounded-lg text-gray-600 text-small font-medium hover:bg-gray-100 transition-colors">
-            Suivant <ChevronRight size={14} />
+            {t('carousel.next')} <ChevronRight size={14} />
           </button>
         </div>
       </motion.div>
