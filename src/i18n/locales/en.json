@@ -310,6 +310,7 @@
         "views": "views",
         "noContent": "No content.",
         "galleryTitle": "Photo gallery",
+        "relatedTitle": "Related articles",
         "backToAll": "Back to all news",
         "articles": [
             {
@@ -373,6 +374,7 @@
         "backToEvents": "Back to events",
         "noDescription": "No description provided.",
         "galleryTitle": "Photo gallery",
+        "relatedTitle": "Related events",
         "backToAll": "Back to all events",
         "stats": {
             "title": "Events by category",
