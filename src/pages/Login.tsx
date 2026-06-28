@@ -66,7 +66,7 @@ const Login = () => {
               className="text-white text-center max-w-xs lg:max-w-sm shrink-0"
             >
               <div className="mb-6">
-                <img src="/images/logoOrigin.png" alt="ZONAL" className="h-24 w-auto mx-auto" />
+                <img src="/images/logoZonal.png" alt="ZONAL" className="h-24 w-auto mx-auto" />
               </div>
               <h2 className="text-2xl md:text-3xl font-bold leading-tight mb-3">
                 {t('login.hero.title').split('\n').map((line, i) => (
