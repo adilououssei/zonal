@@ -174,7 +174,6 @@ const NewsDetail = () => {
                 <h2 className="text-xl font-bold text-gray-900 mb-6">{t('news.relatedTitle')}</h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   {relatedNews.map((related) => {
-                    const d = new Date(related.date + 'T00:00:00')
                     return (
                       <Link key={related.id} to={`/news/${related.id}`} className="card group overflow-hidden">
                         <div className="relative aspect-4/3 overflow-hidden">

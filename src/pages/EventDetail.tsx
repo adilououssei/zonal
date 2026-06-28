@@ -8,13 +8,6 @@ import {
 import { publicEventsService } from '../services/events'
 import type { PublicEvent } from '../services/events'
 
-const getExcerpt = (html: string | null, maxLength = 120): string => {
-  if (!html) return ''
-  const text = html.replace(/<[^>]*>/g, '')
-  if (text.length <= maxLength) return text
-  return text.substring(0, maxLength).trimEnd() + '...'
-}
-
 const statusStyles: Record<string, string> = {
   'À venir': 'bg-emerald-100 text-emerald-700',
   'En cours': 'bg-blue-100 text-blue-700',
