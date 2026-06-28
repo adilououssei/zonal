@@ -115,6 +115,6 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 )
 
 console.log(
-  '%c◈ Site développé par Ousseï Adilou',
+  '%c◈ Site développé par Ousseï Adilou — WhatsApp: https://wa.me/22892193631',
   'font-size:14px; font-weight:bold; color:#0B6B3A; padding:4px 8px;'
 )
