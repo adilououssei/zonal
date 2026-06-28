@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../contexts/useAuth'
 import {
   Image as ImageIcon, Bold, Italic, Underline, Link2, List, ListOrdered,
-  AlignLeft, Quote, Plus, X, Loader2
+  Quote, Plus, X, Loader2
 } from 'lucide-react'
 import { api } from '../../services/api'
 import { newsService } from '../../services/news'
@@ -65,7 +65,7 @@ const NewsForm = () => {
       }
     }
     fetchNews()
-  }, [id, navigate])
+  }, [id, navigate, t])
 
   const handleCoverChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -148,7 +148,7 @@ const NewsForm = () => {
 
   const contentRef = useRef<HTMLTextAreaElement>(null)
 
-  const applyFormat = (prefix: string, suffix: string, fallback: string) => {
+  const handleFormat = (prefix: string, suffix: string, fallbackKey: string) => {
     const ta = contentRef.current
     if (!ta) return
     const start = ta.selectionStart
@@ -156,7 +156,7 @@ const NewsForm = () => {
     const selected = content.substring(start, end)
     const before = content.substring(0, start)
     const after = content.substring(end)
-    const wrapped = selected || fallback
+    const wrapped = selected || t(fallbackKey)
     const newText = before + prefix + wrapped + suffix + after
     setContent(newText)
     requestAnimationFrame(() => {
@@ -166,14 +166,14 @@ const NewsForm = () => {
     })
   }
 
-  const formatActions: { icon: typeof Bold; action: () => void }[] = [
-    { icon: Bold, action: () => applyFormat('<b>', '</b>', t('admin.format.bold')) },
-    { icon: Italic, action: () => applyFormat('<i>', '</i>', t('admin.format.italic')) },
-    { icon: Underline, action: () => applyFormat('<u>', '</u>', t('admin.format.underline')) },
-    { icon: Link2, action: () => applyFormat('<a href="', '">', t('admin.format.link')) },
-    { icon: List, action: () => applyFormat('<ul>\n<li>', '</li>\n</ul>', t('admin.format.list')) },
-    { icon: ListOrdered, action: () => applyFormat('<ol>\n<li>', '</ol>\n</li>', t('admin.format.orderedList')) },
-    { icon: Quote, action: () => applyFormat('<blockquote>', '</blockquote>', t('admin.format.quote')) },
+  const formatButtons: { icon: typeof Bold; prefix: string; suffix: string; fallbackKey: string }[] = [
+    { icon: Bold, prefix: '<b>', suffix: '</b>', fallbackKey: 'admin.format.bold' },
+    { icon: Italic, prefix: '<i>', suffix: '</i>', fallbackKey: 'admin.format.italic' },
+    { icon: Underline, prefix: '<u>', suffix: '</u>', fallbackKey: 'admin.format.underline' },
+    { icon: Link2, prefix: '<a href="', suffix: '">', fallbackKey: 'admin.format.link' },
+    { icon: List, prefix: '<ul>\n<li>', suffix: '</li>\n</ul>', fallbackKey: 'admin.format.list' },
+    { icon: ListOrdered, prefix: '<ol>\n<li>', suffix: '</ol>\n</li>', fallbackKey: 'admin.format.orderedList' },
+    { icon: Quote, prefix: '<blockquote>', suffix: '</blockquote>', fallbackKey: 'admin.format.quote' },
   ]
 
   if (fetching) {
@@ -260,11 +260,11 @@ const NewsForm = () => {
               <label className="block text-small font-medium text-gray-700 mb-2">{t('admin.labels.content')}</label>
               <div className="border border-gray-200 rounded-lg overflow-hidden">
                 <div className="flex items-center gap-1 px-2 py-1.5 border-b border-gray-100 bg-gray-50/60">
-                  {formatActions.map(({ icon: Icon, action }, i) => (
+                  {formatButtons.map(({ icon: Icon, prefix, suffix, fallbackKey }, i) => (
                     <button
                       key={i}
                       type="button"
-                      onClick={action}
+                      onClick={() => handleFormat(prefix, suffix, fallbackKey)}
                       className="w-7 h-7 flex items-center justify-center rounded text-gray-500 hover:bg-gray-200 transition-colors"
                     >
                       <Icon size={14} />

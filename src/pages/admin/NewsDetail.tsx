@@ -43,7 +43,7 @@ const NewsDetail = () => {
       }
     }
     fetchNews()
-  }, [id, navigate])
+  }, [id, navigate, t])
 
   const handleDelete = async () => {
     if (!confirm(t('admin.confirm.deleteNews'))) return

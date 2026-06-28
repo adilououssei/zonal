@@ -7,11 +7,6 @@ export interface SettingsData {
   description: string | null
   email: string | null
   phone: string | null
-  orgNameEn: string | null
-  sloganEn: string | null
-  descriptionEn: string | null
-  footerPresentationEn: string | null
-  copyrightEn: string | null
 
   contactEmail: string | null
   contactPhone: string | null

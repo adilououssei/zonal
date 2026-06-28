@@ -12,6 +12,13 @@ import { eventsService } from '../../services/events'
 
 const eventCategories = ['Environnement', 'Éducation', 'Eau & Assainissement', 'Gestion des catastrophes', 'Développement rural', 'Gouvernance locale']
 
+interface FormatAction {
+  icon: React.ElementType
+  prefix?: string
+  suffix?: string
+  fallbackKey?: string
+}
+
 const catKey = (cat: string) => {
   const map: Record<string, string> = {
     'Environnement': 'environment',

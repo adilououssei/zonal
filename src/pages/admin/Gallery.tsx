@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
@@ -41,19 +41,22 @@ const Gallery = () => {
     return () => window.removeEventListener('keydown', handler)
   }, [lightbox])
 
-  const fetchItems = useCallback(async () => {
-    try {
-      setLoading(true)
-      const data = await galleryService.getAll()
-      setItems(data)
-    } catch {
-      console.error('Erreur lors du chargement de la galerie')
-    } finally {
-      setLoading(false)
+  useEffect(() => {
+    let mounted = true
+    const fetchData = async () => {
+      try {
+        setLoading(true)
+        const data = await galleryService.getAll()
+        if (mounted) setItems(data)
+      } catch {
+        if (mounted) console.error('Erreur lors du chargement de la galerie')
+      } finally {
+        if (mounted) setLoading(false)
+      }
     }
-  }, [])
-
-  useEffect(() => { fetchItems() }, [fetchItems, i18n.language])
+    fetchData()
+    return () => { mounted = false }
+  }, [i18n.language])
 
   const handleDelete = async (id: number) => {
     if (!confirm(t('admin.confirm.deleteItem'))) return

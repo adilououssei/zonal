@@ -36,7 +36,7 @@ const Users = () => {
       if (!cancelled) setLoading(false)
     })
     return () => { cancelled = true }
-  }, [i18n.language])
+  }, [i18n.language, t])
 
   const reloadUsers = async () => {
     try {

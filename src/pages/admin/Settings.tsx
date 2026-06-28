@@ -122,7 +122,7 @@ const Settings = () => {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white rounded-xl shadow-sm border border-gray-100 p-6"
+            className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 overflow-y-auto max-h-[calc(100vh-13rem)]"
           >
             <AnimatePresence mode="wait">
               <motion.div
@@ -138,7 +138,7 @@ const Settings = () => {
                     <div className="space-y-5">
                       <div>
                         <label className={labelClass}>{t('admin.settings.orgName')}</label>
-                        <input type="text" value={form.orgName} onChange={(e) => set('orgName', e.target.value)} className={inputClass} />
+                        <input type="text" value={form.orgName ?? ''} onChange={(e) => set('orgName', e.target.value)} className={inputClass} />
                       </div>
                       <div>
                         <label className={labelClass}>{t('admin.settings.logo')}</label>
@@ -162,19 +162,19 @@ const Settings = () => {
                       </div>
                       <div>
                         <label className={labelClass}>{t('admin.settings.slogan')}</label>
-                        <input type="text" value={form.slogan} onChange={(e) => set('slogan', e.target.value)} className={inputClass} />
+                        <input type="text" value={form.slogan ?? ''} onChange={(e) => set('slogan', e.target.value)} className={inputClass} />
                       </div>
                       <div>
                         <label className={labelClass}>{t('admin.settings.description')}</label>
-                        <textarea rows={3} value={form.description} onChange={(e) => set('description', e.target.value)} className={`${inputClass} resize-none`} />
+                        <textarea rows={3} value={form.description ?? ''} onChange={(e) => set('description', e.target.value)} className={`${inputClass} resize-none`} />
                       </div>
                       <div>
                         <label className={labelClass}>{t('admin.settings.email')}</label>
-                        <input type="email" value={form.email} onChange={(e) => set('email', e.target.value)} className={inputClass} />
+                        <input type="email" value={form.email ?? ''} onChange={(e) => set('email', e.target.value)} className={inputClass} />
                       </div>
                       <div>
                         <label className={labelClass}>{t('admin.settings.phone')}</label>
-                        <input type="text" value={form.phone} onChange={(e) => set('phone', e.target.value)} className={inputClass} />
+                        <input type="text" value={form.phone ?? ''} onChange={(e) => set('phone', e.target.value)} className={inputClass} />
                       </div>
                       <div>
                         <label className={labelClass}>{t('admin.labels.footerPresentation')}</label>
@@ -194,27 +194,27 @@ const Settings = () => {
                     <div className="space-y-5">
                       <div>
                         <label className={`${labelClass} flex items-center gap-2`}><Mail size={14} /> {t('admin.settings.primaryEmail')}</label>
-                        <input type="email" value={form.contactEmail} onChange={(e) => set('contactEmail', e.target.value)} className={inputClass} />
+                        <input type="email" value={form.contactEmail ?? ''} onChange={(e) => set('contactEmail', e.target.value)} className={inputClass} />
                       </div>
                       <div>
                         <label className={`${labelClass} flex items-center gap-2`}><Phone size={14} /> {t('admin.settings.phone')}</label>
-                        <input type="text" value={form.contactPhone} onChange={(e) => set('contactPhone', e.target.value)} className={inputClass} />
+                        <input type="text" value={form.contactPhone ?? ''} onChange={(e) => set('contactPhone', e.target.value)} className={inputClass} />
                       </div>
                       <div>
                         <label className={`${labelClass} flex items-center gap-2`}><Phone size={14} /> {t('admin.settings.secondaryPhone')}</label>
-                        <input type="text" value={form.contactPhoneSecondary} onChange={(e) => set('contactPhoneSecondary', e.target.value)} className={inputClass} />
+                        <input type="text" value={form.contactPhoneSecondary ?? ''} onChange={(e) => set('contactPhoneSecondary', e.target.value)} className={inputClass} />
                       </div>
                       <div>
                         <label className={`${labelClass} flex items-center gap-2`}><MapPin size={14} /> {t('admin.settings.address')}</label>
-                        <input type="text" value={form.address} onChange={(e) => set('address', e.target.value)} className={inputClass} />
+                        <input type="text" value={form.address ?? ''} onChange={(e) => set('address', e.target.value)} className={inputClass} />
                       </div>
                       <div>
                         <label className={`${labelClass} flex items-center gap-2`}><MessageCircle size={14} /> {t('admin.settings.whatsapp')}</label>
-                        <input type="text" value={form.whatsapp} onChange={(e) => set('whatsapp', e.target.value)} className={inputClass} />
+                        <input type="text" value={form.whatsapp ?? ''} onChange={(e) => set('whatsapp', e.target.value)} className={inputClass} />
                       </div>
                       <div>
                         <label className={labelClass}>{t('admin.settings.googleMapsIframe')}</label>
-                        <input type="text" value={form.googleMapsIframe} onChange={(e) => set('googleMapsIframe', e.target.value)} className={inputClass} />
+                        <input type="text" value={form.googleMapsIframe ?? ''} onChange={(e) => set('googleMapsIframe', e.target.value)} className={inputClass} />
                       </div>
                     </div>
                   </div>

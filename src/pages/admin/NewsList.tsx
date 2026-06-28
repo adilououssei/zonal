@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
@@ -18,19 +18,22 @@ const NewsList = () => {
   const categories = ['Toutes', ...Array.from(new Set(news.map((a) => a.category)))]
   const [currentPage, setCurrentPage] = useState(1)
 
-  const fetchNews = useCallback(async () => {
-    try {
-      setLoading(true)
-      const data = await newsService.getAll()
-      setNews(data)
-    } catch {
-      console.error(t('admin.errors.loadError'))
-    } finally {
-      setLoading(false)
+  useEffect(() => {
+    let mounted = true
+    const fetchData = async () => {
+      try {
+        setLoading(true)
+        const data = await newsService.getAll()
+        if (mounted) setNews(data)
+      } catch {
+        if (mounted) console.error(t('admin.errors.loadError'))
+      } finally {
+        if (mounted) setLoading(false)
+      }
     }
-  }, [])
-
-  useEffect(() => { fetchNews() }, [fetchNews, i18n.language])
+    fetchData()
+    return () => { mounted = false }
+  }, [i18n.language, t])
 
   const handleDelete = async (id: number) => {
     if (!confirm(t('admin.confirm.deleteNews'))) return

@@ -1,8 +1,8 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
-import { Handshake, Plus, Edit, Trash2, Globe, Mail, Phone, ToggleLeft, ToggleRight, Search, ChevronDown } from 'lucide-react'
+import { Handshake, Plus, Edit, Trash2, Mail, Phone, ToggleLeft, ToggleRight, Search, ChevronDown } from 'lucide-react'
 import { partnersService } from '../../services/partners'
 import type { AdminPartner } from '../../services/partners'
 
@@ -18,19 +18,22 @@ const Partners = () => {
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState('Tous')
 
-  const fetchPartners = useCallback(async () => {
-    try {
-      setLoading(true)
-      const data = await partnersService.getAll()
-      setPartners(data)
-    } catch {
-      console.error('Erreur lors du chargement')
-    } finally {
-      setLoading(false)
+  useEffect(() => {
+    let mounted = true
+    const fetchData = async () => {
+      try {
+        setLoading(true)
+        const data = await partnersService.getAll()
+        if (mounted) setPartners(data)
+      } catch {
+        if (mounted) console.error('Erreur lors du chargement')
+      } finally {
+        if (mounted) setLoading(false)
+      }
     }
-  }, [])
-
-  useEffect(() => { fetchPartners() }, [fetchPartners, i18n.language])
+    fetchData()
+    return () => { mounted = false }
+  }, [i18n.language])
 
   const handleToggleStatus = async (id: number) => {
     try {

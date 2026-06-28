@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, type FormEvent, type ElementType } from 'react'
+import { useState, useEffect, type FormEvent, type ElementType } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import {
@@ -10,12 +10,6 @@ import { api } from '../../services/api'
 import { authService } from '../../services/auth'
 
 type TabKey = 'info' | 'password' | 'sessions'
-
-const tabs: { key: TabKey; label: string; icon: ElementType }[] = [
-  { key: 'info', label: 'info', icon: User },
-  { key: 'password', label: 'password', icon: Lock },
-  { key: 'sessions', label: 'sessions', icon: Monitor },
-]
 
 const inputClass =
   'w-full px-3.5 py-2.5 rounded-lg border border-gray-200 text-small focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition'
@@ -57,7 +51,7 @@ const Profile = () => {
     }).finally(() => {
       setLoading(false)
     })
-  }, [])
+  }, [t])
 
   const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -347,7 +341,7 @@ const Profile = () => {
                   <ul className="space-y-3">
                     <li className="flex items-center justify-between gap-4 p-4 rounded-xl border border-gray-100">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0">
                           <Laptop size={18} />
                         </div>
                         <div>

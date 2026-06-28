@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
@@ -27,21 +27,22 @@ const EventsList = () => {
   const [statusFilter, setStatusFilter] = useState<FilterStatus>('Tous')
   const [dateFilter, setDateFilter] = useState<'toutes' | 'month' | 'week'>('toutes')
 
-  const fetchEvents = useCallback(async () => {
-    try {
-      setLoading(true)
-      const data = await eventsService.getAll()
-      setEvents(data)
-    } catch {
-      console.error(t('admin.errors.loadEvents'))
-    } finally {
-      setLoading(false)
-    }
-  }, [])
-
   useEffect(() => {
-    fetchEvents()
-  }, [fetchEvents, i18n.language])
+    let mounted = true
+    const fetchData = async () => {
+      try {
+        setLoading(true)
+        const data = await eventsService.getAll()
+        if (mounted) setEvents(data)
+      } catch {
+        if (mounted) console.error(t('admin.errors.loadEvents'))
+      } finally {
+        if (mounted) setLoading(false)
+      }
+    }
+    fetchData()
+    return () => { mounted = false }
+  }, [i18n.language, t])
 
   const handleDelete = async (id: number) => {
     if (!confirm(t('admin.confirm.deleteEvent'))) return

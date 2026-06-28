@@ -225,15 +225,6 @@ const Events = () => {
               )}
             </motion.div>
           </AnimatePresence>
-
-          <div className="text-center mt-10">
-            <Link
-              to="/events"
-              className="border-2 border-primary text-primary px-7 py-3.5 rounded-full text-button font-semibold hover:bg-primary hover:text-white transition-all duration-300 inline-flex items-center gap-2"
-            >
-              {t('events.allUpcoming')} <ArrowRight size={18} />
-            </Link>
-          </div>
         </div>
       </section>
 

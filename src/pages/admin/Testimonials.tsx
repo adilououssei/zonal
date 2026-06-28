@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
@@ -23,19 +23,22 @@ const Testimonials = () => {
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState('Tous')
 
-  const fetchTestimonials = useCallback(async () => {
-    try {
-      setLoading(true)
-      const data = await testimonialsService.getAll()
-      setTestimonials(data)
-    } catch {
-      console.error('Erreur lors du chargement')
-    } finally {
-      setLoading(false)
+  useEffect(() => {
+    let mounted = true
+    const fetchData = async () => {
+      try {
+        setLoading(true)
+        const data = await testimonialsService.getAll()
+        if (mounted) setTestimonials(data)
+      } catch {
+        if (mounted) console.error('Erreur lors du chargement')
+      } finally {
+        if (mounted) setLoading(false)
+      }
     }
+    fetchData()
+    return () => { mounted = false }
   }, [])
-
-  useEffect(() => { fetchTestimonials() }, [fetchTestimonials, i18n.language])
 
   const handleDelete = async (id: number) => {
     if (!confirm(t('admin.confirm.deleteTestimonial'))) return

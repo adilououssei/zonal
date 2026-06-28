@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
@@ -19,19 +19,22 @@ const Projects = () => {
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState<'Tous' | string>('Tous')
 
-  const fetchProjects = useCallback(async () => {
-    try {
-      setLoading(true)
-      const data = await projectsService.getAll()
-      setProjects(data)
-    } catch {
-      console.error('Erreur lors du chargement des projets')
-    } finally {
-      setLoading(false)
+  useEffect(() => {
+    let mounted = true
+    const fetchData = async () => {
+      try {
+        setLoading(true)
+        const data = await projectsService.getAll()
+        if (mounted) setProjects(data)
+      } catch {
+        if (mounted) console.error('Erreur lors du chargement des projets')
+      } finally {
+        if (mounted) setLoading(false)
+      }
     }
-  }, [])
-
-  useEffect(() => { fetchProjects() }, [fetchProjects, i18n.language])
+    fetchData()
+    return () => { mounted = false }
+  }, [i18n.language])
 
   const handleDelete = async (id: number) => {
     if (!confirm(t('admin.confirm.deleteProject'))) return
