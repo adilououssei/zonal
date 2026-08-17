@@ -38,7 +38,7 @@
         "whatsapp": "Write to us on WhatsApp",
         "copyright": "© {{year}} Zonal - All rights reserved",
         "privacy": "Privacy Policy",
-        "credit": "◈ Ousseï Adilou",
+        "credit": "Developed by ◈ OUSSEI Adilou",
         "adminAria": "Administration",
         "dashboardLink": "Dashboard",
         "adminLink": "Admin",
@@ -310,6 +310,7 @@
         "views": "views",
         "noContent": "No content.",
         "galleryTitle": "Photo gallery",
+        "relatedTitle": "Related articles",
         "backToAll": "Back to all news",
         "articles": [
             {
@@ -373,6 +374,7 @@
         "backToEvents": "Back to events",
         "noDescription": "No description provided.",
         "galleryTitle": "Photo gallery",
+        "relatedTitle": "Related events",
         "backToAll": "Back to all events",
         "stats": {
             "title": "Events by category",

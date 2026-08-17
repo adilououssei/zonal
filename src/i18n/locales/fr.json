@@ -38,7 +38,7 @@
         "whatsapp": "Nous écrire sur WhatsApp",
         "copyright": "© {{year}} Zonal - Tous droits réservés",
         "privacy": "Politique de confidentialité",
-        "credit": "◈ Ousseï Adilou",
+        "credit": "Développé par ◈ OUSSEI Adilou",
         "adminAria": "Administration",
         "dashboardLink": "Dashboard",
         "adminLink": "Admin",
@@ -289,6 +289,7 @@
         "backToEvents": "Retour aux événements",
         "noDescription": "Aucune description fournie.",
         "galleryTitle": "Galerie photos",
+        "relatedTitle": "Événements similaires",
         "backToAll": "Retour à tous les événements",
         "stats": {
             "title": "Événements par catégorie",
@@ -481,6 +482,7 @@
         "views": "vues",
         "noContent": "Aucun contenu.",
         "galleryTitle": "Galerie photos",
+        "relatedTitle": "Articles similaires",
         "backToAll": "Retour à toutes les actualités",
         "articles": [
             {

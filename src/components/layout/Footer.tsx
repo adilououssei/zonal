@@ -15,7 +15,7 @@ const Footer = () => {
           {/* Logo & Description */}
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <img src="/images/logoOrigin.png" alt={t('header.logo')} className="h-20 w-auto" />
+              <img src="/images/logoZonal.png" alt={t('header.logo')} className="h-20 w-auto" />
             </div>
             <p className="text-gray-400 text-body leading-relaxed">
               {t('footer.description')}
@@ -114,9 +114,14 @@ const Footer = () => {
         <div className="border-t border-white/10 pt-6 flex flex-col md:flex-row items-center justify-between gap-4 text-gray-400 text-small">
           <div className="flex items-center gap-2">
             <p>{t('footer.copyright', { year: new Date().getFullYear() })}</p>
-            <span className="text-white/5 hover:text-white/20 text-[10px] transition-colors hidden sm:inline">
+            <a
+              href="https://wa.me/22892193631"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white/60 hover:text-primary-light text-xs transition-colors hidden sm:inline font-medium"
+            >
               — {t('footer.credit')}
-            </span>
+            </a>
           </div>
           <div className="flex items-center gap-6">
             <Link to="#" className="hover:text-primary-light transition-colors">{t('footer.privacy')}</Link>
@@ -126,9 +131,14 @@ const Footer = () => {
             </Link>
           </div>
         </div>
-        <p className="text-center text-white/5 hover:text-white/20 text-[10px] transition-colors mt-2 sm:hidden">
+        <a
+          href="https://wa.me/22892193631"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block text-center text-white/60 hover:text-primary-light text-xs transition-colors mt-2 sm:hidden font-medium"
+        >
           {t('footer.credit')}
-        </p>
+        </a>
       </div>
     </footer>
   )

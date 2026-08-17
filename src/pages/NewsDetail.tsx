@@ -3,11 +3,18 @@ import { useParams, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import {
-  Calendar, User, ChevronRight, ArrowLeft, Eye,
+  Calendar, User, ChevronRight, ArrowLeft, ArrowRight, Eye,
 } from 'lucide-react'
 import { publicNewsService } from '../services/news'
 import type { PublicNews } from '../services/news'
 import { sanitizeHtml } from '../lib/sanitize'
+
+const getExcerpt = (html: string | null, maxLength = 120): string => {
+  if (!html) return ''
+  const text = html.replace(/<[^>]*>/g, '')
+  if (text.length <= maxLength) return text
+  return text.substring(0, maxLength).trimEnd() + '...'
+}
 
 const categoryColors: Record<string, string> = {
   'Environnement': 'bg-emerald-100 text-emerald-700',
@@ -23,6 +30,7 @@ const NewsDetail = () => {
   const { id } = useParams()
   const [article, setArticle] = useState<PublicNews | null>(null)
   const [loading, setLoading] = useState(true)
+  const [relatedNews, setRelatedNews] = useState<PublicNews[]>([])
 
   useEffect(() => {
     if (!id) return
@@ -30,6 +38,9 @@ const NewsDetail = () => {
       try {
         const data = await publicNewsService.getById(Number(id))
         setArticle(data)
+        const all = await publicNewsService.getAll()
+        const related = all.filter((a) => a.id !== data.id && a.category === data.category)
+        setRelatedNews(related.slice(0, 3))
       } catch {
         console.error('Erreur lors du chargement de l\'article')
       } finally {
@@ -149,6 +160,39 @@ const NewsDetail = () => {
                       <img src={src} alt={t('admin.labels.photoN', { n: i + 1 })} className="w-full h-full object-cover" />
                     </div>
                   ))}
+                </div>
+              </motion.div>
+            )}
+
+            {/* Related articles */}
+            {relatedNews.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.25 }}
+                className="mt-16"
+              >
+                <h2 className="text-xl font-bold text-gray-900 mb-6">{t('news.relatedTitle')}</h2>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {relatedNews.map((related) => {
+                    return (
+                      <Link key={related.id} to={`/news/${related.id}`} className="card group overflow-hidden">
+                        <div className="relative aspect-4/3 overflow-hidden">
+                          <img src={related.image ?? ''} alt={related.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                        </div>
+                        <div className="p-4">
+                          <span className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-semibold tracking-wide mb-2 ${categoryColors[related.category] ?? 'bg-primary/10 text-primary'}`}>
+                            {related.category}
+                          </span>
+                          <h3 className="text-sm font-semibold text-gray-900 leading-snug mb-2 line-clamp-2">{related.title}</h3>
+                          <p className="text-gray-500 text-xs mb-3">{getExcerpt(related.content)}</p>
+                          <span className="text-primary text-small font-medium inline-flex items-center gap-1 group-hover:gap-2 transition-all">
+                            {t('events.details')} <ArrowRight size={14} />
+                          </span>
+                        </div>
+                      </Link>
+                    )
+                  })}
                 </div>
               </motion.div>
             )}
