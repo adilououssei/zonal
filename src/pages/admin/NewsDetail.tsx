@@ -7,6 +7,7 @@ import {
 } from 'lucide-react'
 import { newsService } from '../../services/news'
 import type { AdminNews } from '../../services/news'
+import { sanitizeHtml } from '../../lib/sanitize'
 
 const categoryColors: Record<string, string> = {
   'Environnement': 'bg-emerald-100 text-emerald-700',
@@ -126,7 +127,7 @@ const NewsDetail = () => {
               <div>
                 <h2 className="text-lg font-semibold text-gray-900 mb-2">{t('admin.labels.content')}</h2>
                 {article.content ? (
-                  <div className="text-gray-600 leading-relaxed" dangerouslySetInnerHTML={{ __html: article.content }} />
+                  <div className="text-gray-600 leading-relaxed" dangerouslySetInnerHTML={{ __html: sanitizeHtml(article.content) }} />
                 ) : (
                   <p className="text-gray-400 italic">{t('admin.empty.noContent')}</p>
                 )}

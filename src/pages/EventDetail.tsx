@@ -7,6 +7,7 @@ import {
 } from 'lucide-react'
 import { publicEventsService } from '../services/events'
 import type { PublicEvent } from '../services/events'
+import { sanitizeHtml } from '../lib/sanitize'
 
 const statusStyles: Record<string, string> = {
   'À venir': 'bg-emerald-100 text-emerald-700',
@@ -115,7 +116,7 @@ const EventDetail = () => {
               className="prose prose-lg max-w-none"
             >
               {event.description ? (
-                <div className="text-gray-700 leading-relaxed" dangerouslySetInnerHTML={{ __html: event.description }} />
+                <div className="text-gray-700 leading-relaxed" dangerouslySetInnerHTML={{ __html: sanitizeHtml(event.description) }} />
               ) : (
                 <p className="text-gray-400 italic">{t('events.noDescription')}</p>
               )}
