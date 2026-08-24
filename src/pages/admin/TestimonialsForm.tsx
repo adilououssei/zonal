@@ -6,6 +6,7 @@ import { Star, Upload, X } from 'lucide-react'
 import { testimonialsService } from '../../services/testimonials'
 import { api } from '../../services/api'
 
+// Formulaire de création/édition d'un témoignage (note de 1 à 5, avatar optionnel).
 const TestimonialsForm = () => {
   const { t } = useTranslation()
   const navigate = useNavigate()

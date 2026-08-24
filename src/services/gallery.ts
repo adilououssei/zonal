@@ -1,3 +1,4 @@
+// Appels API pour la galerie photo : CRUD admin (galleryService) et lecture publique (publicGalleryService)
 import { api } from './api'
 
 export interface GalleryItem {

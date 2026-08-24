@@ -10,6 +10,9 @@ import { teamMembers } from '../data/aboutData'
 import { publicStatsService, type PublicStats } from '../services/stats'
 import { publicTestimonialsService, type PublicTestimonial } from '../services/testimonials'
 
+// Page "À propos" : présentation de l'ONG, statistiques, historique, équipe
+// et carrousel de témoignages (auto-défilant).
+
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
   visible: { opacity: 1, y: 0 }
@@ -36,6 +39,8 @@ const About = () => {
       .catch(() => {})
   }, [i18n.language])
 
+  // Défilement automatique du carrousel de témoignages toutes les 4s, désactivé
+  // s'il y a moins de 3 témoignages (pas besoin de faire défiler 1 seule paire)
   useEffect(() => {
     if (testimonials.length < 3) return
     const timer = setInterval(() => {
@@ -52,6 +57,8 @@ const About = () => {
     { value: 18, label: t('about.stats.regions'), icon: 'MapPin' },
   ]
 
+  // teamMembers (data/aboutData.ts) ne contient que les photos ; noms/rôles
+  // sont traduits via i18n en associant chaque membre à sa clé dans cet ordre
   const teamMemberKeys = ['mahamat', 'fatime', 'abakar', 'aissatou']
   const translatedTeam = teamMembers.map((m, i) => ({
     ...m,

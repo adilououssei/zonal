@@ -9,6 +9,9 @@ import { SimpleLineChart, SimpleDonutChart } from '../../components/admin/Charts
 import { adminService } from '../../services/admin'
 import type { DashboardStats } from '../../services/admin'
 
+// Page d'accueil de l'admin : compteurs, derniers contenus ajoutés, mini
+// calendrier du mois et graphiques (activité mensuelle + répartition du
+// contenu). Toutes les données viennent de DashboardController côté backend.
 const Dashboard = () => {
   const { t, i18n } = useTranslation()
   const [data, setData] = useState<DashboardStats | null>(null)
@@ -54,6 +57,8 @@ const Dashboard = () => {
     { label: t('admin.dashboard.stats.partners'), value: stats.totalPartners, icon: Handshake, color: 'bg-orange-500' },
   ]
 
+  // Calcule les données du mini calendrier du mois en cours : nombre de jours,
+  // décalage du 1er jour du mois (converti pour que la semaine démarre le lundi)
   const now = new Date()
   const currentYear = now.getFullYear()
   const currentMonth = now.getMonth()

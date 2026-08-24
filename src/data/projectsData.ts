@@ -1,3 +1,5 @@
+// Ancien jeu de données fictif (n'est plus importé nulle part) : les projets
+// réels viennent désormais de l'API via services/projects.ts (publicProjectsService).
 export interface PublicProject {
   id: number
   title: string

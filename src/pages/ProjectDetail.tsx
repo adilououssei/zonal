@@ -8,6 +8,8 @@ import {
 import { publicProjectsService } from '../services/projects'
 import type { PublicProject } from '../services/projects'
 
+// Page de détail d'un projet, chargée via son id dans l'URL (/projects/:id).
+
 const statusLabelMap: Record<string, string> = {
   ongoing: 'admin.status.ongoing',
   completed: 'admin.status.completed',

@@ -23,6 +23,11 @@ const newsCatKey = (cat: string) => {
   return `admin.categories.${map[cat] || cat}`
 }
 
+// Formulaire de création/édition d'un article d'actualité (mode déterminé par
+// la présence d'un :id dans l'URL). Le champ auteur est pré-rempli avec le nom
+// de l'utilisateur connecté, mais reste modifiable. Les images sont uploadées
+// immédiatement à la sélection via UploadController (voir EventForm.tsx pour
+// le même mécanisme, détaillé là-bas).
 const NewsForm = () => {
   const { t } = useTranslation()
   const navigate = useNavigate()

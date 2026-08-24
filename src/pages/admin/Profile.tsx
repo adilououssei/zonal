@@ -9,6 +9,10 @@ import { adminService } from '../../services/admin'
 import { api } from '../../services/api'
 import { authService } from '../../services/auth'
 
+// Page "Mon profil" : accessible à tout utilisateur admin connecté pour gérer
+// SES PROPRES informations (contrairement à la page Utilisateurs, réservée au
+// super admin pour gérer tous les comptes). C'est la seule page qui permet au
+// super administrateur de modifier ses propres informations.
 type TabKey = 'info' | 'password' | 'sessions'
 
 const inputClass =

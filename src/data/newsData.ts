@@ -1,4 +1,5 @@
-// src/data/newsData.ts
+// Ancien jeu de données fictif (n'est plus importé nulle part) : les articles
+// réels viennent désormais de l'API via services/news.ts (publicNewsService).
 export interface CategoryItem {
   slug: string
   label: string

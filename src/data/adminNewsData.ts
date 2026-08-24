@@ -1,4 +1,5 @@
-// src/data/adminNewsData.ts
+// Ancien jeu de données fictif (n'est plus importé nulle part) : la liste
+// admin réelle vient désormais de l'API via services/news.ts (newsService).
 export interface AdminNewsItem {
   id: number
   image: string

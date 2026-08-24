@@ -13,6 +13,10 @@ import type { PublicProject } from '../services/projects'
 import { publicEventsService } from '../services/events'
 import type { PublicEvent } from '../services/events'
 
+// Page d'accueil du site public : hero, domaines clés, statistiques animées,
+// carrousel des dernières réalisations et prochains événements. La plupart
+// des données (stats, projets, événements) sont chargées depuis l'API au montage.
+
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
   visible: { opacity: 1, y: 0 }
@@ -24,6 +28,8 @@ const iconMap: Record<string, ElementType> = {
 
 const statIconMap: ElementType[] = [ArrowDown, TrendingUp, Users, MapPin, Users]
 
+// Anime un chiffre de 0 jusqu'à `end` dès que le composant devient visible à
+// l'écran (IntersectionObserver), une seule fois grâce à `counted`.
 function CountUp({ end, duration, suffix }: { end: number; duration?: number; suffix?: string }) {
   const [count, setCount] = useState(0)
   const ref = useRef<HTMLSpanElement>(null)
@@ -56,6 +62,8 @@ function CountUp({ end, duration, suffix }: { end: number; duration?: number; su
   return <span ref={ref}>{count}{suffix ?? ''}</span>
 }
 
+// Convertit le nom de mois en français renvoyé par l'API (ex: "juin") en clé
+// de traduction i18n, pour afficher le mois dans la langue courante du site
 const monthKey = (m: string): string => {
   const map: Record<string, string> = {
     janvier: 'months.january', février: 'months.february', mars: 'months.march',
@@ -89,6 +97,9 @@ const Home = () => {
       .catch(() => console.error('Erreur chargement stats'))
   }, [i18n.language])
 
+  // La section "Réalisations" mélange les projets terminés et en cours (sans
+  // doublons), pour ne pas afficher une section vide tant qu'aucun projet
+  // n'est encore marqué "completed"
   useEffect(() => {
     Promise.all([
       publicProjectsService.getCompleted(),
@@ -118,6 +129,8 @@ const Home = () => {
   const partnersCount = realStats?.partners ?? 0
   const displayProjects = allProjects.slice(0, 6)
 
+  // Certains chiffres viennent de l'API (projets/partenaires réels), d'autres
+  // sont éditoriaux et codés en dur (années d'expérience, régions, bénéficiaires)
   const translatedStats = [
     { value: 15, suffix: '+', label: t('home.stats.experience') },
     { value: projectsCount, suffix: '+', label: t('home.stats.projects') },
@@ -150,6 +163,7 @@ const Home = () => {
     return () => observer.disconnect()
   }, [])
 
+  // Navigation du carrousel de réalisations (Math.max évite une division par zéro si la liste est vide)
   const nextSlide = () => setActiveSlide((prev) => (prev + 1) % Math.max(displayProjects.length, 1))
   const prevSlide = () => setActiveSlide((prev) => (prev - 1 + Math.max(displayProjects.length, 1)) % Math.max(displayProjects.length, 1))
 

@@ -11,6 +11,10 @@ const userStatusColorMap: Record<string, string> = {
   Inactif: 'bg-gray-100 text-gray-500',
 }
 
+// Liste admin des comptes utilisateurs (réservée au super administrateur côté
+// backend). Le compte super admin lui-même est protégé : ni son badge de
+// statut, ni les icônes modifier/supprimer ne sont affichés pour sa ligne
+// (voir aussi les mêmes vérifications côté serveur dans Admin\UserController).
 const Users = () => {
   const { t, i18n } = useTranslation()
   const [users, setUsers] = useState<AdminUser[]>([])
@@ -186,29 +190,39 @@ const Users = () => {
                     <td className="px-5 py-4 text-gray-600 text-small whitespace-nowrap">{user.phone || '-'}</td>
                     <td className="px-5 py-4 text-gray-600 text-small whitespace-nowrap">{user.role}</td>
                     <td className="px-5 py-4">
-                      <button onClick={() => handleToggleStatus(user)} className="cursor-pointer">
+                      {user.roles.includes('ROLE_SUPER_ADMIN') ? (
                         <span className={`inline-block px-2.5 py-1 rounded-full text-[11px] font-semibold ${userStatusColorMap[user.status]}`}>
                           {user.status}
                         </span>
-                      </button>
+                      ) : (
+                        <button onClick={() => handleToggleStatus(user)} className="cursor-pointer">
+                          <span className={`inline-block px-2.5 py-1 rounded-full text-[11px] font-semibold ${userStatusColorMap[user.status]}`}>
+                            {user.status}
+                          </span>
+                        </button>
+                      )}
                     </td>
                     <td className="px-5 py-4 text-gray-500 text-small whitespace-nowrap">{user.lastLogin || '-'}</td>
                     <td className="px-5 py-4 text-right">
                       <div className="flex items-center justify-end gap-1">
-                        <button
-                          onClick={() => openEditModal(user)}
-                          className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-primary hover:bg-primary/10 transition-colors"
-                          title={t('admin.actions.edit')}
-                        >
-                          <Edit size={15} />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(user)}
-                          className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-red hover:bg-red/10 transition-colors"
-                          title={t('admin.actions.delete')}
-                        >
-                          <Trash2 size={15} />
-                        </button>
+                        {!user.roles.includes('ROLE_SUPER_ADMIN') && (
+                          <>
+                            <button
+                              onClick={() => openEditModal(user)}
+                              className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-primary hover:bg-primary/10 transition-colors"
+                              title={t('admin.actions.edit')}
+                            >
+                              <Edit size={15} />
+                            </button>
+                            <button
+                              onClick={() => handleDelete(user)}
+                              className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-red hover:bg-red/10 transition-colors"
+                              title={t('admin.actions.delete')}
+                            >
+                              <Trash2 size={15} />
+                            </button>
+                          </>
+                        )}
                       </div>
                     </td>
                   </tr>

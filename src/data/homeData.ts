@@ -1,4 +1,6 @@
-// src/data/homeData.ts
+// Ancien jeu de données fictif (n'est plus importé nulle part) : la page
+// d'accueil calcule désormais ses statistiques et domaines directement dans
+// Home.tsx (en partie depuis l'API, en partie via i18n).
 export const homeStats = [
   { value: 15, suffix: '+', label: "Années d'expérience" },
   { value: 120, suffix: '+', label: 'Projets réalisés' },

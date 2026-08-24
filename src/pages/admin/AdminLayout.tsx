@@ -3,13 +3,16 @@ import { Link, Outlet, useLocation, useNavigate, useNavigation } from 'react-rou
 import { useTranslation } from 'react-i18next'
 import {
   LayoutDashboard, Calendar, Newspaper, FolderOpen, Image as ImageIcon,
-  Handshake, MessageSquare, FileText, Users, Shield, Settings,
+  Handshake, MessageSquare, FileText, Mail, Users, Shield, Settings,
   LogOut, ChevronDown, Menu, X, User, PanelLeftClose, PanelLeftOpen
 } from 'lucide-react'
 import LanguageSwitcher from '../../components/ui/LanguageSwitcher'
 import { useAuth } from '../../contexts/useAuth'
 import Loader from '../../components/ui/Loader'
 
+// Mise en page commune à toutes les pages du back-office : barre latérale
+// (repliable, filtrée selon les permissions du rôle), en-tête avec menu profil,
+// et redirection vers /login si l'utilisateur n'est pas authentifié.
 const AdminLayout = () => {
   const { t } = useTranslation()
   const location = useLocation()
@@ -23,6 +26,8 @@ const AdminLayout = () => {
   const navigation = useNavigation()
   const [showLoader, setShowLoader] = useState(false)
 
+  // Affiche le loader seulement si la navigation dure plus de 150ms, pour
+  // éviter un flash inutile sur les changements de page quasi instantanés
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout> | null = null
 
@@ -71,14 +76,21 @@ const AdminLayout = () => {
     { path: '/admin/partners', label: t('admin.sidebar.partners'), icon: Handshake, permission: 'partners' },
     { path: '/admin/testimonials', label: t('admin.sidebar.testimonials'), icon: MessageSquare, permission: 'testimonials' },
     { path: '/admin/documents', label: t('admin.sidebar.documents'), icon: FileText, permission: 'documents' },
+    { path: '/admin/newsletter', label: t('admin.sidebar.newsletter'), icon: Mail, permission: 'newsletter' },
     { path: '/admin/users', label: t('admin.sidebar.users'), icon: Users, permission: 'users' },
     { path: '/admin/roles', label: t('admin.sidebar.roles'), icon: Shield, permission: 'roles' },
     { path: '/admin/settings', label: t('admin.sidebar.settings'), icon: Settings, permission: 'settings' },
   ]
 
+  // Le super administrateur voit toujours tous les modules, y compris un module
+  // ajouté après coup et pas encore coché dans la matrice de permissions (page
+  // Rôles). Pour tout autre utilisateur, un module n'apparaît que si sa
+  // permission est explicitement à true : par défaut, tout est masqué.
+  const isSuperAdmin = user?.roles.includes('ROLE_SUPER_ADMIN') ?? false
+
   const navItems = allNavItems.filter((item) => {
-    if (!user?.roleEntity?.permissions) return true
-    return user.roleEntity.permissions[item.permission] !== false
+    if (isSuperAdmin) return true
+    return user?.roleEntity?.permissions?.[item.permission] === true
   })
 
   const isActive = (path: string, end?: boolean) =>

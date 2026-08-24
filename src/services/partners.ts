@@ -1,3 +1,4 @@
+// Appels API admin pour les partenaires (CRUD) ; la lecture publique est dans publicPartners.ts
 import { api } from './api'
 
 export interface AdminPartner {

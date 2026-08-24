@@ -9,6 +9,9 @@ import {
 import { eventsService } from '../../services/events'
 import type { AdminEvent } from '../../services/events'
 
+// Liste admin des événements : recherche, filtre par statut et par date,
+// suppression avec confirmation. La pagination en bas de tableau est pour
+// l'instant un affichage statique (non branchée sur filteredEvents).
 type FilterStatus = 'Tous' | 'À venir' | 'En cours' | 'Terminé'
 
 const statusFilters: FilterStatus[] = ['Tous', 'À venir', 'En cours', 'Terminé']
@@ -54,6 +57,8 @@ const EventsList = () => {
     }
   }
 
+  // Combine les 3 filtres (recherche texte + statut + période) côté client,
+  // sans re-solliciter l'API
   const filteredEvents = events.filter((event) => {
     const matchesSearch = event.title.toLowerCase().includes(searchQuery.toLowerCase())
     const matchesStatus = statusFilter === 'Tous' || event.status === statusFilter

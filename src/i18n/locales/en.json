@@ -507,7 +507,13 @@
     },
     "newsletter": {
         "placeholder": "Your email address",
-        "button": "Subscribe"
+        "button": "Subscribe",
+        "unsubscribe": {
+            "loading": "Processing your request...",
+            "success": "You have been successfully unsubscribed. You will no longer receive our emails.",
+            "error": "This unsubscribe link is invalid or has already been used.",
+            "backToSite": "Back to home"
+        }
     },
     "months": {
         "january": "January",
@@ -553,6 +559,7 @@
             "partners": "Partners",
             "testimonials": "Testimonials",
             "documents": "Documents",
+            "newsletter": "Newsletter",
             "users": "Users",
             "roles": "Roles & Permissions",
             "settings": "Settings",
@@ -608,6 +615,7 @@
             "partners": "Manage the organization's partners and collaborators.",
             "testimonials": "Manage beneficiary and partner testimonials.",
             "documents": "Manage the organization's documents and files.",
+            "newsletter": "View the newsletter subscribers.",
             "users": "Manage users and their access to the platform.",
             "roles": "Manage user roles and permissions.",
             "settings": "Configure the organization's general settings."
@@ -637,7 +645,8 @@
             "rating": "Rating",
             "phone": "Phone",
             "lastLogin": "Last login",
-            "permissions": "Permissions"
+            "permissions": "Permissions",
+            "subscribedAt": "Subscribed on"
         },
         "status": {
             "upcoming": "Upcoming",
@@ -784,7 +793,8 @@
             "deleteTestimonial": "Confirm deletion?",
             "deleteUser": "Delete {{name}}?",
             "deleteRole": "Delete role \"{{name}}\"?",
-            "deleteNews": "Confirm deletion of this article?"
+            "deleteNews": "Confirm deletion of this article?",
+            "deleteSubscriber": "Delete this subscriber?"
         },
         "placeholders": {
             "searchProject": "Search projects...",
@@ -854,7 +864,8 @@
             "noDocuments": "No documents found.",
             "testimonials": "No testimonial found.",
             "users": "No user found.",
-            "noContent": "No content."
+            "noContent": "No content.",
+            "newsletter": "No subscribers yet."
         },
         "errors": {
             "loadEvents": "Error loading events",

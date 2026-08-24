@@ -5,6 +5,10 @@ import { Link } from 'react-router-dom'
 import { Mail, ArrowLeft, Send } from 'lucide-react'
 import { api } from '../services/api'
 
+// Formulaire "mot de passe oublié" : envoie un email de réinitialisation.
+// Le message de succès est volontairement identique que l'email existe ou non
+// en base (voir ForgotPasswordController côté backend), pour ne pas révéler
+// quels emails sont enregistrés.
 const ForgotPassword = () => {
   const { t } = useTranslation()
   const [email, setEmail] = useState('')

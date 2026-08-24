@@ -1,4 +1,6 @@
-// src/data/adminRolesData.ts
+// Ancien jeu de données fictif (n'est plus importé nulle part) : les rôles et
+// modules de permissions réels viennent désormais de l'API via
+// services/admin.ts (adminService.getRoles / getPermissionModules).
 export interface PermissionModule {
   key: string
   label: string

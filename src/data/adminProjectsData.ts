@@ -1,3 +1,8 @@
+// Seuls statusLabelMap et statusColorMap sont encore utilisés (par
+// pages/admin/Projects.tsx et ProjectsForm.tsx) pour l'affichage des statuts.
+// Le tableau `adminProjects` ci-dessous est un ancien jeu de données fictif
+// laissé pour référence : les projets réels viennent maintenant de l'API
+// (voir services/projects.ts), pas de ce fichier.
 export interface AdminProject {
   id: number
   title: string

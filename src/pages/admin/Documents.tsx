@@ -15,6 +15,7 @@ const typeColors: Record<string, string> = {
 
 const typeOptions = ['Tous', 'PDF', 'DOCX', 'XLSX', 'PPTX']
 
+// Liste admin des documents téléchargeables : recherche, filtre par type de fichier.
 const Documents = () => {
   const { t, i18n } = useTranslation()
   const [documents, setDocuments] = useState<AdminDocument[]>([])

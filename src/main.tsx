@@ -18,6 +18,7 @@ import Contact from './pages/Contact'
 import Login from './pages/Login'
 import ForgotPassword from './pages/ForgotPassword'
 import ResetPassword from './pages/ResetPassword'
+import NewsletterUnsubscribe from './pages/NewsletterUnsubscribe'
 import AdminLayout from './pages/admin/AdminLayout'
 import Dashboard from './pages/admin/Dashboard'
 import EventsList from './pages/admin/EventsList'
@@ -36,6 +37,7 @@ import Testimonials from './pages/admin/Testimonials'
 import TestimonialsForm from './pages/admin/TestimonialsForm'
 import Documents from './pages/admin/Documents'
 import DocumentsForm from './pages/admin/DocumentsForm'
+import AdminNewsletter from './pages/admin/Newsletter'
 import Users from './pages/admin/Users'
 import Roles from './pages/admin/Roles'
 import Settings from './pages/admin/Settings'
@@ -43,6 +45,13 @@ import Profile from './pages/admin/Profile'
 import './index.css'
 import './i18n/config'
 
+// Déclaration de toutes les routes du site (public + admin) via React Router.
+// AdminLayout gère lui-même la redirection vers /login si l'utilisateur n'est
+// pas authentifié, et masque les liens du menu selon les permissions du rôle
+// (voir AdminLayout.tsx) — mais aucune route ci-dessous n'est individuellement
+// protégée par permission : un utilisateur authentifié qui tape directement
+// l'URL d'un module qui lui est normalement masqué (ex: /admin/newsletter)
+// peut tout de même y accéder tant que le firewall backend l'autorise.
 const router = createBrowserRouter([
   {
     element: <><ScrollToTop /><Outlet /></>,
@@ -66,6 +75,7 @@ const router = createBrowserRouter([
       { path: '/login', element: <Login /> },
       { path: '/forgot-password', element: <ForgotPassword /> },
       { path: '/reset-password/:token', element: <ResetPassword /> },
+      { path: '/newsletter/unsubscribe/:token', element: <NewsletterUnsubscribe /> },
       {
         path: '/admin',
         element: <AdminLayout />,
@@ -94,6 +104,7 @@ const router = createBrowserRouter([
           { path: 'documents', element: <Documents /> },
           { path: 'documents/new', element: <DocumentsForm /> },
           { path: 'documents/:id/edit', element: <DocumentsForm /> },
+          { path: 'newsletter', element: <AdminNewsletter /> },
           { path: 'users', element: <Users /> },
           { path: 'roles', element: <Roles /> },
           { path: 'settings', element: <Settings /> },
@@ -114,6 +125,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   </React.StrictMode>,
 )
 
+// Message de crédit affiché dans la console du navigateur (visible par tout
+// visiteur qui ouvre les outils de développement) ; correspond au lien de
+// crédit affiché dans le pied de page (voir Footer.tsx)
 console.log(
   '%c◈ Site développé par OUSSEI Adilou — WhatsApp: https://wa.me/22892193631',
   'font-size:14px; font-weight:bold; color:#0B6B3A; padding:4px 8px;'

@@ -6,6 +6,15 @@ import { settingsService } from '../../services/settings'
 import { api } from '../../services/api'
 import type { SettingsData } from '../../services/settings'
 
+// Page "Paramètres" (réservée au super administrateur). IMPORTANT : le
+// backend (entité Settings + SettingsController) gère bien plus de champs que
+// ce que cette page expose actuellement — seuls les onglets Général et
+// Contact sont implémentés ici. Les champs réseaux sociaux/pied de
+// page/images/SEO existent dans SettingsData mais restent figés à `null` dans
+// ce formulaire (jamais affichés ni modifiables) : c'est pour cette raison que
+// les liens Facebook/LinkedIn/YouTube sont codés en dur dans Header.tsx,
+// Footer.tsx et Contact.tsx plutôt que gérés depuis l'admin. Ajouter les
+// onglets manquants ici serait nécessaire pour les rendre configurables.
 type TabKey = 'general' | 'contact'
 
 const inputClass = 'w-full px-3.5 py-2.5 rounded-lg border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-small'

@@ -13,6 +13,8 @@ const fadeUp = {
   visible: { opacity: 1, y: 0 }
 }
 
+// Page "Contact" : coordonnées, formulaire de contact, carte Google Maps et
+// liens réseaux sociaux.
 const Contact = () => {
   const { t } = useTranslation()
   const [name, setName] = useState('')
@@ -85,9 +87,10 @@ const Contact = () => {
     },
   ]
 
+  // Lien YouTube en attente : mettre à jour dès que la chaîne existe (voir aussi Header.tsx et Footer.tsx)
   const socialLinks = [
-    { icon: 'facebook', label: t('social.facebook'), href: '#' },
-    { icon: 'linkedin', label: t('social.linkedin'), href: '#' },
+    { icon: 'facebook', label: t('social.facebook'), href: 'https://www.facebook.com/61580087226895/' },
+    { icon: 'linkedin', label: t('social.linkedin'), href: 'https://www.linkedin.com/groups/12922267' },
     { icon: 'youtube', label: t('social.youtube'), href: '#' },
     { icon: 'whatsapp', label: t('social.whatsapp'), href: 'https://wa.me/23566200620' },
   ]
@@ -324,6 +327,7 @@ const Contact = () => {
                 <a
                   key={index}
                   href={social.href}
+                  // Ouvre dans un nouvel onglet uniquement pour les vraies URLs (pas pour le "#" du lien YouTube en attente)
                   target={social.href.startsWith('http') ? '_blank' : undefined}
                   rel={social.href.startsWith('http') ? 'noopener noreferrer' : undefined}
                   aria-label={social.label}

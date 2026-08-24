@@ -1,6 +1,10 @@
+// Réglages globaux du site (page "Paramètres" de l'admin, réservée au super
+// administrateur). Une seule ligne de données existe côté backend : get()
+// et update() opèrent toujours sur ce même enregistrement singleton.
 import { api } from './api'
 
 export interface SettingsData {
+  // Général
   orgName: string | null
   logo: string | null
   slogan: string | null
@@ -8,6 +12,7 @@ export interface SettingsData {
   email: string | null
   phone: string | null
 
+  // Contact
   contactEmail: string | null
   contactPhone: string | null
   contactPhoneSecondary: string | null
@@ -15,23 +20,27 @@ export interface SettingsData {
   whatsapp: string | null
   googleMapsIframe: string | null
 
+  // Réseaux sociaux
   facebook: string | null
   linkedin: string | null
   youtube: string | null
   whatsappUrl: string | null
 
+  // Pied de page
   footerPresentation: string | null
   copyright: string | null
   openingHours: string[] | null
   legalLink: string | null
   privacyLink: string | null
 
+  // Images des différentes pages
   heroImage: string | null
   aboutImage: string | null
   programsImage: string | null
   eventsImage: string | null
   contactImage: string | null
 
+  // SEO
   metaTitle: string | null
   metaDescription: string | null
   metaKeywords: string | null

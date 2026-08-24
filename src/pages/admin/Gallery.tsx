@@ -8,6 +8,9 @@ import type { GalleryItem } from '../../services/gallery'
 
 const categories = ['Toutes', 'Environnement', 'Éducation', 'Eau', 'Agriculture', 'Social']
 
+// Liste admin de la galerie photo. Chaque élément peut être un album (images[])
+// affiché en mini-diaporama directement dans sa carte, avec un lightbox plein
+// écran navigable au clavier (flèches + Échap) au clic.
 const Gallery = () => {
   const { t, i18n } = useTranslation()
   const [items, setItems] = useState<GalleryItem[]>([])
@@ -15,6 +18,7 @@ const Gallery = () => {
   const [searchQuery, setSearchQuery] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('Toutes')
   const [lightbox, setLightbox] = useState<{ images: string[]; index: number } | null>(null)
+  // Index de l'image actuellement affichée pour chaque carte-album (par id d'élément)
   const [cardIndex, setCardIndex] = useState<Record<number, number>>({})
 
   const goCard = (id: number, dir: number, images: string[] | null) => {
@@ -26,6 +30,7 @@ const Gallery = () => {
     }))
   }
 
+  // Navigation clavier du lightbox (flèches gauche/droite, Échap pour fermer)
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (!lightbox) return

@@ -1,3 +1,7 @@
+// Regroupe les appels API admin qui n'ont pas leur propre fichier dédié :
+// utilisateurs, rôles/permissions, tableau de bord et profil. Les événements
+// sont dupliqués ici (voir aussi events.ts) pour des raisons historiques ;
+// les deux fonctionnent, mais évitez d'en ajouter un troisième.
 import { api } from './api'
 
 export interface AdminUser {

@@ -422,7 +422,13 @@
     },
     "newsletter": {
         "placeholder": "Votre adresse e-mail",
-        "button": "S'abonner"
+        "button": "S'abonner",
+        "unsubscribe": {
+            "loading": "Traitement de votre demande...",
+            "success": "Vous avez été désabonné(e) avec succès. Vous ne recevrez plus nos emails.",
+            "error": "Ce lien de désabonnement est invalide ou a déjà été utilisé.",
+            "backToSite": "Retour à l'accueil"
+        }
     },
     "months": {
         "january": "Janvier",
@@ -553,6 +559,7 @@
             "partners": "Partenaires",
             "testimonials": "Témoignages",
             "documents": "Documents",
+            "newsletter": "Newsletter",
             "users": "Utilisateurs",
             "roles": "Rôles & Permissions",
             "settings": "Paramètres",
@@ -608,6 +615,7 @@
             "partners": "Gérez les partenaires et collaborateurs de l'organisation.",
             "testimonials": "Gérez les témoignages des bénéficiaires et partenaires.",
             "documents": "Gérez les documents et fichiers de l'organisation.",
+            "newsletter": "Consultez les abonnés à la newsletter.",
             "users": "Gérez les utilisateurs et leurs accès à la plateforme.",
             "roles": "Gérez les rôles et les permissions des utilisateurs.",
             "settings": "Configurez les paramètres généraux de l'organisation."
@@ -663,7 +671,8 @@
             "noDocuments": "Aucun document trouvé.",
             "testimonials": "Aucun témoignage trouvé.",
             "users": "Aucun utilisateur trouvé.",
-            "noContent": "Aucun contenu."
+            "noContent": "Aucun contenu.",
+            "newsletter": "Aucun abonné pour le moment."
         },
         "errors": {
             "generic": "Erreur",
@@ -694,7 +703,8 @@
             "deleteTestimonial": "Confirmer la suppression ?",
             "deleteUser": "Supprimer {{name}} ?",
             "deleteRole": "Supprimer le rôle \"{{name}}\" ?",
-            "deleteNews": "Confirmer la suppression de cet article ?"
+            "deleteNews": "Confirmer la suppression de cet article ?",
+            "deleteSubscriber": "Supprimer cet abonné ?"
         },
         "tooltip": {
             "viewDetails": "Voir les détails"
@@ -816,7 +826,8 @@
             "rating": "Note",
             "phone": "Téléphone",
             "lastLogin": "Dernière connexion",
-            "permissions": "Permissions"
+            "permissions": "Permissions",
+            "subscribedAt": "Abonné le"
         },
         "status": {
             "upcoming": "À venir",

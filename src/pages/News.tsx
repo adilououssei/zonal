@@ -10,6 +10,12 @@ import { publicNewsService } from '../services/news'
 import type { PublicNews } from '../services/news'
 import { subscribeToNewsletter } from '../services/newsletter'
 
+// Page "Actualités" : liste des articles avec barre latérale (recherche,
+// catégories, articles récents, formulaire newsletter). La recherche, le tri
+// et la pagination sont pour l'instant des contrôles d'interface uniquement
+// (currentPage/searchQuery ne filtrent pas encore la liste `articles`) : à
+// brancher si ces fonctionnalités doivent devenir actives.
+
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
   visible: { opacity: 1, y: 0 }
@@ -41,6 +47,8 @@ const News = () => {
 
   const recentArticles = articles.slice(0, 4)
 
+  // Fait le lien entre les catégories brutes stockées en base (français ou
+  // anglais selon comment l'admin les a saisies) et leur clé de traduction
   const categoryMap: Record<string, string> = {
     environnement: 'admin.categories.environnement',
     éducation: 'admin.categories.education',
@@ -55,6 +63,9 @@ const News = () => {
     governance: 'admin.categories.governance',
   }
 
+  // Construit la liste "Catégories" de la barre latérale à partir des articles
+  // réellement présents (pas de liste figée : une catégorie disparaît d'elle-même
+  // si plus aucun article ne l'utilise)
   const categoryCounts = articles.reduce<Record<string, number>>((acc, a) => {
     const cat = a.category?.toLowerCase()
     if (cat) acc[cat] = (acc[cat] || 0) + 1

@@ -2,6 +2,11 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ArrowLeft } from 'lucide-react'
 
+// Menu déroulant de catégorie avec option "Autre" : bascule vers un champ
+// texte libre quand l'utilisateur choisit "+ Autre" ou que la valeur actuelle
+// ne fait pas partie de la liste prédéfinie (ex: catégorie saisie manuellement
+// lors d'un ajout précédent). Utilisé dans les formulaires admin (actualités,
+// événements, galerie...).
 interface Props {
   value: string
   onChange: (value: string) => void
@@ -26,6 +31,8 @@ const CategorySelect = ({
   const { t } = useTranslation()
   const [customMode, setCustomMode] = useState(value !== '' && !options.includes(value))
 
+  // Mode "saisie libre" actif si l'utilisateur l'a choisi explicitement, ou si
+  // la valeur reçue ne correspond à aucune option de la liste
   const isOther = customMode || (value !== '' && !options.includes(value))
 
   return (

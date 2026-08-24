@@ -1,3 +1,5 @@
+// Ancien jeu de données fictif (n'est plus importé nulle part) : la liste
+// admin réelle vient désormais de l'API via services/testimonials.ts.
 export interface AdminTestimonial {
   id: number
   author: string

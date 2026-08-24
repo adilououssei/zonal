@@ -1,3 +1,4 @@
+// Appels API pour les témoignages : CRUD admin (testimonialsService) et lecture publique (publicTestimonialsService)
 import { api } from './api'
 
 export interface AdminTestimonial {

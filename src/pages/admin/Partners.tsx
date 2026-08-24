@@ -11,6 +11,8 @@ const statusColorMap: Record<string, string> = {
   inactive: 'bg-gray-100 text-gray-500',
 }
 
+// Liste admin des partenaires : recherche, filtre par statut, et bascule
+// rapide actif/inactif directement depuis la liste (sans passer par le formulaire).
 const Partners = () => {
   const { t, i18n } = useTranslation()
   const [partners, setPartners] = useState<AdminPartner[]>([])

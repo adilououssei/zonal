@@ -1,3 +1,6 @@
+// Lecture publique des partenaires actifs (page "Partenaires" du site). Séparé
+// de partners.ts qui gère le CRUD admin, car les formes de données diffèrent
+// légèrement (pas de champs *En/createdBy exposés côté public).
 import { api } from './api'
 
 export interface PublicPartner {
