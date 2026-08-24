@@ -5,6 +5,9 @@ import { useTranslation } from 'react-i18next'
 import { Lock, Eye, EyeOff, ArrowLeft, Check } from 'lucide-react'
 import { api } from '../services/api'
 
+// Formulaire de changement de mot de passe, accessible via le lien reçu par
+// email (/reset-password/:token). Redirige automatiquement vers /login 3s
+// après un succès.
 const ResetPassword = () => {
   const { t } = useTranslation()
   const { token } = useParams()

@@ -9,6 +9,9 @@ import {
 import LanguageSwitcher from '../ui/LanguageSwitcher'
 import { useAuth } from '../../contexts/useAuth'
 
+// En-tête du site public : barre du haut (coordonnées + réseaux sociaux),
+// navigation principale et menu mobile. Devient opaque au scroll (isScrolled)
+// pour rester lisible au-dessus du contenu de la page.
 const Header = () => {
   const { t } = useTranslation()
   const { isAuthenticated } = useAuth()
@@ -16,6 +19,7 @@ const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const location = useLocation()
 
+  // Bascule le fond du header (transparent -> opaque) au-delà de 50px de scroll
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50)
@@ -64,12 +68,13 @@ const Header = () => {
           <div className="flex items-center gap-4">
             <LanguageSwitcher variant="dark" />
             <div className="flex items-center gap-3">
-              <a href="#" aria-label={t('social.facebook')} className="hover:text-primary-light transition-colors">
+              <a href="https://www.facebook.com/61580087226895/" target="_blank" rel="noopener noreferrer" aria-label={t('social.facebook')} className="hover:text-primary-light transition-colors">
                 <img src="/images/icons/facebook.png" alt={t('social.facebook')} className="w-5.5 h-5.5" />
               </a>
-              <a href="#" aria-label={t('social.linkedin')} className="hover:text-primary-light transition-colors">
+              <a href="https://www.linkedin.com/groups/12922267" target="_blank" rel="noopener noreferrer" aria-label={t('social.linkedin')} className="hover:text-primary-light transition-colors">
                 <img src="/images/icons/linkedin.png" alt={t('social.linkedin')} className="w-5.5 h-5.5" />
               </a>
+              {/* Lien YouTube en attente : mettre à jour dès que la chaîne existe (voir aussi Footer.tsx et Contact.tsx) */}
               <a href="#" aria-label={t('social.youtube')} className="hover:text-primary-light transition-colors">
                 <img src="/images/icons/youtube.png" alt={t('social.youtube')} className="w-5.5 h-5.5" />
               </a>
@@ -178,12 +183,13 @@ const Header = () => {
             {t('header.cta')}
           </a>
           <div className="flex items-center gap-4 pt-4 border-t border-gray-100">
-            <a href="#" aria-label={t('social.facebook')}>
+            <a href="https://www.facebook.com/61580087226895/" target="_blank" rel="noopener noreferrer" aria-label={t('social.facebook')}>
               <img src="/images/icons/facebook.png" alt={t('social.facebook')} className="w-6.5 h-6.5" />
             </a>
-            <a href="#" aria-label={t('social.linkedin')}>
+            <a href="https://www.linkedin.com/groups/12922267" target="_blank" rel="noopener noreferrer" aria-label={t('social.linkedin')}>
               <img src="/images/icons/linkedin.png" alt={t('social.linkedin')} className="w-6.5 h-6.5" />
             </a>
+            {/* Lien YouTube en attente : mettre à jour dès que la chaîne existe */}
             <a href="#" aria-label={t('social.youtube')}>
               <img src="/images/icons/youtube.png" alt={t('social.youtube')} className="w-6.5 h-6.5" />
             </a>

@@ -7,6 +7,9 @@ import { api } from '../../services/api'
 import { documentsService, getFileTypeFromMime } from '../../services/documents'
 import CategorySelect from '../../components/ui/CategorySelect'
 
+// Formulaire de création/édition d'un document. Le type de fichier (PDF,
+// DOCX...) est déduit automatiquement du type MIME au moment de l'upload
+// (getFileTypeFromMime), pas saisi manuellement.
 const DocumentsForm = () => {
   const { t } = useTranslation()
   const navigate = useNavigate()

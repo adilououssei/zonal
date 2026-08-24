@@ -1,5 +1,7 @@
 import { useTranslation } from 'react-i18next'
 
+// Écran de chargement plein écran affiché pendant les transitions de page
+// (voir Layout.tsx et AdminLayout.tsx, qui décident quand l'afficher).
 const Loader = () => {
   const { t } = useTranslation()
   return (

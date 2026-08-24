@@ -4,8 +4,13 @@ import {
   MapPin, Phone, Mail, MessageCircle, Clock, LayoutDashboard
 } from 'lucide-react'
 
+// Pied de page du site public : logo, réseaux sociaux, liens utiles, horaires,
+// coordonnées et copyright.
 const Footer = () => {
   const { t } = useTranslation()
+  // Lien discret vers /admin (quasi invisible : text-white/10) affiché seulement
+  // pour un utilisateur déjà repéré comme admin ; les autres visiteurs voient un
+  // lien vers /login à la place, tout aussi discret
   const isAdmin = localStorage.getItem('zonal_admin') === 'true'
 
   return (
@@ -21,12 +26,13 @@ const Footer = () => {
               {t('footer.description')}
             </p>
             <div className="flex items-center gap-3 mt-5">
-              <a href="#" aria-label={t('social.facebook')} className="w-11 h-11 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/20 transition-colors">
+              <a href="https://www.facebook.com/61580087226895/" target="_blank" rel="noopener noreferrer" aria-label={t('social.facebook')} className="w-11 h-11 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/20 transition-colors">
                 <img src="/images/icons/facebook.png" alt={t('social.facebook')} className="w-6.5 h-6.5" />
               </a>
-              <a href="#" aria-label={t('social.linkedin')} className="w-11 h-11 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/20 transition-colors">
+              <a href="https://www.linkedin.com/groups/12922267" target="_blank" rel="noopener noreferrer" aria-label={t('social.linkedin')} className="w-11 h-11 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/20 transition-colors">
                 <img src="/images/icons/linkedin.png" alt={t('social.linkedin')} className="w-6.5 h-6.5" />
               </a>
+              {/* Lien YouTube en attente : mettre à jour dès que la chaîne existe (voir aussi Header.tsx et Contact.tsx) */}
               <a href="#" aria-label={t('social.youtube')} className="w-11 h-11 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/20 transition-colors">
                 <img src="/images/icons/youtube.png" alt={t('social.youtube')} className="w-6.5 h-6.5" />
               </a>
@@ -114,6 +120,8 @@ const Footer = () => {
         <div className="border-t border-white/10 pt-6 flex flex-col md:flex-row items-center justify-between gap-4 text-gray-400 text-small">
           <div className="flex items-center gap-2">
             <p>{t('footer.copyright', { year: new Date().getFullYear() })}</p>
+            {/* Lien de crédit vers le développeur/l'agence (numéro WhatsApp différent de celui de ZONAL) ;
+                dupliqué plus bas en version mobile (hidden sm:inline ici, block sm:hidden pour l'autre) */}
             <a
               href="https://wa.me/22892193631"
               target="_blank"
@@ -124,6 +132,7 @@ const Footer = () => {
             </a>
           </div>
           <div className="flex items-center gap-6">
+            {/* TODO: lien "Politique de confidentialité" pas encore branché vers une vraie page (to="#") */}
             <Link to="#" className="hover:text-primary-light transition-colors">{t('footer.privacy')}</Link>
             <Link to={isAdmin ? '/admin' : '/login'} className="text-white/10 hover:text-white/40 transition-colors text-xs flex items-center gap-1" aria-label={t('footer.adminAria')}>
               {isAdmin ? <LayoutDashboard size={10} /> : null}

@@ -1,3 +1,4 @@
+// Appels API pour les événements : CRUD admin (eventsService) et lecture publique (publicEventsService)
 import { api } from './api'
 
 export interface AdminEvent {

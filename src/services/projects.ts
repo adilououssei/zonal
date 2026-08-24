@@ -1,3 +1,4 @@
+// Appels API pour les projets : CRUD admin (projectsService) et lecture publique (publicProjectsService)
 import { api } from './api'
 
 export interface AdminProject {

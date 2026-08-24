@@ -7,6 +7,9 @@ import { api } from '../../services/api'
 import { galleryService } from '../../services/gallery'
 import CategorySelect from '../../components/ui/CategorySelect'
 
+// Formulaire de création/édition d'un élément de galerie. Accepte plusieurs
+// images (album) : la première sert de couverture/miniature (voir Gallery
+// entity ↔ src côté backend).
 const GalleryForm = () => {
   const { t } = useTranslation()
   const navigate = useNavigate()

@@ -10,6 +10,8 @@ import { publicEventsService } from '../services/events'
 import type { PublicEvent } from '../services/events'
 import { subscribeToNewsletter } from '../services/newsletter'
 
+// Page "Événements" : liste filtrable par statut, bande d'événements passés
+// défilable horizontalement, et formulaire d'inscription à la newsletter.
 type EventStatus = 'Tous' | 'À venir' | 'En cours' | 'Passé'
 
 const fadeUp = {
@@ -17,6 +19,7 @@ const fadeUp = {
   visible: { opacity: 1, y: 0 }
 }
 
+// Retire les balises HTML de la description et la tronque pour l'aperçu en carte
 const getExcerpt = (html: string | null, maxLength = 150): string => {
   if (!html) return ''
   const text = html.replace(/<[^>]*>/g, '')
@@ -89,6 +92,7 @@ const Events = () => {
     return true
   })
 
+  // Fait défiler la bande d'événements passés d'une "carte" à la fois (largeur ~340px)
   const scrollPast = (dir: 'left' | 'right') => {
     const el = pastScrollRef.current
     if (!el) return

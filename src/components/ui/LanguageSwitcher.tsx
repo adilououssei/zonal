@@ -2,6 +2,9 @@ import { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ChevronDown } from 'lucide-react'
 
+// Sélecteur de langue FR/EN (drapeau + menu déroulant), affiché dans le header
+// du site public et de l'admin. `variant` adapte les couleurs selon que le
+// composant est posé sur un fond clair ou sombre.
 const languages = [
   { code: 'fr', label: 'FR', flag: 'https://flagcdn.com/w20/fr.png' },
   { code: 'en', label: 'EN', flag: 'https://flagcdn.com/w20/gb.png' },
@@ -16,6 +19,7 @@ const LanguageSwitcher = ({ variant = 'light' }: Props) => {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
+  // Ferme le menu déroulant si l'utilisateur clique en dehors
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)

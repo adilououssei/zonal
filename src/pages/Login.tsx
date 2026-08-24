@@ -6,6 +6,8 @@ import { LogIn, Eye, EyeOff } from 'lucide-react'
 import { useAuth } from '../contexts/useAuth'
 import LanguageSwitcher from '../components/ui/LanguageSwitcher'
 
+// Page de connexion à l'admin. Redirige automatiquement vers /admin si
+// l'utilisateur est déjà connecté (évite d'afficher le formulaire inutilement).
 const Login = () => {
   const { t } = useTranslation()
   const navigate = useNavigate()
@@ -123,6 +125,8 @@ const Login = () => {
                 </div>
 
                 <div className="flex items-center justify-between">
+                  {/* Case "Se souvenir de moi" purement visuelle pour l'instant : n'est pas
+                      encore transmise à login() ni utilisée pour prolonger la session */}
                   <label className="flex items-center gap-2 cursor-pointer select-none">
                     <input
                       type="checkbox"

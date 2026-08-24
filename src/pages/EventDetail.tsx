@@ -9,6 +9,9 @@ import { publicEventsService } from '../services/events'
 import type { PublicEvent } from '../services/events'
 import { sanitizeHtml } from '../lib/sanitize'
 
+// Page de détail d'un événement (/events/:id), avec galerie photo et
+// suggestions d'événements de la même catégorie.
+
 const statusStyles: Record<string, string> = {
   'À venir': 'bg-emerald-100 text-emerald-700',
   'En cours': 'bg-blue-100 text-blue-700',
@@ -28,6 +31,7 @@ const EventDetail = () => {
       try {
         const data = await publicEventsService.getById(Number(id))
         setEvent(data)
+        // "Événements liés" = même catégorie, événement courant exclu, 3 max
         const all = await publicEventsService.getAll()
         const related = all.filter((e) => e.id !== data.id && e.category === data.category)
         setRelatedEvents(related.slice(0, 3))

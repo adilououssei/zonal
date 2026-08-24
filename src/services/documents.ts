@@ -1,3 +1,4 @@
+// Appels API pour les documents téléchargeables (CRUD admin + liste publique)
 import { api } from './api'
 
 export interface AdminDocument {
@@ -53,6 +54,7 @@ export const publicDocumentsService = {
   getAll: () => api.get<PublicDocument[]>('/api/documents', false),
 }
 
+// Convertit une taille en octets en libellé lisible (o / Ko / Mo)
 export function formatFileSize(bytes: number | null): string {
   if (bytes === null || bytes === undefined) return '—'
   if (bytes < 1024) return `${bytes} o`
@@ -60,6 +62,7 @@ export function formatFileSize(bytes: number | null): string {
   return `${(bytes / (1024 * 1024)).toFixed(1)} Mo`
 }
 
+// Déduit un type de fichier lisible (PDF, DOCX...) à partir du type MIME renvoyé par le navigateur
 export function getFileTypeFromMime(mime: string): string {
   if (mime.includes('pdf')) return 'PDF'
   if (mime.includes('wordprocessing') || mime.includes('msword')) return 'DOCX'

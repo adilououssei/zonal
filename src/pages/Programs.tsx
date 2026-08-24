@@ -11,6 +11,9 @@ import type { PublicStats } from '../services/stats'
 import { publicPartnersService } from '../services/publicPartners'
 import type { PublicPartner } from '../services/publicPartners'
 
+// Page "Programmes" : domaines d'intervention, statistiques et bandeau de
+// logos partenaires en défilement continu (CSS, pause au survol).
+
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
   visible: { opacity: 1, y: 0 }
@@ -31,6 +34,8 @@ const Programs = () => {
     publicPartnersService.getAll().then(setPartners).catch(() => {})
   }, [])
 
+  // Chiffres réels si l'API a répondu, sinon valeurs éditoriales de repli
+  // (évite d'afficher des zéros pendant le chargement ou en cas d'erreur réseau)
   const statsData = stats
     ? [
         { value: stats.completedProjects, suffix: '+', label: t('home.stats.projects') },
@@ -254,6 +259,8 @@ const Programs = () => {
               onMouseEnter={() => setIsPaused(true)}
               onMouseLeave={() => setIsPaused(false)}
             >
+              {/* Liste dupliquée (partners + partners) pour créer une boucle infinie
+                  visuellement continue avec l'animation CSS "partners-track" */}
               <div className={`flex gap-10 partners-track ${isPaused ? 'paused' : ''}`}>
                 {[...partners, ...partners].map((partner, index) => (
                   <div

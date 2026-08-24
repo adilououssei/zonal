@@ -4,6 +4,9 @@ import Header from './Header.tsx'
 import Footer from './Footer.tsx'
 import Loader from '../ui/Loader.tsx'
 
+// Mise en page commune à toutes les pages publiques du site (header + footer
+// fixes, contenu de la page courante injecté via <Outlet />). Utilisé comme
+// route parente dans main.tsx.
 const Layout = () => {
   const navigation = useNavigation()
   const location = useLocation()
@@ -16,6 +19,8 @@ const Layout = () => {
     }
   }, [location.pathname])
 
+  // Affiche le loader seulement si la navigation dure plus de 150ms, pour
+  // éviter un flash inutile sur les changements de page quasi instantanés
   useEffect(() => {
     const timer = setTimeout(
       () => setShowLoader(navigation.state === 'loading'),

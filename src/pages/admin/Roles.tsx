@@ -8,11 +8,17 @@ import {
 } from 'lucide-react'
 import { adminService, type Role, type PermissionModule } from '../../services/admin'
 
+// Doit contenir une entrée pour chaque icône listée par
+// RoleController::permissions() côté backend. Note : "Mail" (icône du module
+// newsletter) n'y est pas répertorié, donc le module Newsletter s'affiche ici
+// avec l'icône de secours (LayoutDashboard) au lieu d'une enveloppe.
 const iconMap: Record<string, ElementType> = {
   LayoutDashboard, Calendar, Newspaper, FolderOpen, ImageIcon,
   Handshake, MessageSquare, FileText, Users, Shield, Settings,
 }
 
+// Gestion des rôles métier et de leur matrice de permissions par module
+// (page réservée au super administrateur, voir Admin\RoleController côté backend).
 const Roles = () => {
   const { t, i18n } = useTranslation()
   const [roles, setRoles] = useState<Role[]>([])

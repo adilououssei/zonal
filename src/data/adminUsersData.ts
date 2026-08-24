@@ -1,4 +1,5 @@
-// src/data/adminUsersData.ts
+// Ancien jeu de données fictif (n'est plus importé nulle part) : la liste
+// admin réelle vient désormais de l'API via services/admin.ts (adminService).
 export type UserStatus = 'Actif' | 'Inactif'
 
 export interface AdminUserItem {

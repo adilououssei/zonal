@@ -8,6 +8,10 @@ import {
 } from 'lucide-react'
 import { newsService, type AdminNews } from '../../services/news'
 
+// Liste admin des articles d'actualité : recherche, filtre par catégorie
+// (déduite dynamiquement des articles existants). Le tri "récent/populaire"
+// et la pagination sont pour l'instant des contrôles décoratifs (non branchés
+// sur filteredNews).
 const NewsList = () => {
   const { t, i18n } = useTranslation()
   const [news, setNews] = useState<AdminNews[]>([])

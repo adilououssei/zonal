@@ -11,6 +11,7 @@ const statusColorMap: Record<string, string> = {
   draft: 'bg-gray-100 text-gray-500',
 }
 
+// Liste admin des témoignages : recherche, filtre par statut publié/brouillon.
 const Testimonials = () => {
   const { t, i18n } = useTranslation()
 

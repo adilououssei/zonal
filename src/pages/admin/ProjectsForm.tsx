@@ -7,6 +7,9 @@ import { statusLabelMap } from '../../data/adminProjectsData'
 import { api } from '../../services/api'
 import { projectsService } from '../../services/projects'
 
+// Formulaire de création/édition d'un projet (mode déterminé par la présence
+// d'un :id dans l'URL). Une seule image (pas de galerie, contrairement aux
+// événements/actualités), uploadée immédiatement via UploadController.
 const ProjectsForm = () => {
   const { t } = useTranslation()
   const navigate = useNavigate()

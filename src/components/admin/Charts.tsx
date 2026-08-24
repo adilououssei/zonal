@@ -1,14 +1,21 @@
+// Petits graphiques SVG "faits maison" (sans librairie externe) utilisés par
+// le tableau de bord admin (Dashboard.tsx) : une courbe d'activité mensuelle
+// et un donut de répartition du contenu par type.
 interface ChartData {
   label: string
   value: number
   color?: string
 }
 
+// Trace une ligne brisée reliant chaque point de data, avec un point et une
+// étiquette sous chaque valeur (ex: activité mois par mois)
 export const SimpleLineChart = ({ data }: { data: ChartData[] }) => {
   const max = Math.max(...data.map((d) => d.value))
   const w = 280
   const h = 140
+  // Convertit un index de point en position X sur le SVG (avec marges de 20px de chaque côté)
   const px = (i: number) => 20 + (i / (data.length - 1)) * (w - 40)
+  // Convertit une valeur en position Y sur le SVG (0 en bas, max en haut)
   const py = (v: number) => h - 20 - (v / max) * (h - 40)
   const points = data.map((d, i) => `${px(i)},${py(d.value)}`).join(' ')
 
@@ -27,11 +34,15 @@ export const SimpleLineChart = ({ data }: { data: ChartData[] }) => {
   )
 }
 
+// Trace un donut où chaque part est proportionnelle à sa valeur, avec une
+// légende colorée à côté (ex: répartition Projets/Événements/Articles/Partenaires)
 export const SimpleDonutChart = ({ data }: { data: ChartData[] }) => {
   const total = data.reduce((s, d) => s + d.value, 0)
   const cx = 80
   const cy = 80
   const r = 60
+  // Calcule, pour chaque part, son décalage cumulé (offset) dans le total :
+  // sert à positionner l'arc de chaque part les uns après les autres
   const segs: { offset: number; color: string; label: string; value: number }[] = []
   let sum = 0
   for (const d of data) {
@@ -46,12 +57,14 @@ export const SimpleDonutChart = ({ data }: { data: ChartData[] }) => {
           const pct = s.value / total
           const angle = pct * 360
           const startAngle = (s.offset / total) * 360
+          // Conversion degrés -> radians, décalée de -90° pour démarrer en haut du cercle (comme une horloge)
           const startRad = ((startAngle - 90) * Math.PI) / 180
           const endRad = ((startAngle + angle - 90) * Math.PI) / 180
           const x1 = cx + r * Math.cos(startRad)
           const y1 = cy + r * Math.sin(startRad)
           const x2 = cx + r * Math.cos(endRad)
           const y2 = cy + r * Math.sin(endRad)
+          // Indique au chemin SVG s'il doit dessiner le grand ou le petit arc de cercle (nécessaire dès qu'une part dépasse 180°)
           const largeArc = angle > 180 ? 1 : 0
           return (
             <path

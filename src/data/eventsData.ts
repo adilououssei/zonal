@@ -1,4 +1,6 @@
-// src/data/eventsData.ts
+// Ancien jeu de données fictif (n'est plus importé nulle part) : les
+// événements réels du site public viennent désormais de l'API via
+// services/events.ts (publicEventsService).
 export type EventStatus = 'À venir' | 'En cours' | 'Passé'
 
 export interface EventItem {

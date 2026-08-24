@@ -18,6 +18,8 @@ const categoryColors: Record<string, string> = {
   'Gouvernance locale': 'bg-purple-100 text-purple-700',
 }
 
+// Fiche détail admin d'un article (lecture seule). Le contenu HTML est
+// nettoyé via sanitizeHtml avant injection (protection XSS).
 const NewsDetail = () => {
   const { t } = useTranslation()
   const monthNames = [

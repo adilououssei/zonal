@@ -6,6 +6,7 @@ import { Mail, Phone, Image as ImageIcon, Loader2 } from 'lucide-react'
 import { api } from '../../services/api'
 import { partnersService } from '../../services/partners'
 
+// Formulaire de création/édition d'un partenaire (logo uploadé via UploadController).
 const PartnersForm = () => {
   const { t } = useTranslation()
   const navigate = useNavigate()

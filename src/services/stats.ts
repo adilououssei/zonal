@@ -1,3 +1,4 @@
+// Chiffres-clés publics affichés sur le site (nombre de projets, événements...)
 import { api } from './api'
 
 export interface PublicStats {

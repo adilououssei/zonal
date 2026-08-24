@@ -1,3 +1,4 @@
+// Appels API pour les articles d'actualité : CRUD admin (newsService) et lecture publique (publicNewsService)
 import { api } from './api'
 
 export interface AdminNews {

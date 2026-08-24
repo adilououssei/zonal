@@ -6,6 +6,8 @@ import { MapPin, ArrowUpRight } from 'lucide-react'
 import { publicProjectsService } from '../services/projects'
 import type { PublicProject } from '../services/projects'
 
+// Page "Projets" : liste filtrable par statut (tous / en cours / terminé / planifié).
+
 const statusLabelMap: Record<string, string> = {
   ongoing: 'admin.status.ongoing',
   completed: 'admin.status.completed',
@@ -21,6 +23,8 @@ const statusColorMap: Record<string, string> = {
 const filters = ['Tous', 'ongoing', 'completed', 'planned'] as const
 type Filter = (typeof filters)[number]
 
+// Formate une période de dates dans la langue courante ; si début et fin sont
+// la même année, n'affiche l'année qu'une seule fois (ex: "3 mars - 12 juin 2026")
 const formatPeriod = (start: string | null, end: string | null, i18n: { language: string }): string => {
   const locale = i18n.language === 'en' ? 'en-US' : 'fr-FR'
   const fullOpts: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'long', year: 'numeric' }

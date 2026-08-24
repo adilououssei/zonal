@@ -1,4 +1,8 @@
-// src/data/aboutData.ts
+// Données statiques de la page "À propos". Seul `teamMembers` (photos + ordre)
+// est encore utilisé par About.tsx, qui associe chaque membre à ses
+// traductions via i18n. `aboutStats` n'est plus utilisé : la page calcule
+// désormais ses statistiques dynamiquement à partir de l'API (voir dynamicStats
+// dans About.tsx).
 export const aboutStats = [
   { value: 15, suffix: '+', label: "Années d'expérience", icon: 'Award' },
   { value: 120, suffix: '+', label: 'Projets réalisés', icon: 'Leaf' },

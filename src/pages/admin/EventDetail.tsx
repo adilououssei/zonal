@@ -15,6 +15,9 @@ const statusStyles: Record<string, string> = {
   'Terminé': 'bg-gray-100 text-gray-500',
 }
 
+// Fiche détail admin d'un événement (lecture seule, avec accès rapide à
+// l'édition et à la suppression). Le contenu HTML de la description est
+// nettoyé via sanitizeHtml avant injection (protection XSS).
 const EventDetail = () => {
   const { t } = useTranslation()
   const monthNames = [

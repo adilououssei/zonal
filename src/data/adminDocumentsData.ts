@@ -1,3 +1,5 @@
+// Ancien jeu de données fictif (n'est plus importé nulle part) : la liste
+// admin réelle vient désormais de l'API via services/documents.ts.
 export interface AdminDocument {
   id: number
   name: string

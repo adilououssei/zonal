@@ -31,6 +31,9 @@ const catKey = (cat: string) => {
   return `admin.categories.${map[cat] || cat}`
 }
 
+// Insère (ou entoure la sélection existante avec) une balise HTML dans le
+// textarea de description, puis repositionne le curseur juste après —
+// sert de mini barre d'outils de mise en forme sans éditeur riche externe
 const formatDescription = (
   descRef: { current: HTMLTextAreaElement | null },
   description: string,
@@ -57,6 +60,10 @@ const formatDescription = (
   })
 }
 
+// Formulaire de création/édition d'un événement (mode déterminé par la
+// présence d'un :id dans l'URL). Les images (couverture + galerie) sont
+// uploadées immédiatement à la sélection via UploadController, avant même
+// l'enregistrement du formulaire.
 const EventForm = () => {
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
@@ -102,7 +109,9 @@ const EventForm = () => {
         setCoverPreview(event.coverImage)
         setGallery(event.gallery ?? [])
         setCategory(event.category ?? '')
-        // Use the backend status, but also recompute from date
+        // Le statut est recalculé côté client à partir de la date plutôt que de
+        // reprendre tel quel celui renvoyé par l'API, pour rester juste si la
+        // fiche est rouverte longtemps après sa création
         setStatus(computeStatusFromDate(event.date))
       } catch {
         console.error(t('admin.errors.loadEvent'))
@@ -203,7 +212,7 @@ const EventForm = () => {
     { icon: Link2, prefix: '<a href="', suffix: '">', fallbackKey: 'admin.format.link' },
     { icon: List, prefix: '<ul>\n<li>', suffix: '</li>\n</ul>', fallbackKey: 'admin.format.list' },
     { icon: ListOrdered, prefix: '<ol>\n<li>', suffix: '</li>\n</ol>', fallbackKey: 'admin.format.orderedList' },
-    { icon: AlignLeft },
+    { icon: AlignLeft }, // purement décoratif : pas de prefix/suffix donc ce bouton ne fait rien au clic
     { icon: Quote, prefix: '<blockquote>', suffix: '</blockquote>', fallbackKey: 'admin.format.quote' },
   ]
 

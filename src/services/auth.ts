@@ -1,3 +1,6 @@
+// Authentification côté front : connexion, déconnexion, et persistance du
+// jeton JWT + des infos utilisateur dans le localStorage (pas de session
+// serveur, l'API est stateless — voir security.yaml côté backend).
 import { api } from './api'
 
 export interface User {
@@ -72,6 +75,8 @@ class AuthService {
     localStorage.setItem(this.USER_KEY, JSON.stringify(user))
   }
 
+  // Utilisé après une modification du profil pour rafraîchir les infos affichées
+  // (nom, avatar...) sans repasser par un login complet
   updateUser(user: User): void {
     this.setUser(user)
   }

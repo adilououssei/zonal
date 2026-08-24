@@ -1,3 +1,5 @@
+// Ancien jeu de données fictif (n'est plus importé nulle part) : la galerie
+// admin réelle vient désormais de l'API via services/gallery.ts.
 export interface AdminGalleryItem {
   id: number
   src: string

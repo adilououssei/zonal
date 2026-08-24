@@ -12,6 +12,7 @@ import { statusLabelMap, statusColorMap } from '../../data/adminProjectsData'
 
 const statusFilters: ('Tous' | string)[] = ['Tous', 'ongoing', 'completed', 'planned']
 
+// Liste admin des projets : recherche et filtre par statut.
 const Projects = () => {
   const { t, i18n } = useTranslation()
   const [projects, setProjects] = useState<AdminProject[]>([])

@@ -9,6 +9,10 @@ import { publicNewsService } from '../services/news'
 import type { PublicNews } from '../services/news'
 import { sanitizeHtml } from '../lib/sanitize'
 
+// Page de détail d'un article d'actualité (/news/:id), avec galerie photo et
+// suggestions d'articles de la même catégorie.
+
+// Retire les balises HTML du contenu et le tronque pour l'aperçu en carte "liés"
 const getExcerpt = (html: string | null, maxLength = 120): string => {
   if (!html) return ''
   const text = html.replace(/<[^>]*>/g, '')
