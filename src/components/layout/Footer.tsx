@@ -20,7 +20,7 @@ const Footer = () => {
           {/* Logo & Description */}
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <img src="/images/logoZonal.png" alt={t('header.logo')} className="h-20 w-auto" />
+              <img src="/images/news/logoNoFont2.png" alt={t('header.logo')} className="h-20 w-auto" />
             </div>
             <p className="text-gray-400 text-body leading-relaxed">
               {t('footer.description')}

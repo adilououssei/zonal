@@ -173,7 +173,7 @@ const Home = () => {
       <section className="relative min-h-[85vh] flex items-end overflow-hidden pb-28 md:pb-32">
         <div className="absolute inset-0">
           <img
-            src="/images/hero1.png"
+            src="/images/news/homeHero2.png"
             alt={t('home.hero.tagline')}
             className="w-full h-full object-cover"
           />

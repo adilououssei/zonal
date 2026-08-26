@@ -103,10 +103,10 @@ const AdminLayout = () => {
       <aside className={`fixed inset-y-0 left-0 z-40 bg-primary-dark text-white transform transition-all duration-300 lg:translate-x-0 lg:z-auto ${collapsed ? 'w-16' : 'w-64'} ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className={`flex items-center h-16 px-3 border-b border-white/10 ${collapsed ? 'justify-center' : ''}`}>
           {collapsed ? (
-            <img src="/images/logoZonal.png" alt="ZONAL" className="h-22 w-auto" />
+            <img src="/images/news/logoNoFont2.png" alt="ZONAL" className="h-22 w-auto" />
           ) : (
             <>
-              <img src="/images/logoZonal.png" alt="ZONAL" className="h-22 w-auto" />
+              <img src="/images/news/logoNoFont2.png" alt="ZONAL" className="h-22 w-auto" />
               <button
                 onClick={() => setCollapsed(true)}
                 className="ml-auto text-white/40 hover:text-white transition-colors cursor-pointer hidden lg:block"

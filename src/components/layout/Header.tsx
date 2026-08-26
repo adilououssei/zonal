@@ -90,7 +90,7 @@ const Header = () => {
       <div className="container-custom py-1 md:py-1">
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
-            <img src="/images/logoOrigin.png" alt={t('header.logo')} className="h-20 w-auto" />
+            <img src="/images/news/logoNoFont.png" alt={t('header.logo')} className="h-20 w-auto" />
           </Link>
 
           {/* Desktop Navigation */}
