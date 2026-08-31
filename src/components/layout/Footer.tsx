@@ -32,8 +32,10 @@ const Footer = () => {
               <a href="https://www.linkedin.com/groups/12922267" target="_blank" rel="noopener noreferrer" aria-label={t('social.linkedin')} className="w-11 h-11 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/20 transition-colors">
                 <img src="/images/icons/linkedin.png" alt={t('social.linkedin')} className="w-6.5 h-6.5" />
               </a>
-              {/* Lien YouTube en attente : mettre à jour dès que la chaîne existe (voir aussi Header.tsx et Contact.tsx) */}
-              <a href="#" aria-label={t('social.youtube')} className="w-11 h-11 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/20 transition-colors">
+              <a href="https://www.instagram.com/organisationzonal?igsi=MW12bDl0aDJybWV5cg==" target="_blank" rel="noopener noreferrer" aria-label={t('social.instagram')} className="w-11 h-11 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/20 transition-colors">
+                <img src="/images/icons/instagram.png" alt={t('social.instagram')} className="w-6.5 h-6.5" />
+              </a>
+              <a href="https://www.youtube.com/@zonal-tchadutube" target="_blank" rel="noopener noreferrer" aria-label={t('social.youtube')} className="w-11 h-11 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/20 transition-colors">
                 <img src="/images/icons/youtube.png" alt={t('social.youtube')} className="w-6.5 h-6.5" />
               </a>
               <a href="https://wa.me/23566200620" target="_blank" rel="noopener noreferrer" aria-label={t('social.whatsapp')} className="w-11 h-11 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/20 transition-colors">
