@@ -87,11 +87,11 @@ const Contact = () => {
     },
   ]
 
-  // Lien YouTube en attente : mettre à jour dès que la chaîne existe (voir aussi Header.tsx et Footer.tsx)
   const socialLinks = [
     { icon: 'facebook', label: t('social.facebook'), href: 'https://www.facebook.com/61580087226895/' },
     { icon: 'linkedin', label: t('social.linkedin'), href: 'https://www.linkedin.com/groups/12922267' },
-    { icon: 'youtube', label: t('social.youtube'), href: '#' },
+    { icon: 'instagram', label: t('social.instagram'), href: 'https://www.instagram.com/organisationzonal?igsi=MW12bDl0aDJybWV5cg==' },
+    { icon: 'youtube', label: t('social.youtube'), href: 'https://www.youtube.com/@zonal-tchadutube' },
     { icon: 'whatsapp', label: t('social.whatsapp'), href: 'https://wa.me/23566200620' },
   ]
 
@@ -101,7 +101,7 @@ const Contact = () => {
       <section className="relative py-20 md:py-28 overflow-hidden">
         <div className="absolute inset-0">
           <img
-            src="images/hero.png"
+            src="images/news/contactHero.png"
             alt={t('contact.hero.title')}
             className="w-full h-full object-cover"
           />
@@ -273,7 +273,7 @@ const Contact = () => {
               className="rounded-card overflow-hidden shadow-lg relative min-h-105 lg:min-h-0"
             >
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3970.658738179776!2d15.0447!3d12.1348!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTLCsDA4JzA1LjMiTiAxNcKwMDInNDAuOSJF!5e0!3m2!1sfr!2sfr!4v1700000000000"
+                src="https://www.google.com/maps?q=12.091639,15.131250&z=17&output=embed"
                 width="100%"
                 height="100%"
                 style={{ border: 0, minHeight: '420px' }}

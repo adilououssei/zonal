@@ -123,7 +123,7 @@ const Programs = () => {
       <section className="relative py-20 md:py-28 overflow-hidden">
         <div className="absolute inset-0">
           <img
-            src="/images/programms.png"
+            src="/images/news/programsHero.png"
             alt={t('programs.hero.title')}
             className="w-full h-full object-cover"
           />

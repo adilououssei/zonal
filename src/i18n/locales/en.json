@@ -11,7 +11,7 @@
         },
         "topbar": {
             "address": "N'Djamena, Chad",
-            "address2": "Rue, avenue Dedjal Allamta",
+            "address2": "Street No. 9650",
             "email": "zonal.ch@gmail.com",
             "phone": "+235 662 00 620",
             "search": "Search",
@@ -32,7 +32,7 @@
         "hours": "Opening Hours",
         "contact": "Contact",
         "address": "N'Djamena, Chad",
-        "address2": "Rue, avenue Dedjal Allamta",
+        "address2": "Street No. 9650",
         "phone": "+235 662 00 620",
         "email": "zonal.ch@gmail.com",
         "whatsapp": "Write to us on WhatsApp",
@@ -401,7 +401,7 @@
                 "title": "Address",
                 "lines": [
                     "N'Djamena, Chad",
-                    "Rue, avenue Dedjal Allamta"
+                    "Street No. 9650"
                 ]
             },
             "phone": {
@@ -467,6 +467,7 @@
     },
     "social": {
         "facebook": "Facebook",
+        "instagram": "Instagram",
         "linkedin": "LinkedIn",
         "youtube": "YouTube",
         "whatsapp": "WhatsApp",

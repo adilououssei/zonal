@@ -68,7 +68,7 @@ const Login = () => {
               className="text-white text-center max-w-xs lg:max-w-sm shrink-0"
             >
               <div className="mb-6">
-                <img src="/images/logoZonal.png" alt="ZONAL" className="h-24 w-auto mx-auto" />
+                <img src="/images/news/logoNoFont2.png" alt="ZONAL" className="h-24 w-auto mx-auto" />
               </div>
               <h2 className="text-2xl md:text-3xl font-bold leading-tight mb-3">
                 {t('login.hero.title').split('\n').map((line, i) => (
@@ -87,7 +87,7 @@ const Login = () => {
               className="w-full max-w-sm bg-white rounded-2xl shadow-2xl p-6"
             >
               <div className="text-center mb-4">
-                <img src="/images/logoOrigin.png" alt="ZONAL" className="h-20 w-auto mx-auto" />
+                <img src="/images/news/logoNoFont.png" alt="ZONAL" className="h-20 w-auto mx-auto" />
               </div>
 
               <h1 className="text-center text-lg font-bold text-gray-900 mb-4">{t('login.card.title')}</h1>

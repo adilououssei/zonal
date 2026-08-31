@@ -72,7 +72,7 @@ const About = () => {
       <section className="relative py-20 md:py-28 overflow-hidden">
         <div className="absolute inset-0">
           <img
-            src="/images/hero-about.png"
+            src="/images/news/aboutHero.png"
             alt={t('about.hero.title')}
             className="w-full h-full object-cover"
           />
@@ -164,7 +164,7 @@ const About = () => {
             >
               <div className="rounded-card overflow-hidden shadow-xl mb-0">
                 <img
-                src="images/photo-plante.jpeg"
+                src="images/news/image.png"
                 alt={t('about.who.title')}
                   className="w-full h-auto"
                 />

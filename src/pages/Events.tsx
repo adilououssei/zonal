@@ -105,7 +105,7 @@ const Events = () => {
       <section className="relative py-20 md:py-28 overflow-hidden">
         <div className="absolute inset-0">
           <img
-            src="/images/hero-event.png"
+            src="/images/news/eventHero.png"
             alt={t('events.hero.title')}
             className="w-full h-full object-cover"
           />

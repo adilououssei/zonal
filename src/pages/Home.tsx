@@ -28,6 +28,17 @@ const iconMap: Record<string, ElementType> = {
 
 const statIconMap: ElementType[] = [ArrowDown, TrendingUp, Users, MapPin, Users]
 
+// Images du slider du hero : l'image historique (hero1) reste en premier, suivie
+// des slides ajoutés ensuite (slide2 à slide6), dans cet ordre.
+const heroImages = [
+  '/images/hero1.png',
+  '/images/slide2.png',
+  '/images/slide3.png',
+  '/images/slide4.png',
+  '/images/slide5.png',
+  '/images/slide6.png',
+]
+
 // Anime un chiffre de 0 jusqu'à `end` dès que le composant devient visible à
 // l'écran (IntersectionObserver), une seule fois grâce à `counted`.
 function CountUp({ end, duration, suffix }: { end: number; duration?: number; suffix?: string }) {
@@ -85,6 +96,7 @@ const Home = () => {
   const statsRef = useRef<HTMLDivElement | null>(null)
   const [statsInView, setStatsInView] = useState(false)
   const [activeSlide, setActiveSlide] = useState(0)
+  const [heroSlide, setHeroSlide] = useState(0)
   const [realStats, setRealStats] = useState<PublicStats | null>(null)
   const [allProjects, setAllProjects] = useState<PublicProject[]>([])
   const [upcomingEvents, setUpcomingEvents] = useState<PublicEvent[]>([])
@@ -163,6 +175,14 @@ const Home = () => {
     return () => observer.disconnect()
   }, [])
 
+  // Défilement automatique du slider du hero
+  useEffect(() => {
+    const id = setInterval(() => {
+      setHeroSlide((prev) => (prev + 1) % heroImages.length)
+    }, 6000)
+    return () => clearInterval(id)
+  }, [])
+
   // Navigation du carrousel de réalisations (Math.max évite une division par zéro si la liste est vide)
   const nextSlide = () => setActiveSlide((prev) => (prev + 1) % Math.max(displayProjects.length, 1))
   const prevSlide = () => setActiveSlide((prev) => (prev - 1 + Math.max(displayProjects.length, 1)) % Math.max(displayProjects.length, 1))
@@ -172,12 +192,34 @@ const Home = () => {
       {/* Hero Section */}
       <section className="relative min-h-[85vh] flex items-end overflow-hidden pb-28 md:pb-32">
         <div className="absolute inset-0">
-          <img
-            src="/images/hero1.png"
-            alt={t('home.hero.tagline')}
-            className="w-full h-full object-cover"
-          />
+          <AnimatePresence>
+            <motion.img
+              key={heroSlide}
+              src={heroImages[heroSlide]}
+              alt={t('home.hero.tagline')}
+              initial={{ opacity: 0, scale: 1.08 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{
+                opacity: { duration: 1.2, ease: 'easeInOut' },
+                scale: { duration: 6, ease: 'easeOut' },
+              }}
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+          </AnimatePresence>
           <div className="absolute inset-0 bg-linear-to-r from-black/70 via-black/50 to-black/30" />
+          <div className="absolute top-6 right-6 md:top-8 md:right-8 z-10 flex gap-2">
+            {heroImages.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setHeroSlide(index)}
+                aria-label={t('carousel.slide', { n: index + 1 })}
+                className={`h-2.5 rounded-full transition-all duration-300 ${
+                  index === heroSlide ? 'w-6 bg-white' : 'w-2.5 bg-white/40 hover:bg-white/60'
+                }`}
+              />
+            ))}
+          </div>
         </div>
         <div className="relative text-white px-4 sm:px-6 lg:px-8 max-w-6xl ml-0 lg:ml-12">
           <motion.div
