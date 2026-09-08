@@ -7,7 +7,8 @@ import {
 } from 'lucide-react'
 import { publicEventsService } from '../services/events'
 import type { PublicEvent } from '../services/events'
-import { sanitizeHtml } from '../lib/sanitize'
+import { sanitizeHtml, stripHtml } from '../lib/sanitize'
+import Seo, { SITE_URL } from '../components/Seo'
 
 // Page de détail d'un événement (/events/:id), avec galerie photo et
 // suggestions d'événements de la même catégorie.
@@ -63,8 +64,28 @@ const EventDetail = () => {
 
   const eventDate = new Date(event.date + 'T00:00:00')
 
+  const plainDescription = stripHtml(event.description) || `Événement organisé par ZONAL, ONG développement durable au Tchad, à ${event.location}.`
+
   return (
     <>
+      <Seo
+        title={event.title}
+        description={plainDescription}
+        keywords={`ZONAL, ONG développement durable Tchad, événement, ${event.title}, ${event.location}`}
+        path={`/events/${event.id}`}
+        image={event.image}
+        type="article"
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'Event',
+          name: event.title,
+          startDate: event.time ? `${event.date}T${event.time}` : event.date,
+          location: { '@type': 'Place', name: event.location, address: event.location },
+          image: event.image ? [event.image] : undefined,
+          description: plainDescription,
+          organizer: { '@type': 'Organization', name: 'ZONAL', url: SITE_URL },
+        }}
+      />
       {/* Hero */}
       <section className="relative py-20 md:py-28 overflow-hidden">
         <div className="absolute inset-0">

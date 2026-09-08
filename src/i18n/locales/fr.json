@@ -884,7 +884,20 @@
             "googleMapsIframe": "Lien Google Maps (iframe)",
             "changeLogo": "Changer le logo",
             "uploading": "Upload...",
-            "logo": "Logo"
+            "logo": "Logo",
+            "seo": "SEO",
+            "seoInfo": "Référencement (SEO)",
+            "seoHelp": "Ces informations apparaissent dans les résultats Google et lors du partage du site sur les réseaux sociaux. Laissez vide pour utiliser les valeurs par défaut du site.",
+            "metaTitle": "Titre du site (balise title)",
+            "metaTitleHelp": "Affiché en gras dans les résultats Google et l'onglet du navigateur. 50-60 caractères recommandés.",
+            "metaDescription": "Description du site (meta description)",
+            "metaDescriptionHelp": "Affichée sous le titre dans les résultats Google. 150-160 caractères recommandés.",
+            "metaKeywords": "Mots-clés",
+            "metaKeywordsHelp": "Séparés par des virgules. Impact limité sur Google aujourd'hui, mais utile pour documenter votre ciblage.",
+            "ogImage": "Image de partage (réseaux sociaux)",
+            "ogImageHelp": "Image affichée quand le site est partagé sur Facebook, WhatsApp, LinkedIn... Format recommandé : 1200x630px.",
+            "googleAnalyticsId": "Identifiant Google Analytics",
+            "changeImage": "Changer l'image"
         },
         "profile": {
             "title": "Mon profil",

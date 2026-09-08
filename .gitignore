@@ -12,6 +12,10 @@ dist
 dist-ssr
 *.local
 
+# Régénéré avant chaque build par scripts/generate-sitemap.mjs (voir "prebuild"
+# dans package.json) — jamais à jour s'il était committé.
+public/sitemap.xml
+
 # Environment variables (may contain secrets/URLs specific to a deployment)
 .env
 .env.*

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { api } from '../services/api'
+import Seo from '../components/Seo'
 import {
   MapPin, Phone, Mail, MessageCircle, Clock,
   ChevronRight, Send, Headset, Handshake, Users
@@ -97,6 +98,12 @@ const Contact = () => {
 
   return (
     <>
+      <Seo
+        title="Contact"
+        description="Contactez ZONAL, ONG développement durable au Tchad : adresse, téléphone, email et formulaire de contact."
+        keywords="ZONAL, ONG ZONAL, contact, Tchad, N'Djamena"
+        path="/contact"
+      />
       {/* Hero */}
       <section className="relative py-20 md:py-28 overflow-hidden">
         <div className="absolute inset-0">

@@ -9,6 +9,7 @@ import {
 import { teamMembers } from '../data/aboutData'
 import { publicStatsService, type PublicStats } from '../services/stats'
 import { publicTestimonialsService, type PublicTestimonial } from '../services/testimonials'
+import Seo from '../components/Seo'
 
 // Page "À propos" : présentation de l'ONG, statistiques, historique, équipe
 // et carrousel de témoignages (auto-défilant).
@@ -68,6 +69,12 @@ const About = () => {
 
   return (
     <>
+      <Seo
+        title="À propos de nous"
+        description="Découvrez ZONAL, ONG développement durable au Tchad : notre mission, notre équipe et notre impact à N'Djamena et Moundou."
+        keywords="ZONAL, ONG ZONAL, ONG développement durable Tchad, à propos, mission, équipe"
+        path="/about"
+      />
       {/* Hero */}
       <section className="relative py-20 md:py-28 overflow-hidden">
         <div className="absolute inset-0">

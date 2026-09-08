@@ -9,6 +9,7 @@ import {
 import { publicEventsService } from '../services/events'
 import type { PublicEvent } from '../services/events'
 import { subscribeToNewsletter } from '../services/newsletter'
+import Seo from '../components/Seo'
 
 // Page "Événements" : liste filtrable par statut, bande d'événements passés
 // défilable horizontalement, et formulaire d'inscription à la newsletter.
@@ -101,6 +102,12 @@ const Events = () => {
 
   return (
     <>
+      <Seo
+        title="Événements"
+        description="Retrouvez les événements organisés par ZONAL, ONG développement durable au Tchad : formations, ateliers et conférences à N'Djamena et Moundou."
+        keywords="ZONAL, ONG développement durable Tchad, événements, formation, atelier"
+        path="/events"
+      />
       {/* Hero */}
       <section className="relative py-20 md:py-28 overflow-hidden">
         <div className="absolute inset-0">

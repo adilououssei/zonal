@@ -1,21 +1,21 @@
 import { useState, useEffect, useRef, type ElementType, type FormEvent } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
-import { Info, Mail, Phone, MapPin, MessageCircle, Upload, Loader2 } from 'lucide-react'
+import { Info, Mail, Phone, MapPin, MessageCircle, Upload, Loader2, Search } from 'lucide-react'
 import { settingsService } from '../../services/settings'
 import { api } from '../../services/api'
 import type { SettingsData } from '../../services/settings'
 
 // Page "Paramètres" (réservée au super administrateur). IMPORTANT : le
 // backend (entité Settings + SettingsController) gère bien plus de champs que
-// ce que cette page expose actuellement — seuls les onglets Général et
-// Contact sont implémentés ici. Les champs réseaux sociaux/pied de
-// page/images/SEO existent dans SettingsData mais restent figés à `null` dans
-// ce formulaire (jamais affichés ni modifiables) : c'est pour cette raison que
-// les liens Facebook/LinkedIn/YouTube sont codés en dur dans Header.tsx,
-// Footer.tsx et Contact.tsx plutôt que gérés depuis l'admin. Ajouter les
-// onglets manquants ici serait nécessaire pour les rendre configurables.
-type TabKey = 'general' | 'contact'
+// ce que cette page expose actuellement — seuls les onglets Général, Contact
+// et SEO sont implémentés ici. Les champs réseaux sociaux/pied de page/images
+// existent dans SettingsData mais restent figés à `null` dans ce formulaire
+// (jamais affichés ni modifiables) : c'est pour cette raison que les liens
+// Facebook/LinkedIn/YouTube sont codés en dur dans Header.tsx, Footer.tsx et
+// Contact.tsx plutôt que gérés depuis l'admin. Ajouter les onglets manquants
+// ici serait nécessaire pour les rendre configurables.
+type TabKey = 'general' | 'contact' | 'seo'
 
 const inputClass = 'w-full px-3.5 py-2.5 rounded-lg border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-small'
 const labelClass = 'block text-small font-medium text-gray-700 mb-1.5'
@@ -25,6 +25,7 @@ const Settings = () => {
   const tabs: { key: TabKey; label: string; icon: ElementType }[] = [
     { key: 'general', label: t('admin.settings.generalInfo'), icon: Info },
     { key: 'contact', label: t('admin.settings.contact'), icon: Mail },
+    { key: 'seo', label: t('admin.settings.seo'), icon: Search },
   ]
   const [activeTab, setActiveTab] = useState<TabKey>('general')
   const [loading, setLoading] = useState(true)
@@ -59,7 +60,11 @@ const Settings = () => {
           facebook: null, linkedin: null, youtube: null, whatsappUrl: null,
           footerPresentation: null, copyright: null, openingHours: null, legalLink: null, privacyLink: null,
           heroImage: null, aboutImage: null, programsImage: null, eventsImage: null, contactImage: null,
-          metaTitle: null, metaDescription: null, metaKeywords: null, ogImage: null, googleAnalyticsId: null,
+          metaTitle: data.metaTitle ?? '',
+          metaDescription: data.metaDescription ?? '',
+          metaKeywords: data.metaKeywords ?? '',
+          ogImage: data.ogImage ?? '',
+          googleAnalyticsId: data.googleAnalyticsId ?? '',
         })
       })
       .catch(() => console.error('Erreur chargement paramètres'))
@@ -77,6 +82,22 @@ const Settings = () => {
       fd.append('file', file)
       const result = await api.upload<{ url: string }>('/api/upload', fd)
       set('logo', result.url)
+    } catch {
+      console.error('Erreur upload')
+    } finally {
+      setUploadingField(null)
+    }
+  }
+
+  const handleOgImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setUploadingField('ogImage')
+    try {
+      const fd = new FormData()
+      fd.append('file', file)
+      const result = await api.upload<{ url: string }>('/api/upload', fd)
+      set('ogImage', result.url)
     } catch {
       console.error('Erreur upload')
     } finally {
@@ -166,7 +187,7 @@ const Settings = () => {
                               </span>
                             </div>
                           )}
-                          <ImageUploadButton uploading={uploadingField} onUpload={handleLogoUpload} t={t} />
+                          <ImageUploadButton field="logo" uploading={uploadingField} onUpload={handleLogoUpload} label={t('admin.settings.changeLogo')} t={t} />
                         </div>
                       </div>
                       <div>
@@ -229,6 +250,48 @@ const Settings = () => {
                   </div>
                 )}
 
+                {activeTab === 'seo' && (
+                  <div>
+                    <h3 className="font-semibold text-gray-900 text-body mb-2">{t('admin.settings.seoInfo')}</h3>
+                    <p className="text-gray-500 text-small mb-5">{t('admin.settings.seoHelp')}</p>
+                    <div className="space-y-5">
+                      <div>
+                        <label className={labelClass}>{t('admin.settings.metaTitle')}</label>
+                        <input type="text" value={form.metaTitle ?? ''} onChange={(e) => set('metaTitle', e.target.value)} maxLength={70} className={inputClass} />
+                        <p className="text-gray-400 text-[11px] mt-1">{t('admin.settings.metaTitleHelp')} ({(form.metaTitle ?? '').length}/60)</p>
+                      </div>
+                      <div>
+                        <label className={labelClass}>{t('admin.settings.metaDescription')}</label>
+                        <textarea rows={3} value={form.metaDescription ?? ''} onChange={(e) => set('metaDescription', e.target.value)} maxLength={200} className={`${inputClass} resize-none`} />
+                        <p className="text-gray-400 text-[11px] mt-1">{t('admin.settings.metaDescriptionHelp')} ({(form.metaDescription ?? '').length}/160)</p>
+                      </div>
+                      <div>
+                        <label className={labelClass}>{t('admin.settings.metaKeywords')}</label>
+                        <input type="text" value={form.metaKeywords ?? ''} onChange={(e) => set('metaKeywords', e.target.value)} placeholder="ZONAL, ONG ZONAL, ONG développement durable Tchad" className={inputClass} />
+                        <p className="text-gray-400 text-[11px] mt-1">{t('admin.settings.metaKeywordsHelp')}</p>
+                      </div>
+                      <div>
+                        <label className={labelClass}>{t('admin.settings.ogImage')}</label>
+                        <div className="flex items-center gap-4">
+                          {form.ogImage ? (
+                            <div className="relative">
+                              <img src={form.ogImage} alt="Image de partage" className="w-20 h-12 rounded-lg object-cover border border-gray-200" />
+                              <button type="button" onClick={() => set('ogImage', '')} className="absolute -top-2 -right-2 w-5 h-5 bg-red text-white rounded-full flex items-center justify-center text-[10px]">&times;</button>
+                            </div>
+                          ) : (
+                            <div className="w-20 h-12 rounded-lg border border-dashed border-gray-300 flex items-center justify-center text-gray-300 text-[10px]">1200x630</div>
+                          )}
+                          <ImageUploadButton field="ogImage" uploading={uploadingField} onUpload={handleOgImageUpload} label={t('admin.settings.changeImage')} t={t} />
+                        </div>
+                        <p className="text-gray-400 text-[11px] mt-1">{t('admin.settings.ogImageHelp')}</p>
+                      </div>
+                      <div>
+                        <label className={labelClass}>{t('admin.settings.googleAnalyticsId')}</label>
+                        <input type="text" value={form.googleAnalyticsId ?? ''} onChange={(e) => set('googleAnalyticsId', e.target.value)} placeholder="G-XXXXXXXXXX" className={inputClass} />
+                      </div>
+                    </div>
+                  </div>
+                )}
 
               </motion.div>
             </AnimatePresence>
@@ -248,13 +311,13 @@ const Settings = () => {
   )
 }
 
-function ImageUploadButton({ uploading, onUpload, t: translate }: { uploading: string | null; onUpload: (e: React.ChangeEvent<HTMLInputElement>) => void; t: (key: string) => string }) {
+function ImageUploadButton({ field, uploading, onUpload, label, t: translate }: { field: string; uploading: string | null; onUpload: (e: React.ChangeEvent<HTMLInputElement>) => void; label: string; t: (key: string) => string }) {
   const ref = useRef<HTMLInputElement>(null)
   return (
     <>
       <button type="button" onClick={() => ref.current?.click()} className="flex items-center gap-1.5 text-primary text-small font-medium hover:text-primary-dark transition-colors">
-        {uploading === 'logo' ? <Loader2 size={14} className="animate-spin" /> : <Upload size={14} />}
-        {uploading === 'logo' ? translate('admin.settings.uploading') : translate('admin.settings.changeLogo')}
+        {uploading === field ? <Loader2 size={14} className="animate-spin" /> : <Upload size={14} />}
+        {uploading === field ? translate('admin.settings.uploading') : label}
       </button>
       <input ref={ref} type="file" accept="image/*" className="hidden" onChange={onUpload} />
     </>

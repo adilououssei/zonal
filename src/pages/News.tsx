@@ -9,6 +9,7 @@ import {
 import { publicNewsService } from '../services/news'
 import type { PublicNews } from '../services/news'
 import { subscribeToNewsletter } from '../services/newsletter'
+import Seo from '../components/Seo'
 
 // Page "Actualités" : liste des articles avec barre latérale (recherche,
 // catégories, articles récents, formulaire newsletter). La recherche, le tri
@@ -82,6 +83,12 @@ const News = () => {
 
   return (
     <>
+      <Seo
+        title="Actualités"
+        description="Suivez les actualités de ZONAL, ONG développement durable au Tchad : nos actions, projets et initiatives sur le terrain."
+        keywords="ZONAL, ONG développement durable Tchad, actualités, actions"
+        path="/news"
+      />
       {/* Hero */}
       <section className="relative py-20 md:py-28 overflow-hidden">
         <div className="absolute inset-0">

@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom'
 import { MapPin, ArrowUpRight } from 'lucide-react'
 import { publicProjectsService } from '../services/projects'
 import type { PublicProject } from '../services/projects'
+import Seo from '../components/Seo'
 
 // Page "Projets" : liste filtrable par statut (tous / en cours / terminé / planifié).
 
@@ -67,6 +68,13 @@ const Projects = () => {
     : projects.filter((p) => p.status === activeFilter)
 
   return (
+    <>
+      <Seo
+        title="Nos Projets et Réalisations"
+        description="Découvrez les projets et réalisations de ZONAL, ONG développement durable au Tchad, sur le terrain à N'Djamena, Moundou et dans les régions du Tchad."
+        keywords="ZONAL, ONG ZONAL, ONG développement durable Tchad, projets, réalisations"
+        path="/projects"
+      />
     <section className="py-16 bg-white">
       <div className="max-w-7xl mx-auto px-4">
         <motion.div
@@ -165,6 +173,7 @@ const Projects = () => {
 
       </div>
     </section>
+    </>
   )
 }
 

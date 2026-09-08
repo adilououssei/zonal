@@ -7,7 +7,8 @@ import {
 } from 'lucide-react'
 import { publicNewsService } from '../services/news'
 import type { PublicNews } from '../services/news'
-import { sanitizeHtml } from '../lib/sanitize'
+import { sanitizeHtml, stripHtml } from '../lib/sanitize'
+import Seo, { SITE_URL } from '../components/Seo'
 
 // Page de détail d'un article d'actualité (/news/:id), avec galerie photo et
 // suggestions d'articles de la même catégorie.
@@ -72,9 +73,28 @@ const NewsDetail = () => {
   }
 
   const articleDate = new Date(article.date + 'T00:00:00')
+  const plainExcerpt = stripHtml(article.excerpt) || stripHtml(article.content) || `Actualité de ZONAL, ONG développement durable au Tchad.`
 
   return (
     <>
+      <Seo
+        title={article.title}
+        description={plainExcerpt}
+        keywords={`ZONAL, ONG développement durable Tchad, actualité, ${article.category}, ${article.title}`}
+        path={`/news/${article.id}`}
+        image={article.image}
+        type="article"
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'NewsArticle',
+          headline: article.title,
+          image: article.image ? [article.image] : undefined,
+          datePublished: article.date,
+          description: plainExcerpt,
+          author: { '@type': article.author ? 'Person' : 'Organization', name: article.author || 'ZONAL' },
+          publisher: { '@type': 'Organization', name: 'ZONAL', logo: { '@type': 'ImageObject', url: `${SITE_URL}/images/logoOrigin.png` } },
+        }}
+      />
       {/* Hero with cover */}
       <section className="relative py-20 md:py-28 overflow-hidden">
         <div className="absolute inset-0">

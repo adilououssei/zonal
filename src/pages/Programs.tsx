@@ -10,6 +10,7 @@ import { publicStatsService } from '../services/stats'
 import type { PublicStats } from '../services/stats'
 import { publicPartnersService } from '../services/publicPartners'
 import type { PublicPartner } from '../services/publicPartners'
+import Seo from '../components/Seo'
 
 // Page "Programmes" : domaines d'intervention, statistiques et bandeau de
 // logos partenaires en défilement continu (CSS, pause au survol).
@@ -119,6 +120,12 @@ const Programs = () => {
 
   return (
     <>
+      <Seo
+        title="Nos Programmes"
+        description="Les programmes de ZONAL, ONG développement durable au Tchad : éducation, environnement, santé, agriculture et gouvernance locale."
+        keywords="ZONAL, ONG développement durable Tchad, programmes, éducation, environnement, santé, agriculture, gouvernance locale"
+        path="/programs"
+      />
       {/* Hero */}
       <section className="relative py-20 md:py-28 overflow-hidden">
         <div className="absolute inset-0">

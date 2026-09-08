@@ -12,6 +12,9 @@ import { publicProjectsService } from '../services/projects'
 import type { PublicProject } from '../services/projects'
 import { publicEventsService } from '../services/events'
 import type { PublicEvent } from '../services/events'
+import { publicSettingsService } from '../services/settings'
+import type { PublicSettingsData } from '../services/settings'
+import Seo, { SITE_URL } from '../components/Seo'
 
 // Page d'accueil du site public : hero, domaines clés, statistiques animées,
 // carrousel des dernières réalisations et prochains événements. La plupart
@@ -102,11 +105,18 @@ const Home = () => {
   const [upcomingEvents, setUpcomingEvents] = useState<PublicEvent[]>([])
   const [loadingRealisations, setLoadingRealisations] = useState(true)
   const [loadingEvents, setLoadingEvents] = useState(true)
+  const [settings, setSettings] = useState<PublicSettingsData | null>(null)
 
   useEffect(() => {
     publicStatsService.get()
       .then(setRealStats)
       .catch(() => console.error('Erreur chargement stats'))
+  }, [i18n.language])
+
+  useEffect(() => {
+    publicSettingsService.get()
+      .then(setSettings)
+      .catch(() => console.error('Erreur chargement réglages'))
   }, [i18n.language])
 
   // La section "Réalisations" mélange les projets terminés et en cours (sans
@@ -187,8 +197,35 @@ const Home = () => {
   const nextSlide = () => setActiveSlide((prev) => (prev + 1) % Math.max(displayProjects.length, 1))
   const prevSlide = () => setActiveSlide((prev) => (prev - 1 + Math.max(displayProjects.length, 1)) % Math.max(displayProjects.length, 1))
 
+  const orgName = settings?.orgName || 'ZONAL'
+  const sameAs = [settings?.facebook, settings?.linkedin, settings?.youtube].filter((v): v is string => !!v)
+
   return (
     <>
+      <Seo
+        title={settings?.metaTitle || 'ZONAL ONG — Développement Durable au Tchad'}
+        description={
+          settings?.metaDescription
+          || settings?.description
+          || "ZONAL est une ONG tchadienne engagée pour le développement durable au Tchad : éducation, environnement, santé, agriculture et gouvernance locale à N'Djamena, Moundou et alentours."
+        }
+        keywords={settings?.metaKeywords || 'ZONAL, ONG ZONAL, ONG développement durable Tchad, ONG Tchad, N\'Djamena, environnement, éducation, santé, agriculture, gouvernance locale'}
+        path="/"
+        image={settings?.ogImage}
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'NGO',
+          name: orgName,
+          alternateName: 'ONG ZONAL',
+          url: SITE_URL,
+          logo: settings?.logo || `${SITE_URL}/images/logoOrigin.png`,
+          description: settings?.description || "ONG tchadienne œuvrant pour le développement durable au Tchad.",
+          email: settings?.contactEmail || settings?.email || undefined,
+          telephone: settings?.contactPhone || settings?.phone || undefined,
+          address: settings?.address ? { '@type': 'PostalAddress', streetAddress: settings.address, addressCountry: 'TD' } : undefined,
+          sameAs: sameAs.length > 0 ? sameAs : undefined,
+        }}
+      />
       {/* Hero Section */}
       <section className="relative min-h-[85vh] flex items-end overflow-hidden pb-28 md:pb-32">
         <div className="absolute inset-0">

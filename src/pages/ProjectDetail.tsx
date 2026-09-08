@@ -7,6 +7,7 @@ import {
 } from 'lucide-react'
 import { publicProjectsService } from '../services/projects'
 import type { PublicProject } from '../services/projects'
+import Seo, { SITE_URL } from '../components/Seo'
 
 // Page de détail d'un projet, chargée via son id dans l'URL (/projects/:id).
 
@@ -78,6 +79,23 @@ const ProjectDetail = () => {
 
   return (
     <>
+      <Seo
+        title={project.title}
+        description={project.description?.slice(0, 160) || `Projet mené par ZONAL, ONG développement durable au Tchad, à ${project.location}.`}
+        keywords={`ZONAL, ONG développement durable Tchad, ${project.title}, ${project.location}`}
+        path={`/projects/${project.id}`}
+        image={project.image}
+        type="article"
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'Article',
+          headline: project.title,
+          image: project.image ? [project.image] : undefined,
+          description: project.description?.slice(0, 300),
+          author: { '@type': 'Organization', name: 'ZONAL' },
+          publisher: { '@type': 'Organization', name: 'ZONAL', logo: { '@type': 'ImageObject', url: `${SITE_URL}/images/logoOrigin.png` } },
+        }}
+      />
       {/* Hero */}
       <section className="relative py-20 md:py-28 overflow-hidden">
         <div className="absolute inset-0">

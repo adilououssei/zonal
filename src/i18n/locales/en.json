@@ -753,7 +753,20 @@
             "googleMapsIframe": "Google Maps link (iframe)",
             "changeLogo": "Change logo",
             "uploading": "Uploading...",
-            "logo": "Logo"
+            "logo": "Logo",
+            "seo": "SEO",
+            "seoInfo": "Search Engine Optimization (SEO)",
+            "seoHelp": "This information appears in Google search results and when the site is shared on social media. Leave blank to use the site's default values.",
+            "metaTitle": "Site title (title tag)",
+            "metaTitleHelp": "Shown in bold in Google results and the browser tab. 50-60 characters recommended.",
+            "metaDescription": "Site description (meta description)",
+            "metaDescriptionHelp": "Shown under the title in Google results. 150-160 characters recommended.",
+            "metaKeywords": "Keywords",
+            "metaKeywordsHelp": "Comma-separated. Limited impact on Google today, but useful to document your targeting.",
+            "ogImage": "Sharing image (social media)",
+            "ogImageHelp": "Image shown when the site is shared on Facebook, WhatsApp, LinkedIn... Recommended size: 1200x630px.",
+            "googleAnalyticsId": "Google Analytics ID",
+            "changeImage": "Change image"
         },
         "profile": {
             "title": "My Profile",
