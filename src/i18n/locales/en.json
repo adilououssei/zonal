@@ -12,7 +12,7 @@
         "topbar": {
             "address": "N'Djamena, Chad",
             "address2": "Street No. 9650",
-            "email": "zonal.ch@gmail.com",
+            "email": "zonal.chd@gmail.com",
             "phone": "+235 662 00 620",
             "search": "Search",
             "openMenu": "Open menu",
@@ -34,7 +34,7 @@
         "address": "N'Djamena, Chad",
         "address2": "Street No. 9650",
         "phone": "+235 662 00 620",
-        "email": "zonal.ch@gmail.com",
+        "email": "zonal.chd@gmail.com",
         "whatsapp": "Write to us on WhatsApp",
         "copyright": "© {{year}} Zonal - All rights reserved",
         "privacy": "Privacy Policy",
@@ -413,7 +413,7 @@
             "email": {
                 "title": "Email",
                 "lines": [
-                    "zonal.ch@gmail.com"
+                    "zonal.chd@gmail.com"
                 ]
             },
             "whatsapp": {
