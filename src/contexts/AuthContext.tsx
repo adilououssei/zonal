@@ -11,6 +11,7 @@ export interface AuthContextType {
   login: (email: string, password: string) => Promise<User>
   logout: () => void
   refreshUser: () => void
+  syncUserFromServer: () => Promise<void>
 }
 
 export const AuthContext = createContext<AuthContextType | null>(null)

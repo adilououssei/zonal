@@ -17,7 +17,7 @@ const AdminLayout = () => {
   const { t } = useTranslation()
   const location = useLocation()
   const navigate = useNavigate()
-  const { user, isAuthenticated, logout } = useAuth()
+  const { user, isAuthenticated, logout, syncUserFromServer } = useAuth()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [collapsed, setCollapsed] = useState(false)
   const [profileOpen, setProfileOpen] = useState(false)
@@ -49,6 +49,16 @@ const AdminLayout = () => {
       navigate('/login', { replace: true })
     }
   }, [isAuthenticated, navigate])
+
+  // Rafraîchit le rôle/les permissions depuis l'API à chaque chargement de
+  // l'admin (montage du layout, donc à chaque rechargement de page) : sans
+  // ça, un changement de permissions fait par un super administrateur ne
+  // s'appliquait qu'après déconnexion/reconnexion de la personne concernée.
+  useEffect(() => {
+    if (isAuthenticated) {
+      syncUserFromServer()
+    }
+  }, [isAuthenticated, syncUserFromServer])
 
   const handleLogout = () => {
     logout()

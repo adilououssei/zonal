@@ -84,6 +84,17 @@ class AuthService {
   refreshUser(): void {
     // no-op: user data is fetched from storage
   }
+
+  // Récupère le profil courant depuis l'API (rôle et permissions inclus) et
+  // met à jour le localStorage. Contrairement à login(), ne redemande pas de
+  // mot de passe : sert à rafraîchir les permissions d'une session déjà
+  // ouverte (ex: un super administrateur les a changées entre-temps), sans
+  // attendre que l'utilisateur se déconnecte/reconnecte pour qu'elles s'appliquent.
+  async fetchCurrentUser(): Promise<User> {
+    const user = await api.get<User>('/api/admin/profile')
+    this.setUser(user)
+    return user
+  }
 }
 
 export const authService = new AuthService()

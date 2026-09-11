@@ -26,6 +26,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(authService.getUser())
   }, [])
 
+  // Recharge le rôle/les permissions depuis l'API (ex: au montage de l'admin) :
+  // contrairement à refreshUser, va chercher l'état réel côté serveur plutôt
+  // que de relire le localStorage, pour qu'un changement de permissions fait
+  // par un super administrateur s'applique dès le prochain chargement de la
+  // page, sans devoir se déconnecter/reconnecter. Échec silencieux (ex: token
+  // expiré) : la page se chargera avec les données déjà en cache, et les
+  // appels API échoueront normalement avec leur propre message d'erreur.
+  const syncUserFromServer = useCallback(async () => {
+    try {
+      const fresh = await authService.fetchCurrentUser()
+      setUser(fresh)
+    } catch {
+      // ignore : token invalide/expiré, pas authentifié, etc. — géré ailleurs
+    }
+  }, [])
+
   return (
     <AuthContext.Provider
       value={{
@@ -35,6 +51,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         login,
         logout,
         refreshUser,
+        syncUserFromServer,
       }}
     >
       {children}
