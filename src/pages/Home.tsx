@@ -31,6 +31,10 @@ const iconMap: Record<string, ElementType> = {
 
 const statIconMap: ElementType[] = [ArrowDown, TrendingUp, Users, MapPin, Users]
 
+// Nombre de domaines clés affichés juste sous le hero (gouvernance, environnement,
+// gestion des catastrophes) : fixe, sert au slider mobile auto-défilant
+const DOMAINS_COUNT = 3
+
 // Images du slider du hero : l'image historique (hero1) reste en premier, suivie
 // des slides ajoutés ensuite (slide2 à slide6), dans cet ordre.
 const heroImages = [
@@ -100,6 +104,8 @@ const Home = () => {
   const [statsInView, setStatsInView] = useState(false)
   const [activeSlide, setActiveSlide] = useState(0)
   const [heroSlide, setHeroSlide] = useState(0)
+  const [activeDomain, setActiveDomain] = useState(0)
+  const domainsScrollRef = useRef<HTMLDivElement>(null)
   const [realStats, setRealStats] = useState<PublicStats | null>(null)
   const [allProjects, setAllProjects] = useState<PublicProject[]>([])
   const [upcomingEvents, setUpcomingEvents] = useState<PublicEvent[]>([])
@@ -167,6 +173,22 @@ const Home = () => {
     { icon: 'ShieldCheck', title: t('home.domains.disaster.title'), description: t('home.domains.disaster.desc') },
   ]
 
+  // Slider mobile des domaines clés : chaque carte occupe exactement la largeur
+  // du conteneur (w-full, sans marge entre elles), donc clientWidth = le pas
+  // d'une carte à l'autre, ce qui donne un index toujours exact (pas d'estimation
+  // approximative qui désynchronisait les points de pagination du slide affiché)
+  const handleDomainsScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const el = e.currentTarget
+    const index = Math.round(el.scrollLeft / el.clientWidth)
+    setActiveDomain(Math.min(featuredDomains.length - 1, Math.max(0, index)))
+  }
+
+  const scrollToDomain = (index: number) => {
+    const el = domainsScrollRef.current
+    if (!el) return
+    el.scrollTo({ left: index * el.clientWidth, behavior: 'smooth' })
+  }
+
   useEffect(() => {
     const el = statsRef.current
     if (!el) return
@@ -190,6 +212,19 @@ const Home = () => {
     const id = setInterval(() => {
       setHeroSlide((prev) => (prev + 1) % heroImages.length)
     }, 6000)
+    return () => clearInterval(id)
+  }, [])
+
+  // Défilement automatique du slider mobile des domaines clés (sans effet sur
+  // desktop/tablette : le conteneur y est caché donc le scrollTo n'y fait rien)
+  useEffect(() => {
+    const id = setInterval(() => {
+      setActiveDomain((prev) => {
+        const next = (prev + 1) % DOMAINS_COUNT
+        scrollToDomain(next)
+        return next
+      })
+    }, 4000)
     return () => clearInterval(id)
   }, [])
 
@@ -297,21 +332,60 @@ const Home = () => {
           transition={{ duration: 0.6 }}
           className="container-custom"
         >
-          <div className="bg-white rounded-2xl shadow-xl px-6 md:px-10 py-8 grid grid-cols-1 md:grid-cols-3 gap-8">
-            {featuredDomains.map((domain, index) => {
-              const Icon = iconMap[domain.icon] || Users
-              return (
-                <div key={index} className="flex items-start gap-4">
-                  <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
-                    <Icon size={28} />
+          <div className="bg-white rounded-2xl shadow-xl py-8">
+            {/* Desktop / tablette : les 3 domaines côte à côte */}
+            <div className="hidden md:grid md:grid-cols-3 gap-8 px-6 md:px-10">
+              {featuredDomains.map((domain, index) => {
+                const Icon = iconMap[domain.icon] || Users
+                return (
+                  <div key={index} className="flex items-start gap-4">
+                    <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                      <Icon size={28} />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-1">{domain.title}</h3>
+                      <p className="text-body text-gray-600 leading-relaxed">{domain.description}</p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-1">{domain.title}</h3>
-                    <p className="text-body text-gray-600 leading-relaxed">{domain.description}</p>
-                  </div>
-                </div>
-              )
-            })}
+                )
+              })}
+            </div>
+
+            {/* Mobile : les domaines défilent en slider, une carte par écran (swipe tactile + points de pagination) */}
+            <div className="md:hidden">
+              <div
+                ref={domainsScrollRef}
+                onScroll={handleDomainsScroll}
+                className="flex overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-hide"
+              >
+                {featuredDomains.map((domain, index) => {
+                  const Icon = iconMap[domain.icon] || Users
+                  return (
+                    <div key={index} className="snap-start shrink-0 w-full px-6">
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                          <Icon size={22} />
+                        </div>
+                        <h3 className="text-lg font-semibold text-gray-900">{domain.title}</h3>
+                      </div>
+                      <p className="text-body text-gray-600 leading-relaxed">{domain.description}</p>
+                    </div>
+                  )
+                })}
+              </div>
+              <div className="flex items-center justify-center gap-2 mt-5">
+                {featuredDomains.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => scrollToDomain(index)}
+                    aria-label={t('carousel.slide', { n: index + 1 })}
+                    className={`h-2.5 rounded-full transition-all duration-300 ${
+                      index === activeDomain ? 'w-6 bg-primary' : 'w-2.5 bg-gray-200'
+                    }`}
+                  />
+                ))}
+              </div>
+            </div>
           </div>
         </motion.div>
       </section>

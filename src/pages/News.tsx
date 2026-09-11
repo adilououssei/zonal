@@ -135,7 +135,7 @@ const News = () => {
           <div className="grid grid-cols-1 lg:grid-cols-[68%_32%] gap-10">
             {/* Colonne articles */}
             <div>
-              <div className="flex items-center justify-between mb-8">
+              <div className="flex flex-wrap items-center justify-between gap-3 mb-8">
                 <div>
                   <h2 className="text-2xl font-bold text-gray-900">{t('news.allTitle')}</h2>
                   <div className="w-10 h-1 bg-red mt-2" />

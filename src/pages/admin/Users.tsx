@@ -25,7 +25,7 @@ const Users = () => {
   const [roles, setRoles] = useState<Role[]>([])
   const [modalOpen, setModalOpen] = useState(false)
   const [editingUser, setEditingUser] = useState<AdminUser | null>(null)
-  const [formData, setFormData] = useState({ email: '', password: '', firstName: '', lastName: '', phone: '', roleId: '', accessLevel: 'ROLE_USER' })
+  const [formData, setFormData] = useState({ email: '', password: '', firstName: '', lastName: '', phone: '', roleId: '' })
 
   useEffect(() => {
     let cancelled = false
@@ -62,7 +62,7 @@ const Users = () => {
 
   const openCreateModal = () => {
     setEditingUser(null)
-    setFormData({ email: '', password: '', firstName: '', lastName: '', phone: '', roleId: '', accessLevel: 'ROLE_USER' })
+    setFormData({ email: '', password: '', firstName: '', lastName: '', phone: '', roleId: '' })
     setModalOpen(true)
   }
 
@@ -75,7 +75,6 @@ const Users = () => {
       lastName: user.lastName || '',
       phone: user.phone || '',
       roleId: String(user.roleEntity?.id ?? ''),
-      accessLevel: user.roles.includes('ROLE_ADMIN') ? 'ROLE_ADMIN' : 'ROLE_USER',
     })
     setModalOpen(true)
   }
@@ -84,19 +83,15 @@ const Users = () => {
     e.preventDefault()
     try {
       const roleId = formData.roleId ? Number(formData.roleId) : undefined
-      // Le niveau d'accès (ROLE_USER/ROLE_ADMIN) contrôle l'accès aux routes /api/admin
-      // côté backend ; il est distinct du rôle métier (roleId) qui ne fait que
-      // masquer/afficher les modules du menu. Voir Entity/User.php pour le détail.
-      const roles = [formData.accessLevel]
       if (editingUser) {
-        const payload: Record<string, unknown> = { email: formData.email, roleId, roles }
+        const payload: Record<string, unknown> = { email: formData.email, roleId }
         if (formData.firstName) payload.firstName = formData.firstName
         if (formData.lastName) payload.lastName = formData.lastName
         if (formData.phone) payload.phone = formData.phone
         if (formData.password) payload.password = formData.password
         await adminService.updateUser(editingUser.id, payload as Parameters<typeof adminService.updateUser>[1])
       } else {
-        await adminService.createUser({ ...formData, password: formData.password, roleId, roles } as Parameters<typeof adminService.createUser>[0])
+        await adminService.createUser({ ...formData, password: formData.password, roleId } as Parameters<typeof adminService.createUser>[0])
       }
       setModalOpen(false)
       reloadUsers()
@@ -345,17 +340,6 @@ const Users = () => {
                   {roles.map((r) => (
                     <option key={r.id} value={r.id}>{r.name}</option>
                   ))}
-                </select>
-              </div>
-              <div>
-                <label className="block text-small font-medium text-gray-700 mb-1">{t('admin.labels.accessLevel')}</label>
-                <select
-                  value={formData.accessLevel}
-                  onChange={(e) => setFormData({ ...formData, accessLevel: e.target.value })}
-                  className="w-full px-3.5 py-2.5 rounded-lg border border-gray-200 text-small text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition cursor-pointer"
-                >
-                  <option value="ROLE_USER">{t('admin.labels.accessLevelUser')}</option>
-                  <option value="ROLE_ADMIN">{t('admin.labels.accessLevelAdmin')}</option>
                 </select>
               </div>
               <div className="flex gap-3 pt-2">

@@ -16,7 +16,7 @@ const Footer = () => {
   return (
     <footer className="bg-primary-dark text-white pt-16 pb-6">
       <div className="container-custom">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 mb-12">
           {/* Logo & Description */}
           <div>
             <div className="flex items-center gap-2 mb-4">
@@ -46,21 +46,23 @@ const Footer = () => {
 
           {/* Liens utiles */}
           <div>
-            <h4 className="font-semibold text-lg mb-4">{t('footer.links')}</h4>
-            <ul className="space-y-3">
+            <h4 className="font-semibold text-lg mb-1.5">{t('footer.links')}</h4>
+            <span className="block w-8 h-0.5 bg-primary-light mb-4" />
+            <ul className="grid grid-cols-2 sm:grid-cols-1 gap-x-4 gap-y-3">
               <li><Link to="/" className="text-gray-400 hover:text-primary-light transition-colors">{t('header.nav.home')}</Link></li>
               <li><Link to="/about" className="text-gray-400 hover:text-primary-light transition-colors">{t('header.nav.about')}</Link></li>
               <li><Link to="/programs" className="text-gray-400 hover:text-primary-light transition-colors">{t('header.nav.programs')}</Link></li>
               <li><Link to="/projects" className="text-gray-400 hover:text-primary-light transition-colors">{t('header.nav.projects')}</Link></li>
               <li><Link to="/news" className="text-gray-400 hover:text-primary-light transition-colors">{t('header.nav.news')}</Link></li>
               <li><Link to="/events" className="text-gray-400 hover:text-primary-light transition-colors">{t('header.nav.events')}</Link></li>
-              <li><Link to="/contact" className="text-gray-400 hover:text-primary-light transition-colors">{t('header.nav.contact')}</Link></li>
+              <li className="col-span-2 sm:col-span-1"><Link to="/contact" className="text-gray-400 hover:text-primary-light transition-colors">{t('header.nav.contact')}</Link></li>
             </ul>
           </div>
 
           {/* Heures d'ouverture */}
           <div>
-            <h4 className="font-semibold text-lg mb-4">{t('footer.hours')}</h4>
+            <h4 className="font-semibold text-lg mb-1.5">{t('footer.hours')}</h4>
+            <span className="block w-8 h-0.5 bg-primary-light mb-4" />
             <ul className="space-y-4 text-gray-400">
               <li className="flex items-start gap-3">
                 <Clock size={20} className="text-primary-light shrink-0 mt-0.5" />
@@ -88,7 +90,8 @@ const Footer = () => {
 
           {/* Contact */}
           <div>
-            <h4 className="font-semibold text-lg mb-4">{t('footer.contact')}</h4>
+            <h4 className="font-semibold text-lg mb-1.5">{t('footer.contact')}</h4>
+            <span className="block w-8 h-0.5 bg-primary-light mb-4" />
             <ul className="space-y-3 text-gray-400">
               <li className="flex items-start gap-3">
                 <MapPin size={20} className="text-primary-light shrink-0 mt-0.5" />

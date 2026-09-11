@@ -318,7 +318,7 @@ const Events = () => {
                 {t('events.newsletter.desc')}
               </p>
             </div>
-            <form className="flex w-full md:w-auto gap-3" onSubmit={async (e) => {
+            <form className="flex flex-wrap w-full md:w-auto gap-3" onSubmit={async (e) => {
               e.preventDefault()
               if (!newsletterEmail) return
               setNewsletterStatus('loading')

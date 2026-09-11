@@ -2,7 +2,7 @@ import { useState, useEffect, type FormEvent } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
-import { LogIn, Eye, EyeOff } from 'lucide-react'
+import { LogIn, Eye, EyeOff, ArrowLeft } from 'lucide-react'
 import { useAuth } from '../contexts/useAuth'
 import LanguageSwitcher from '../components/ui/LanguageSwitcher'
 
@@ -47,18 +47,25 @@ const Login = () => {
   }
 
   return (
-    <div className="h-screen relative overflow-hidden">
+    <div className="min-h-screen relative">
       <img
         src="/images/bg_login.png"
         alt=""
         className="absolute inset-0 w-full h-full object-cover"
       />
       <div className="absolute inset-0 bg-linear-to-r from-primary-dark/95 via-primary-dark/70 to-primary-dark/40" />
+      <Link
+        to="/"
+        className="absolute top-4 left-4 z-20 inline-flex items-center gap-1.5 text-small font-medium text-white/80 hover:text-white transition-colors"
+      >
+        <ArrowLeft size={16} />
+        {t('admin.topbar.backToSite')}
+      </Link>
       <div className="absolute top-4 right-4 z-20">
         <LanguageSwitcher variant="dark" />
       </div>
 
-      <div className="relative z-10 h-screen flex items-center overflow-y-auto py-6">
+      <div className="relative z-10 min-h-screen flex items-center py-16">
         <div className="w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col lg:flex-row items-center justify-center gap-10 lg:gap-16">
             <motion.div

@@ -31,14 +31,14 @@ const ForgotPassword = () => {
   }
 
   return (
-    <div className="h-screen relative overflow-hidden">
+    <div className="min-h-screen relative">
       <img
         src="https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?w=1920&h=1080&fit=crop"
         alt=""
         className="absolute inset-0 w-full h-full object-cover"
       />
       <div className="absolute inset-0 bg-linear-to-r from-primary-dark/95 via-primary-dark/70 to-primary-dark/40" />
-      <div className="relative z-10 h-screen flex items-center justify-center">
+      <div className="relative z-10 min-h-screen flex items-center justify-center py-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
