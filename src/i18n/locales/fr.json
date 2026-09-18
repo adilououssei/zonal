@@ -362,7 +362,8 @@
             "subjectOther": "Autre",
             "message": "Écrivez votre message ici...",
             "submit": "Envoyer le message",
-            "sending": "Envoi..."
+            "sending": "Envoi...",
+            "captchaRequired": "Veuillez cocher « Je ne suis pas un robot »."
         },
         "support": {
             "support": {

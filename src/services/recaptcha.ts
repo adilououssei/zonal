@@ -1,52 +1,90 @@
-// reCAPTCHA v3 : protection anti-bot invisible (aucune case à cocher, aucun
-// défi visuel) pour les formulaires publics comme l'inscription newsletter.
+// reCAPTCHA côté frontend :
+// - v3 (invisible, aucune interaction) pour l'inscription newsletter ;
+// - v2 (case "Je ne suis pas un robot") pour le formulaire de contact.
+// Les deux types ont chacun leur paire de clés chez Google. Un seul script
+// api.js est chargé pour les deux (Google déconseille de le charger deux fois).
 //
-// Si VITE_RECAPTCHA_SITE_KEY n'est pas définie (dev local sans compte
-// reCAPTCHA), getRecaptchaToken() renvoie null : le backend ignore alors la
-// vérification (voir RecaptchaVerifier côté Symfony).
+// Sans clé configurée (dev local sans compte reCAPTCHA), rien n'est chargé et
+// aucun jeton n'est envoyé : le backend ignore alors la vérification (voir
+// RecaptchaVerifier côté Symfony).
 
-const SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY as string | undefined
+const V3_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY as string | undefined
+export const V2_SITE_KEY = import.meta.env.VITE_RECAPTCHA_V2_SITE_KEY as string | undefined
+
+interface GRecaptcha {
+  ready: (callback: () => void) => void
+  execute: (siteKey: string, options: { action: string }) => Promise<string>
+  render: (
+    container: HTMLElement,
+    options: {
+      sitekey: string
+      callback: (token: string) => void
+      'expired-callback': () => void
+      'error-callback': () => void
+    },
+  ) => number
+  reset: (widgetId?: number) => void
+}
 
 declare global {
   interface Window {
-    grecaptcha?: {
-      ready: (callback: () => void) => void
-      execute: (siteKey: string, options: { action: string }) => Promise<string>
-    }
+    grecaptcha?: GRecaptcha
   }
 }
 
 let scriptPromise: Promise<void> | null = null
 
-function loadScript(siteKey: string): Promise<void> {
+function loadScript(): Promise<void> {
   if (scriptPromise) return scriptPromise
 
   scriptPromise = new Promise((resolve, reject) => {
     const script = document.createElement('script')
-    script.src = `https://www.google.com/recaptcha/api.js?render=${siteKey}`
+    // "render=<clé v3>" active aussi l'API v3 ; "explicit" suffit si seule la case v2 est utilisée
+    script.src = `https://www.google.com/recaptcha/api.js?render=${V3_SITE_KEY ?? 'explicit'}`
     script.async = true
     script.onload = () => resolve()
-    script.onerror = () => reject(new Error('Impossible de charger reCAPTCHA'))
+    script.onerror = () => {
+      scriptPromise = null
+      reject(new Error('Impossible de charger reCAPTCHA'))
+    }
     document.head.appendChild(script)
   })
 
   return scriptPromise
 }
 
-// Renvoie un jeton reCAPTCHA pour l'action donnée, ou null si reCAPTCHA
+function whenReady(): Promise<GRecaptcha> {
+  return loadScript().then(
+    () => new Promise<GRecaptcha>(resolve => window.grecaptcha!.ready(() => resolve(window.grecaptcha!))),
+  )
+}
+
+// Renvoie un jeton reCAPTCHA v3 pour l'action donnée, ou null si reCAPTCHA
 // n'est pas configuré ou n'a pas pu être chargé (ne bloque jamais le
 // formulaire : le pire cas est une soumission non vérifiée côté backend).
 export async function getRecaptchaToken(action: string): Promise<string | null> {
-  if (!SITE_KEY) return null
+  if (!V3_SITE_KEY) return null
 
   try {
-    await loadScript(SITE_KEY)
-    return await new Promise<string>((resolve, reject) => {
-      window.grecaptcha!.ready(() => {
-        window.grecaptcha!.execute(SITE_KEY, { action }).then(resolve).catch(reject)
-      })
-    })
+    const grecaptcha = await whenReady()
+    return await grecaptcha.execute(V3_SITE_KEY, { action })
   } catch {
     return null
   }
+}
+
+// Affiche la case "Je ne suis pas un robot" (v2) dans le conteneur donné.
+export async function renderCheckbox(
+  container: HTMLElement,
+  onToken: (token: string | null) => void,
+): Promise<void> {
+  if (!V2_SITE_KEY) return
+
+  const grecaptcha = await whenReady()
+  grecaptcha.render(container, {
+    sitekey: V2_SITE_KEY,
+    callback: token => onToken(token),
+    'expired-callback': () => onToken(null),
+    'error-callback': () => onToken(null),
+  })
 }

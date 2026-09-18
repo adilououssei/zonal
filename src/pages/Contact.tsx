@@ -4,6 +4,8 @@ import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { api } from '../services/api'
 import Seo from '../components/Seo'
+import RecaptchaCheckbox from '../components/RecaptchaCheckbox'
+import { V2_SITE_KEY } from '../services/recaptcha'
 import {
   MapPin, Phone, Mail, MessageCircle, Clock,
   ChevronRight, Send, Headset, Handshake, Users
@@ -25,16 +27,25 @@ const Contact = () => {
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null)
+  // Changer cette valeur remonte la case reCAPTCHA (un jeton ne sert qu'une fois)
+  const [captchaKey, setCaptchaKey] = useState(0)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
+    if (V2_SITE_KEY && !recaptchaToken) {
+      setError(t('contact.form.captchaRequired'))
+      return
+    }
     setLoading(true)
     try {
-      await api.post<{ message: string }>('/api/contact', { name, email, subject, message }, false)
+      await api.post<{ message: string }>('/api/contact', { name, email, subject, message, recaptchaToken }, false)
       setSubmitted(true)
     } catch (err) {
       setError(err instanceof Error ? err.message : t('errors.sendMessage'))
+      setRecaptchaToken(null)
+      setCaptchaKey(k => k + 1)
     } finally {
       setLoading(false)
     }
@@ -261,6 +272,7 @@ const Contact = () => {
                     placeholder={t('contact.form.message')}
                     className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition resize-none"
                   />
+                  <RecaptchaCheckbox key={captchaKey} onToken={setRecaptchaToken} />
                   {error && <p className="text-red text-sm">{error}</p>}
                   <button type="submit" disabled={loading} className="btn-red w-full justify-center flex items-center gap-2 disabled:opacity-60">
                     <Send size={18} />

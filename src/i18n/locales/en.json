@@ -447,7 +447,8 @@
             "subjectOther": "Other",
             "message": "Write your message here...",
             "submit": "Send message",
-            "sending": "Sending..."
+            "sending": "Sending...",
+            "captchaRequired": "Please tick “I’m not a robot”."
         },
         "support": {
             "support": {
