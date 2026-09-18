@@ -18,6 +18,11 @@ COPY . .
 ARG VITE_API_URL=http://localhost:8000
 ENV VITE_API_URL=$VITE_API_URL
 
+# Idem pour la clé "site" reCAPTCHA v3 (publique) : changer de clé nécessite
+# aussi un rebuild de l'image.
+ARG VITE_RECAPTCHA_SITE_KEY=
+ENV VITE_RECAPTCHA_SITE_KEY=$VITE_RECAPTCHA_SITE_KEY
+
 RUN npm run build
 
 # --- Étape 2 : servir les fichiers statiques avec Nginx (image finale, ni ---

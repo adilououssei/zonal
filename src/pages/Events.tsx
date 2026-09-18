@@ -9,6 +9,7 @@ import {
 import { publicEventsService } from '../services/events'
 import type { PublicEvent } from '../services/events'
 import { subscribeToNewsletter } from '../services/newsletter'
+import { getRecaptchaToken } from '../services/recaptcha'
 import Seo from '../components/Seo'
 
 // Page "Événements" : liste filtrable par statut, bande d'événements passés
@@ -323,7 +324,8 @@ const Events = () => {
               if (!newsletterEmail) return
               setNewsletterStatus('loading')
               try {
-                const res = await subscribeToNewsletter(newsletterEmail)
+                const recaptchaToken = await getRecaptchaToken('newsletter_subscribe')
+                const res = await subscribeToNewsletter(newsletterEmail, undefined, recaptchaToken)
                 setNewsletterMessage(res.message)
                 setNewsletterStatus('success')
                 setNewsletterEmail('')

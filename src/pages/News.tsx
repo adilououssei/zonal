@@ -9,6 +9,7 @@ import {
 import { publicNewsService } from '../services/news'
 import type { PublicNews } from '../services/news'
 import { subscribeToNewsletter } from '../services/newsletter'
+import { getRecaptchaToken } from '../services/recaptcha'
 import Seo from '../components/Seo'
 
 // Page "Actualités" : liste des articles avec barre latérale (recherche,
@@ -319,7 +320,8 @@ const News = () => {
                   if (!newsletterEmail) return
                   setNewsletterStatus('loading')
                   try {
-                    const res = await subscribeToNewsletter(newsletterEmail)
+                    const recaptchaToken = await getRecaptchaToken('newsletter_subscribe')
+                    const res = await subscribeToNewsletter(newsletterEmail, undefined, recaptchaToken)
                     setNewsletterMessage(res.message)
                     setNewsletterStatus('success')
                     setNewsletterEmail('')

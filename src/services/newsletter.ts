@@ -6,8 +6,8 @@ export interface SubscribeResponse {
   message: string
 }
 
-export async function subscribeToNewsletter(email: string, name?: string): Promise<SubscribeResponse> {
-  return api.post<SubscribeResponse>('/api/newsletter/subscribe', { email, name }, false)
+export async function subscribeToNewsletter(email: string, name?: string, recaptchaToken?: string | null): Promise<SubscribeResponse> {
+  return api.post<SubscribeResponse>('/api/newsletter/subscribe', { email, name, recaptchaToken }, false)
 }
 
 // Appelé via le lien "se désinscrire" reçu par email (le jeton fait office d'authentification)
