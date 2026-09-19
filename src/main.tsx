@@ -19,6 +19,7 @@ import Login from './pages/Login'
 import ForgotPassword from './pages/ForgotPassword'
 import ResetPassword from './pages/ResetPassword'
 import NewsletterUnsubscribe from './pages/NewsletterUnsubscribe'
+import NewsletterConfirm from './pages/NewsletterConfirm'
 import AdminLayout from './pages/admin/AdminLayout'
 import Dashboard from './pages/admin/Dashboard'
 import EventsList from './pages/admin/EventsList'
@@ -75,6 +76,7 @@ const router = createBrowserRouter([
       { path: '/login', element: <Login /> },
       { path: '/forgot-password', element: <ForgotPassword /> },
       { path: '/reset-password/:token', element: <ResetPassword /> },
+      { path: '/newsletter/confirm/:token', element: <NewsletterConfirm /> },
       { path: '/newsletter/unsubscribe/:token', element: <NewsletterUnsubscribe /> },
       {
         path: '/admin',

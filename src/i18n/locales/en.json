@@ -512,6 +512,12 @@
     "newsletter": {
         "placeholder": "Your email address",
         "button": "Subscribe",
+        "confirm": {
+            "loading": "Confirming your subscription...",
+            "success": "Your newsletter subscription is confirmed. Thank you!",
+            "error": "This confirmation link is invalid or has expired (it may already have been used). You can subscribe again from the site.",
+            "backToSite": "Back to home"
+        },
         "unsubscribe": {
             "loading": "Processing your request...",
             "success": "You have been successfully unsubscribed. You will no longer receive our emails.",
@@ -659,6 +665,7 @@
             "planned": "Planned",
             "active": "Active",
             "inactive": "Inactive",
+            "pending": "Awaiting confirmation",
             "published": "Published",
             "draft": "Draft",
             "all": "All",

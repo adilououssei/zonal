@@ -10,6 +10,11 @@ export async function subscribeToNewsletter(email: string, name?: string, recapt
   return api.post<SubscribeResponse>('/api/newsletter/subscribe', { email, name, recaptchaToken }, false)
 }
 
+// Appelé via le lien "Confirmer mon inscription" reçu par email (double opt-in)
+export async function confirmNewsletterSubscription(token: string): Promise<SubscribeResponse> {
+  return api.get<SubscribeResponse>(`/api/newsletter/confirm/${token}`, false)
+}
+
 // Appelé via le lien "se désinscrire" reçu par email (le jeton fait office d'authentification)
 export async function unsubscribeFromNewsletter(token: string): Promise<SubscribeResponse> {
   return api.get<SubscribeResponse>(`/api/newsletter/unsubscribe/${token}`, false)
@@ -20,6 +25,7 @@ export interface NewsletterSubscriber {
   email: string
   name: string | null
   isActive: boolean
+  status: 'active' | 'pending' | 'unsubscribed'
   subscribedAt: string | null
 }
 
