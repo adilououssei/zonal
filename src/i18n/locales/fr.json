@@ -363,7 +363,9 @@
             "message": "Écrivez votre message ici...",
             "submit": "Envoyer le message",
             "sending": "Envoi...",
-            "captchaRequired": "Veuillez cocher « Je ne suis pas un robot »."
+            "captchaRequired": "Veuillez cocher « Je ne suis pas un robot ».",
+            "captchaLoadError": "La vérification anti-robot n'a pas pu se charger (bloqueur de publicité ou connexion ?).",
+            "captchaRetry": "Réessayer"
         },
         "support": {
             "support": {

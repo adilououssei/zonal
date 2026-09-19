@@ -448,7 +448,9 @@
             "message": "Write your message here...",
             "submit": "Send message",
             "sending": "Sending...",
-            "captchaRequired": "Please tick “I’m not a robot”."
+            "captchaRequired": "Please tick “I’m not a robot”.",
+            "captchaLoadError": "The anti-robot check could not load (ad blocker or connection?).",
+            "captchaRetry": "Try again"
         },
         "support": {
             "support": {
