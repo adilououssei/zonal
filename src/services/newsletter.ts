@@ -25,7 +25,6 @@ export interface NewsletterSubscriber {
   email: string
   name: string | null
   isActive: boolean
-  status: 'active' | 'pending' | 'unsubscribed'
   subscribedAt: string | null
 }
 

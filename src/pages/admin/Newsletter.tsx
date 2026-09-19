@@ -109,8 +109,8 @@ const Newsletter = () => {
                       <td className="px-5 py-4 text-gray-600 text-small">{s.name || '—'}</td>
                       <td className="px-5 py-4 text-gray-600 text-small">{formatDate(s.subscribedAt)}</td>
                       <td className="px-5 py-4">
-                        <span className={`inline-block px-2.5 py-1 rounded-full text-[11px] font-semibold ${s.status === 'active' ? 'bg-emerald-100 text-emerald-700' : s.status === 'pending' ? 'bg-amber-100 text-amber-700' : 'bg-gray-100 text-gray-500'}`}>
-                          {s.status === 'active' ? t('admin.status.active') : s.status === 'pending' ? t('admin.status.pending') : t('admin.status.inactive')}
+                        <span className={`inline-block px-2.5 py-1 rounded-full text-[11px] font-semibold ${s.isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-500'}`}>
+                          {s.isActive ? t('admin.status.active') : t('admin.status.inactive')}
                         </span>
                       </td>
                       <td className="px-5 py-4 text-right">

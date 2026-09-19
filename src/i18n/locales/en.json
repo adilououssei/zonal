@@ -665,7 +665,6 @@
             "planned": "Planned",
             "active": "Active",
             "inactive": "Inactive",
-            "pending": "Awaiting confirmation",
             "published": "Published",
             "draft": "Draft",
             "all": "All",
