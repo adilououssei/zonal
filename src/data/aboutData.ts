@@ -16,9 +16,9 @@ export const aboutStats = [
 // grossissement pour que le visage remplisse le cercle. Noms et rôles sont
 // dans i18n (about.teamMembers.<key>).
 export const teamMembers = [
-  { key: 'houssoube', image: '/images/equipes/tof1.jpeg', focus: '49% 35%', zoom: 1.6 },
-  { key: 'yanne', image: '/images/equipes/tof4.jpeg', focus: '45% 33%', zoom: 1.6 },
-  { key: 'bachirou', image: '/images/equipes/tof3.jpeg', focus: '48% 33%', zoom: 1.4 },
+  { key: 'houssoube', image: '/images/equipes/tof1.jpeg', focus: '49% 8%', zoom: 1.15 },
+  { key: 'yanne', image: '/images/equipes/tof4.jpeg', focus: '45% 8%', zoom: 1.15 },
+  { key: 'bachirou', image: '/images/equipes/tof3.jpeg', focus: '48% 100%', zoom: 0.9 },
   { key: 'laoukoura', image: '/images/equipes/tof2.jpeg', focus: '51% 5%', zoom: 1.1 },
   { key: 'nenbara', image: '/images/equipes/tof5.jpeg', focus: '55% 45%', zoom: 1.05 },
   { key: 'bedin', image: '/images/equipes/tof6.jpeg', focus: '55% 0%', zoom: 1.5 },

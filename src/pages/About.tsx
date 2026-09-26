@@ -304,7 +304,7 @@ const About = () => {
                 >
                   {teamPages[currentTeamPage]?.map((member) => (
                     <div key={member.key} className="flex flex-col items-center text-center">
-                      <div className="w-40 h-40 md:w-48 md:h-48 rounded-full overflow-hidden ring-4 ring-primary/15 shadow-md mb-5">
+                      <div className="w-40 h-40 md:w-48 md:h-48 rounded-full overflow-hidden bg-white ring-4 ring-primary/15 shadow-md mb-5">
                         <img
                           src={member.image}
                           alt={member.name}
