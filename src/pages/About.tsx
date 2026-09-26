@@ -33,7 +33,6 @@ const About = () => {
     window.matchMedia('(min-width: 640px)').matches ? 3 : 1
   )
   const [teamPage, setTeamPage] = useState(0)
-  const [teamPaused, setTeamPaused] = useState(false)
 
   useEffect(() => {
     publicStatsService.get().then(setRealStats).catch(() => {})
@@ -60,10 +59,10 @@ const About = () => {
 
   useEffect(() => {
     const pages = Math.ceil(teamMembers.length / teamPerPage)
-    if (teamPaused || pages < 2) return
+    if (pages < 2) return
     const timer = setInterval(() => setTeamPage((prev) => (prev + 1) % pages), 5000)
     return () => clearInterval(timer)
-  }, [teamPerPage, teamPaused])
+  }, [teamPerPage])
 
   // Défilement automatique du carrousel de témoignages toutes les 4s, désactivé
   // s'il y a moins de 3 témoignages (pas besoin de faire défiler 1 seule paire)
@@ -287,71 +286,33 @@ const About = () => {
             <p className="text-gray-600 text-body">{t('about.team.subtitle')}</p>
           </motion.div>
 
-          <div
-            className="relative"
-            onMouseEnter={() => setTeamPaused(true)}
-            onMouseLeave={() => setTeamPaused(false)}
-          >
-            <div className="overflow-hidden">
-              <AnimatePresence mode="wait" initial={false}>
-                <motion.div
-                  key={`${teamPerPage}-${currentTeamPage}`}
-                  initial={{ opacity: 0, x: 60 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -60 }}
-                  transition={{ duration: 0.35 }}
-                  className="grid grid-cols-1 sm:grid-cols-3 gap-8"
-                >
-                  {teamPages[currentTeamPage]?.map((member) => (
-                    <div key={member.key} className="flex flex-col items-center text-center">
-                      <div className="w-40 h-40 md:w-48 md:h-48 rounded-full overflow-hidden bg-white ring-4 ring-primary/15 shadow-md mb-5">
-                        <img
-                          src={member.image}
-                          alt={member.name}
-                          loading="lazy"
-                          className="w-full h-full object-cover"
-                          style={{ objectPosition: member.focus, transform: `scale(${member.zoom})`, transformOrigin: member.focus }}
-                        />
-                      </div>
-                      <h3 className="font-semibold text-gray-900 text-lg">{member.name}</h3>
-                      <p className="text-gray-500 text-small mt-1 max-w-xs">{member.role}</p>
+          <div className="overflow-hidden py-3">
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={`${teamPerPage}-${currentTeamPage}`}
+                initial={{ opacity: 0, x: 60 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -60 }}
+                transition={{ duration: 0.35 }}
+                className="grid grid-cols-1 sm:grid-cols-3 gap-8"
+              >
+                {teamPages[currentTeamPage]?.map((member) => (
+                  <div key={member.key} className="flex flex-col items-center text-center">
+                    <div className="w-40 h-40 md:w-48 md:h-48 rounded-full overflow-hidden bg-white ring-4 ring-primary/15 shadow-md mb-5">
+                      <img
+                        src={member.image}
+                        alt={member.name}
+                        loading="lazy"
+                        className="w-full h-full object-cover"
+                        style={{ objectPosition: member.focus, transform: `scale(${member.zoom})`, transformOrigin: member.focus }}
+                      />
                     </div>
-                  ))}
-                </motion.div>
-              </AnimatePresence>
-            </div>
-
-            {teamPageCount > 1 && (
-              <div className="flex items-center justify-center gap-4 mt-10">
-                <button
-                  type="button"
-                  onClick={() => setTeamPage((currentTeamPage - 1 + teamPageCount) % teamPageCount)}
-                  aria-label={t('carousel.prev')}
-                  className="w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
-                >
-                  <ChevronLeft size={18} />
-                </button>
-                <div className="flex gap-2">
-                  {teamPages.map((_, i) => (
-                    <button
-                      key={i}
-                      type="button"
-                      onClick={() => setTeamPage(i)}
-                      aria-label={t('carousel.slide', { n: i + 1 })}
-                      className={`h-2.5 rounded-full transition-all ${i === currentTeamPage ? 'w-8 bg-primary' : 'w-2.5 bg-gray-300'}`}
-                    />
-                  ))}
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setTeamPage((currentTeamPage + 1) % teamPageCount)}
-                  aria-label={t('carousel.next')}
-                  className="w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
-                >
-                  <ChevronRight size={18} />
-                </button>
-              </div>
-            )}
+                    <h3 className="font-semibold text-gray-900 text-lg">{member.name}</h3>
+                    <p className="text-gray-500 text-small mt-1 max-w-xs">{member.role}</p>
+                  </div>
+                ))}
+              </motion.div>
+            </AnimatePresence>
           </div>
         </div>
       </section>
