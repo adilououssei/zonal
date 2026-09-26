@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { Handshake, Plus, Edit, Trash2, Mail, Phone, ToggleLeft, ToggleRight, Search, ChevronDown } from 'lucide-react'
 import { partnersService } from '../../services/partners'
 import type { AdminPartner } from '../../services/partners'
+import RowActions from '../../components/admin/RowActions'
 
 const statusColorMap: Record<string, string> = {
   active: 'bg-emerald-100 text-emerald-700',
@@ -117,37 +118,48 @@ const Partners = () => {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-gray-100 bg-gray-50/50">
-                  <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.partner')}</th>
-                  <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.domain')}</th>
-                  <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.contact')}</th>
-                  <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.status')}</th>
-                  <th className="text-right px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.actions')}</th>
+                  <th className="text-left px-4 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.partner')}</th>
+                  <th className="hidden md:table-cell text-left px-4 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.domain')}</th>
+                  <th className="hidden lg:table-cell text-left px-4 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.contact')}</th>
+                  <th className="hidden sm:table-cell text-left px-4 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.status')}</th>
+                  <th className="w-14 text-right px-4 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.actions')}</th>
                 </tr>
               </thead>
               <tbody>
                 {filtered.length > 0 ? (
                   filtered.map((partner, i) => (
-                    <tr key={partner.id} className={`border-b border-gray-50 ${i % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'}`}>
-                      <td className="px-5 py-4">
+                    <tr key={partner.id} className={`border-b border-gray-50 hover:bg-gray-50/80 transition-colors ${i % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'}`}>
+                      <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
                           <div className="w-9 h-9 rounded-lg bg-orange-50 flex items-center justify-center text-orange-500 shrink-0">
                             <Handshake size={16} />
                           </div>
-                          <span className="text-gray-800 text-small font-medium">{partner.name}</span>
+                          <div className="min-w-0">
+                            <span title={partner.name} className="block max-w-md text-gray-800 text-small font-medium leading-snug line-clamp-2 break-words">{partner.name}</span>
+                            {/* Infos des colonnes masquées sur les écrans plus étroits */}
+                            <div className="lg:hidden mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-500">
+                              {partner.domain && <span className="md:hidden">{partner.domain}</span>}
+                              {partner.email && <span className="inline-flex items-center gap-1 min-w-0"><Mail size={12} className="shrink-0" /><span className="truncate max-w-[14rem]">{partner.email}</span></span>}
+                              {partner.phone && <span className="inline-flex items-center gap-1"><Phone size={12} />{partner.phone}</span>}
+                              <span className={`sm:hidden inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold ${statusColorMap[partner.status] ?? 'bg-gray-100 text-gray-500'}`}>
+                                {partner.status === 'active' ? t('admin.status.active') : t('admin.status.inactive')}
+                              </span>
+                            </div>
+                          </div>
                         </div>
                       </td>
-                      <td className="px-5 py-4 text-gray-600 text-small">{partner.domain}</td>
-                      <td className="px-5 py-4">
-                        <div className="flex flex-col gap-0.5 text-gray-600 text-small">
+                      <td className="hidden md:table-cell px-4 py-3 text-gray-600 text-small">{partner.domain}</td>
+                      <td className="hidden lg:table-cell px-4 py-3">
+                        <div className="flex flex-col gap-0.5 text-gray-600 text-small max-w-[16rem]">
                           {partner.email && (
-                            <span className="flex items-center gap-1.5">
-                              <Mail size={13} />
-                              {partner.email}
+                            <span className="flex items-center gap-1.5 min-w-0" title={partner.email}>
+                              <Mail size={13} className="shrink-0" />
+                              <span className="truncate">{partner.email}</span>
                             </span>
                           )}
                           {partner.phone && (
-                            <span className="flex items-center gap-1.5">
-                              <Phone size={13} />
+                            <span className="flex items-center gap-1.5 whitespace-nowrap">
+                              <Phone size={13} className="shrink-0" />
                               {partner.phone}
                             </span>
                           )}
@@ -156,33 +168,30 @@ const Partners = () => {
                           )}
                         </div>
                       </td>
-                      <td className="px-5 py-4">
+                      <td className="hidden sm:table-cell px-4 py-3">
                         <button
                           onClick={() => handleToggleStatus(partner.id)}
-                          className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold cursor-pointer hover:opacity-80 transition-opacity ${statusColorMap[partner.status] ?? 'bg-gray-100 text-gray-500'}`}
+                          className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold whitespace-nowrap cursor-pointer hover:opacity-80 transition-opacity ${statusColorMap[partner.status] ?? 'bg-gray-100 text-gray-500'}`}
                           title={partner.status === 'active' ? t('admin.actions.deactivate') : t('admin.actions.activate')}
                         >
                           {partner.status === 'active' ? <ToggleRight size={13} /> : <ToggleLeft size={13} />}
                           {partner.status === 'active' ? t('admin.status.active') : t('admin.status.inactive')}
                         </button>
                       </td>
-                      <td className="px-5 py-4 text-right">
-                        <div className="flex items-center justify-end gap-1">
-                          <Link
-                            to={`/admin/partners/${partner.id}/edit`}
-                            className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-primary hover:bg-primary/10 transition-colors"
-                            title={t('admin.actions.edit')}
-                          >
-                            <Edit size={15} />
-                          </Link>
-                          <button
-                            onClick={() => handleDelete(partner.id)}
-                            className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-red hover:bg-red/10 transition-colors"
-                            title={t('admin.actions.delete')}
-                          >
-                            <Trash2 size={15} />
-                          </button>
-                        </div>
+                      <td className="px-4 py-3 text-right">
+                        <RowActions
+                          label={partner.name}
+                          actions={[
+                            { key: 'edit', label: t('admin.actions.edit'), icon: Edit, to: `/admin/partners/${partner.id}/edit` },
+                            {
+                              key: 'toggle',
+                              label: partner.status === 'active' ? t('admin.actions.deactivate') : t('admin.actions.activate'),
+                              icon: partner.status === 'active' ? ToggleLeft : ToggleRight,
+                              onClick: () => handleToggleStatus(partner.id),
+                            },
+                            { key: 'delete', label: t('admin.actions.delete'), icon: Trash2, danger: true, onClick: () => handleDelete(partner.id) },
+                          ]}
+                        />
                       </td>
                     </tr>
                   ))

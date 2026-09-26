@@ -32,6 +32,14 @@ RUN npm run build
 FROM nginx:1.27-alpine AS frontend
 
 COPY --from=build /app/dist /usr/share/nginx/html
-COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
+# Les fichiers de /etc/nginx/templates sont passés dans envsubst au démarrage
+# par l'image officielle, puis écrits dans /etc/nginx/conf.d/ (sans .template).
+COPY docker/nginx.conf.template /etc/nginx/templates/default.conf.template
+RUN rm -f /etc/nginx/conf.d/default.conf
+
+# Backend qui fournit les aperçus de liens partagés (voir nginx.conf.template) :
+# la même API que celle du site, sauf si on la surcharge au lancement (-e OG_API_URL=...).
+ARG VITE_API_URL=http://localhost:8000
+ENV OG_API_URL=$VITE_API_URL
 
 EXPOSE 80

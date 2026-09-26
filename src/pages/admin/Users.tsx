@@ -1,8 +1,9 @@
 import { useState, useEffect, type FormEvent } from 'react'
 import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
-import { Plus, Edit, Trash2, Search, ChevronsLeft, ChevronRight } from 'lucide-react'
+import { Plus, Edit, Trash2, Search, ChevronsLeft, ChevronRight, UserCheck, UserX } from 'lucide-react'
 import { adminService, type AdminUser, type Role } from '../../services/admin'
+import RowActions from '../../components/admin/RowActions'
 
 const avatarColors = ['bg-purple-50 text-purple-500', 'bg-blue-50 text-blue-500', 'bg-emerald-50 text-emerald-600', 'bg-orange-50 text-orange-500']
 
@@ -165,68 +166,75 @@ const Users = () => {
           <table className="w-full">
             <thead>
               <tr className="border-b border-gray-100 bg-gray-50/50">
-                <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.name')}</th>
-                <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.email')}</th>
-                <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.phone')}</th>
-                <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.role')}</th>
-                <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.status')}</th>
-                <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.lastLogin')}</th>
-                <th className="text-right px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.actions')}</th>
+                <th className="text-left px-4 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.name')}</th>
+                <th className="hidden lg:table-cell text-left px-4 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.email')}</th>
+                <th className="hidden 2xl:table-cell text-left px-4 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.phone')}</th>
+                <th className="hidden md:table-cell text-left px-4 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.role')}</th>
+                <th className="hidden sm:table-cell text-left px-4 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.status')}</th>
+                <th className="hidden xl:table-cell text-left px-4 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.lastLogin')}</th>
+                <th className="w-14 text-right px-4 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.actions')}</th>
               </tr>
             </thead>
             <tbody>
               {filteredUsers.length > 0 ? (
-                filteredUsers.map((user, i) => (
-                  <tr key={user.id} className={`border-b border-gray-50 ${i % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'}`}>
-                    <td className="px-5 py-4">
+                filteredUsers.map((user, i) => {
+                  const isSuperAdmin = user.roles.includes('ROLE_SUPER_ADMIN')
+                  const statusBadge = (
+                    <span className={`inline-block px-2.5 py-1 rounded-full text-[11px] font-semibold whitespace-nowrap ${userStatusColorMap[user.status]}`}>
+                      {user.status}
+                    </span>
+                  )
+                  return (
+                  <tr key={user.id} className={`border-b border-gray-50 hover:bg-gray-50/80 transition-colors ${i % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'}`}>
+                    <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
                         <div className={`w-9 h-9 rounded-full flex items-center justify-center font-semibold text-small shrink-0 ${avatarColors[i % avatarColors.length]}`}>
                           {user.name.split(' ').map((n) => n[0]).join('').slice(0, 2)}
                         </div>
-                        <span className="text-gray-800 text-small font-medium whitespace-nowrap">{user.name}</span>
+                        <div className="min-w-0">
+                          <span title={user.name} className="block max-w-xs text-gray-800 text-small font-medium leading-snug line-clamp-2 break-words">{user.name}</span>
+                          {/* Infos des colonnes masquées sur les écrans plus étroits */}
+                          <div className="2xl:hidden mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-500">
+                            <span className="lg:hidden truncate max-w-[14rem]" title={user.email}>{user.email}</span>
+                            {user.phone && <span>{user.phone}</span>}
+                            <span className="md:hidden">{user.role}</span>
+                            <span className="sm:hidden">{user.status}</span>
+                          </div>
+                        </div>
                       </div>
                     </td>
-                    <td className="px-5 py-4 text-gray-600 text-small whitespace-nowrap">{user.email}</td>
-                    <td className="px-5 py-4 text-gray-600 text-small whitespace-nowrap">{user.phone || '-'}</td>
-                    <td className="px-5 py-4 text-gray-600 text-small whitespace-nowrap">{user.role}</td>
-                    <td className="px-5 py-4">
-                      {user.roles.includes('ROLE_SUPER_ADMIN') ? (
-                        <span className={`inline-block px-2.5 py-1 rounded-full text-[11px] font-semibold ${userStatusColorMap[user.status]}`}>
-                          {user.status}
-                        </span>
-                      ) : (
-                        <button onClick={() => handleToggleStatus(user)} className="cursor-pointer">
-                          <span className={`inline-block px-2.5 py-1 rounded-full text-[11px] font-semibold ${userStatusColorMap[user.status]}`}>
-                            {user.status}
-                          </span>
-                        </button>
+                    <td className="hidden lg:table-cell px-4 py-3 text-gray-600 text-small">
+                      <span className="block max-w-[16rem] truncate" title={user.email}>{user.email}</span>
+                    </td>
+                    <td className="hidden 2xl:table-cell px-4 py-3 text-gray-600 text-small whitespace-nowrap">{user.phone || '-'}</td>
+                    <td className="hidden md:table-cell px-4 py-3 text-gray-600 text-small">{user.role}</td>
+                    <td className="hidden sm:table-cell px-4 py-3">
+                      {isSuperAdmin ? statusBadge : (
+                        <button onClick={() => handleToggleStatus(user)} className="cursor-pointer">{statusBadge}</button>
                       )}
                     </td>
-                    <td className="px-5 py-4 text-gray-500 text-small whitespace-nowrap">{user.lastLogin || '-'}</td>
-                    <td className="px-5 py-4 text-right">
-                      <div className="flex items-center justify-end gap-1">
-                        {!user.roles.includes('ROLE_SUPER_ADMIN') && (
-                          <>
-                            <button
-                              onClick={() => openEditModal(user)}
-                              className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-primary hover:bg-primary/10 transition-colors"
-                              title={t('admin.actions.edit')}
-                            >
-                              <Edit size={15} />
-                            </button>
-                            <button
-                              onClick={() => handleDelete(user)}
-                              className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-red hover:bg-red/10 transition-colors"
-                              title={t('admin.actions.delete')}
-                            >
-                              <Trash2 size={15} />
-                            </button>
-                          </>
-                        )}
-                      </div>
+                    <td className="hidden xl:table-cell px-4 py-3 text-gray-500 text-small whitespace-nowrap">{user.lastLogin || '-'}</td>
+                    <td className="px-4 py-3 text-right">
+                      {/* Le super-admin n'est ni modifiable ni supprimable depuis cette page */}
+                      {!isSuperAdmin && (
+                        <RowActions
+                          label={user.name}
+                          actions={[
+                            { key: 'edit', label: t('admin.actions.edit'), icon: Edit, onClick: () => openEditModal(user) },
+                            {
+                              key: 'toggle',
+                              label: user.status === 'Actif' ? t('admin.actions.deactivate') : t('admin.actions.activate'),
+                              icon: user.status === 'Actif' ? UserX : UserCheck,
+                              onClick: () => handleToggleStatus(user),
+                            },
+                            { key: 'delete', label: t('admin.actions.delete'), icon: Trash2, danger: true, onClick: () => handleDelete(user) },
+                          ]}
+                        />
+                      )}
                     </td>
                   </tr>
-                ))
+                  )
+                })
               ) : (
                 <tr>
                   <td colSpan={7} className="px-5 py-10 text-center text-gray-400 text-small">

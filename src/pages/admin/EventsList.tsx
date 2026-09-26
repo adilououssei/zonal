@@ -4,10 +4,13 @@ import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
 import {
   Calendar, MapPin, Plus, Edit, Trash2, Search, ChevronDown,
-  ChevronsLeft, ChevronRight, Eye
+  ChevronsLeft, ChevronRight, Eye, Share2
 } from 'lucide-react'
 import { eventsService } from '../../services/events'
 import type { AdminEvent } from '../../services/events'
+import ShareModal from '../../components/admin/ShareModal'
+import { useShareModal } from '../../components/admin/useShareModal'
+import RowActions from '../../components/admin/RowActions'
 
 // Liste admin des événements : recherche, filtre par statut et par date,
 // suppression avec confirmation. La pagination en bas de tableau est pour
@@ -29,6 +32,7 @@ const EventsList = () => {
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState<FilterStatus>('Tous')
   const [dateFilter, setDateFilter] = useState<'toutes' | 'month' | 'week'>('toutes')
+  const { shareItem, justPublished, openShare, closeShare } = useShareModal()
 
   useEffect(() => {
     let mounted = true
@@ -150,65 +154,67 @@ const EventsList = () => {
           <table className="w-full">
             <thead>
               <tr className="border-b border-gray-100 bg-gray-50/50">
-                <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.image')}</th>
-                <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.title')}</th>
-                <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.date')}</th>
-                <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.location')}</th>
-                <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.status')}</th>
-                <th className="text-right px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.actions')}</th>
+                <th className="hidden sm:table-cell w-20 text-left px-4 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.image')}</th>
+                <th className="text-left px-4 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.title')}</th>
+                <th className="hidden md:table-cell text-left px-4 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.date')}</th>
+                <th className="hidden xl:table-cell text-left px-4 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.location')}</th>
+                <th className="hidden sm:table-cell text-left px-4 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.status')}</th>
+                <th className="w-14 text-right px-4 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.actions')}</th>
               </tr>
             </thead>
             <tbody>
               {filteredEvents.length > 0 ? (
                 filteredEvents.map((event, i) => (
-                  <tr key={event.id} className={`border-b border-gray-50 ${i % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'}`}>
-                    <td className="px-5 py-4">
+                  <tr key={event.id} className={`border-b border-gray-50 hover:bg-gray-50/80 transition-colors ${i % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'}`}>
+                    <td className="hidden sm:table-cell px-4 py-3">
                       <div className="w-14 h-14 rounded-lg overflow-hidden bg-gray-100">
-                        <img src={event.coverImage ?? ''} alt={event.title} className="w-full h-full object-cover" />
+                        {event.coverImage && <img src={event.coverImage} alt="" className="w-full h-full object-cover" />}
                       </div>
                     </td>
-                    <td className="px-5 py-4">
-                      <div className="flex items-center gap-2 text-gray-800 text-small font-medium max-w-xs">
-                        <Calendar size={14} className="text-primary shrink-0" />
+                    <td className="px-4 py-3">
+                      {/* Titre limité à 2 lignes : le titre complet est au survol et sur la fiche détail */}
+                      <Link
+                        to={`/admin/events/${event.id}`}
+                        title={event.title}
+                        className="block max-w-md text-gray-800 text-small font-medium leading-snug line-clamp-2 break-words hover:text-primary transition-colors"
+                      >
                         {event.title}
+                      </Link>
+                      {/* Infos des colonnes masquées sur les écrans plus étroits */}
+                      <div className="xl:hidden mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-500">
+                        <span className="md:hidden inline-flex items-center gap-1"><Calendar size={12} />{event.date}</span>
+                        {event.location && <span className="inline-flex items-center gap-1 min-w-0"><MapPin size={12} className="shrink-0" /><span className="truncate max-w-[14rem]">{event.location}</span></span>}
+                        <span className={`sm:hidden inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold ${statusColorMap[event.status] ?? 'bg-gray-100 text-gray-500'}`}>{event.status}</span>
                       </div>
                     </td>
-                    <td className="px-5 py-4 text-gray-600 text-small whitespace-nowrap">{event.date}</td>
-                    <td className="px-5 py-4">
-                      <span className="flex items-center gap-1.5 text-gray-600 text-small whitespace-nowrap">
-                        <MapPin size={14} className="text-gray-400" />
-                        {event.location}
+                    <td className="hidden md:table-cell px-4 py-3 text-gray-600 text-small whitespace-nowrap">{event.date}</td>
+                    <td className="hidden xl:table-cell px-4 py-3">
+                      <span className="flex items-center gap-1.5 text-gray-600 text-small max-w-[14rem]" title={event.location}>
+                        <MapPin size={14} className="text-gray-400 shrink-0" />
+                        <span className="truncate">{event.location}</span>
                       </span>
                     </td>
-                    <td className="px-5 py-4">
-                      <span className={`inline-block px-2.5 py-1 rounded-full text-[11px] font-semibold ${statusColorMap[event.status] ?? 'bg-gray-100 text-gray-500'}`}>
+                    <td className="hidden sm:table-cell px-4 py-3">
+                      <span className={`inline-block px-2.5 py-1 rounded-full text-[11px] font-semibold whitespace-nowrap ${statusColorMap[event.status] ?? 'bg-gray-100 text-gray-500'}`}>
                         {event.status}
                       </span>
                     </td>
-                    <td className="px-5 py-4 text-right">
-                      <div className="flex items-center justify-end gap-1">
-                        <Link
-                          to={`/admin/events/${event.id}`}
-                          className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-blue-500 hover:bg-blue/10 transition-colors"
-                          title={t('admin.tooltip.viewDetails')}
-                        >
-                          <Eye size={15} />
-                        </Link>
-                        <Link
-                          to={`/admin/events/${event.id}/edit`}
-                          className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-primary hover:bg-primary/10 transition-colors"
-                          title={t('admin.actions.edit')}
-                        >
-                          <Edit size={15} />
-                        </Link>
-                        <button
-                          onClick={() => handleDelete(event.id)}
-                          className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-red hover:bg-red/10 transition-colors"
-                          title={t('admin.actions.delete')}
-                        >
-                          <Trash2 size={15} />
-                        </button>
-                      </div>
+                    <td className="px-4 py-3 text-right">
+                      <RowActions
+                        label={event.title}
+                        actions={[
+                          { key: 'view', label: t('admin.tooltip.viewDetails'), icon: Eye, to: `/admin/events/${event.id}` },
+                          { key: 'edit', label: t('admin.actions.edit'), icon: Edit, to: `/admin/events/${event.id}/edit` },
+                          {
+                            key: 'share', label: t('admin.share.share'), icon: Share2,
+                            onClick: () => openShare({
+                              type: 'events', id: event.id, title: event.title, summary: event.description,
+                              image: event.coverImage, date: event.date, location: event.location,
+                            }),
+                          },
+                          { key: 'delete', label: t('admin.actions.delete'), icon: Trash2, danger: true, onClick: () => handleDelete(event.id) },
+                        ]}
+                      />
                     </td>
                   </tr>
                 ))
@@ -242,6 +248,7 @@ const EventsList = () => {
           </button>
         </div>
       </motion.div>
+      <ShareModal item={shareItem} justPublished={justPublished} onClose={closeShare} />
     </div>
   )
 }

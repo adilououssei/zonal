@@ -7,6 +7,7 @@ import {
   MessageSquare, FileText, Shield
 } from 'lucide-react'
 import { adminService, type Role, type PermissionModule } from '../../services/admin'
+import RowActions from '../../components/admin/RowActions'
 
 // Doit contenir une entrée pour chaque icône listée par
 // RoleController::permissions() côté backend. Note : "Mail" (icône du module
@@ -149,7 +150,7 @@ const Roles = () => {
                 <th colSpan={modules.length} className="pb-4 text-center text-gray-600 text-xs font-semibold tracking-wider">
                   {t('admin.table.permissions')}
                 </th>
-                <th className="text-right pb-4 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.actions')}</th>
+                <th className="w-14 text-right pb-4 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.actions')}</th>
               </tr>
             </thead>
             <tbody>
@@ -171,23 +172,14 @@ const Roles = () => {
                       </td>
                     )
                   })}
-                  <td className="py-4 pl-4 text-right whitespace-nowrap">
-                    <div className="flex items-center justify-end gap-1">
-                      <button
-                        onClick={() => openEditModal(role)}
-                        className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-primary hover:bg-primary/10 transition-colors"
-                        title={t('admin.actions.edit')}
-                      >
-                        <Edit size={15} />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(role)}
-                        className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-red hover:bg-red/10 transition-colors"
-                        title={t('admin.actions.delete')}
-                      >
-                        <Trash2 size={15} />
-                      </button>
-                    </div>
+                  <td className="py-4 pl-4 text-right">
+                    <RowActions
+                      label={role.name}
+                      actions={[
+                        { key: 'edit', label: t('admin.actions.edit'), icon: Edit, onClick: () => openEditModal(role) },
+                        { key: 'delete', label: t('admin.actions.delete'), icon: Trash2, danger: true, onClick: () => handleDelete(role) },
+                      ]}
+                    />
                   </td>
                 </tr>
               ))}

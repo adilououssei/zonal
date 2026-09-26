@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
-import { FileText, Plus, Download, Trash2, FileType, Search, ChevronDown } from 'lucide-react'
+import { FileText, Plus, Download, Trash2, FileType, Search, ChevronDown, Edit } from 'lucide-react'
+import RowActions from '../../components/admin/RowActions'
 import { documentsService, formatFileSize } from '../../services/documents'
 import type { AdminDocument } from '../../services/documents'
 
@@ -100,55 +101,50 @@ const Documents = () => {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-gray-100 bg-gray-50/50">
-                  <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.name')}</th>
-                  <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.type')}</th>
-                  <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.size')}</th>
-                  <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.date')}</th>
-                  <th className="text-right px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.actions')}</th>
+                  <th className="text-left px-4 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.name')}</th>
+                  <th className="hidden md:table-cell text-left px-4 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.type')}</th>
+                  <th className="hidden lg:table-cell text-left px-4 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.size')}</th>
+                  <th className="hidden sm:table-cell text-left px-4 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.date')}</th>
+                  <th className="w-14 text-right px-4 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.actions')}</th>
                 </tr>
               </thead>
               <tbody>
                 {filtered.length > 0 ? (
                   filtered.map((doc, i) => (
-                    <tr key={doc.id} className={`border-b border-gray-50 ${i % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'}`}>
-                      <td className="px-5 py-4">
+                    <tr key={doc.id} className={`border-b border-gray-50 hover:bg-gray-50/80 transition-colors ${i % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'}`}>
+                      <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
                           <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${typeColors[doc.type] || 'bg-gray-50 text-gray-500'}`}>
                             <FileText size={16} />
                           </div>
-                          <span className="text-gray-800 text-small font-medium">{doc.name}</span>
+                          <div className="min-w-0">
+                            <span title={doc.name} className="block max-w-md text-gray-800 text-small font-medium leading-snug line-clamp-2 break-words">{doc.name}</span>
+                            {/* Infos des colonnes masquées sur les écrans plus étroits */}
+                            <div className="lg:hidden mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-500">
+                              <span className="md:hidden font-semibold">{doc.type}</span>
+                              <span>{formatFileSize(doc.size)}</span>
+                              <span className="sm:hidden">{formatDate(doc.date)}</span>
+                            </div>
+                          </div>
                         </div>
                       </td>
-                      <td className="px-5 py-4">
-                        <span className={`inline-block px-2.5 py-1 rounded-full text-[11px] font-semibold ${typeColors[doc.type] || 'bg-gray-100 text-gray-500'}`}>
+                      <td className="hidden md:table-cell px-4 py-3">
+                        <span className={`inline-block px-2.5 py-1 rounded-full text-[11px] font-semibold whitespace-nowrap ${typeColors[doc.type] || 'bg-gray-100 text-gray-500'}`}>
                           <FileType size={12} className="inline mr-1" />
                           {doc.type}
                         </span>
                       </td>
-                      <td className="px-5 py-4 text-gray-600 text-small">{formatFileSize(doc.size)}</td>
-                      <td className="px-5 py-4 text-gray-600 text-small">{formatDate(doc.date)}</td>
-                      <td className="px-5 py-4 text-right">
-                        <div className="flex items-center justify-end gap-1">
-                          <a
-                            href={doc.file}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-primary hover:bg-primary/10 transition-colors"
-                            title={t('admin.actions.download')}
-                          >
-                            <Download size={15} />
-                          </a>
-                          <Link to={`/admin/documents/${doc.id}/edit`} className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-primary hover:bg-primary/10 transition-colors" title={t('admin.actions.edit')}>
-                            <FileText size={15} />
-                          </Link>
-                          <button
-                            onClick={() => handleDelete(doc.id)}
-                            className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-red hover:bg-red/10 transition-colors"
-                            title={t('admin.actions.delete')}
-                          >
-                            <Trash2 size={15} />
-                          </button>
-                        </div>
+                      <td className="hidden lg:table-cell px-4 py-3 text-gray-600 text-small whitespace-nowrap">{formatFileSize(doc.size)}</td>
+                      <td className="hidden sm:table-cell px-4 py-3 text-gray-600 text-small whitespace-nowrap">{formatDate(doc.date)}</td>
+                      <td className="px-4 py-3 text-right">
+                        <RowActions
+                          label={doc.name}
+                          actions={[
+                            { key: 'download', label: t('admin.actions.download'), icon: Download, href: doc.file },
+                            { key: 'edit', label: t('admin.actions.edit'), icon: Edit, to: `/admin/documents/${doc.id}/edit` },
+                            { key: 'delete', label: t('admin.actions.delete'), icon: Trash2, danger: true, onClick: () => handleDelete(doc.id) },
+                          ]}
+                        />
                       </td>
                     </tr>
                   ))

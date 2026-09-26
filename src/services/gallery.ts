@@ -53,3 +53,12 @@ export const publicGalleryService = {
 
   getById: (id: number) => api.get<PublicGalleryItem>(`/api/gallery/${id}`, false),
 }
+
+// Photos d'un album : la liste complète (la couverture en premier, voir
+// GalleryForm), ou la seule image de couverture pour les anciens éléments sans album.
+export const albumPhotos = (item: Pick<PublicGalleryItem, 'src' | 'images'>): string[] =>
+  item.images && item.images.length > 0 ? item.images : item.src ? [item.src] : []
+
+// Date d'un album en toutes lettres (« juin 2026 »)
+export const formatAlbumDate = (date: string | null, language: string): string | null =>
+  date ? new Date(`${date}T00:00:00`).toLocaleDateString(language, { month: 'long', year: 'numeric' }) : null

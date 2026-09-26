@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import {
   Users, Leaf, TreePine, ShieldCheck, GraduationCap, Droplets,
-  ArrowRight, ArrowDown, TrendingUp, MapPin, ChevronLeft, ChevronRight
+  ArrowRight, ArrowDown, TrendingUp, MapPin
 } from 'lucide-react'
 import { publicStatsService } from '../services/stats'
 import type { PublicStats } from '../services/stats'
@@ -15,6 +15,8 @@ import type { PublicEvent } from '../services/events'
 import { publicSettingsService } from '../services/settings'
 import type { PublicSettingsData } from '../services/settings'
 import Seo, { SITE_URL } from '../components/Seo'
+import GalleryTeaser from '../components/GalleryTeaser'
+import PagedCarousel from '../components/ui/PagedCarousel'
 
 // Page d'accueil du site public : hero, domaines clés, statistiques animées,
 // carrousel des dernières réalisations et prochains événements. La plupart
@@ -102,7 +104,6 @@ const Home = () => {
   const { t, i18n } = useTranslation()
   const statsRef = useRef<HTMLDivElement | null>(null)
   const [statsInView, setStatsInView] = useState(false)
-  const [activeSlide, setActiveSlide] = useState(0)
   const [heroSlide, setHeroSlide] = useState(0)
   const [activeDomain, setActiveDomain] = useState(0)
   const domainsScrollRef = useRef<HTMLDivElement>(null)
@@ -155,7 +156,8 @@ const Home = () => {
 
   const projectsCount = realStats?.completedProjects ?? 0
   const partnersCount = realStats?.partners ?? 0
-  const displayProjects = allProjects.slice(0, 6)
+  // 3 pages de 3 réalisations au plus dans le carrousel
+  const displayProjects = allProjects.slice(0, 9)
 
   // Certains chiffres viennent de l'API (projets/partenaires réels), d'autres
   // sont éditoriaux et codés en dur (années d'expérience, régions, bénéficiaires)
@@ -229,8 +231,6 @@ const Home = () => {
   }, [])
 
   // Navigation du carrousel de réalisations (Math.max évite une division par zéro si la liste est vide)
-  const nextSlide = () => setActiveSlide((prev) => (prev + 1) % Math.max(displayProjects.length, 1))
-  const prevSlide = () => setActiveSlide((prev) => (prev - 1 + Math.max(displayProjects.length, 1)) % Math.max(displayProjects.length, 1))
 
   const orgName = settings?.orgName || 'ZONAL'
   const sameAs = [settings?.facebook, settings?.linkedin, settings?.youtube].filter((v): v is string => !!v)
@@ -440,72 +440,34 @@ const Home = () => {
               <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
             </div>
           ) : displayProjects.length > 0 ? (
-            <div className="relative">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <AnimatePresence mode="popLayout">
-                  {displayProjects.map((project, index) => (
-                    <motion.div
-                      key={project.id}
-                      initial="hidden"
-                      whileInView="visible"
-                      viewport={{ once: true, amount: 0.1 }}
-                      variants={fadeUp}
-                      transition={{ duration: 0.5, delay: index * 0.1 }}
-                      className="card overflow-hidden group"
-                    >
-                      <div className="aspect-4/3 overflow-hidden">
-                        <img
-                          src={project.image ?? '/images/hero-event.png'}
-                          alt={project.title}
-                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                        />
-                      </div>
-                      <div className="p-6">
-                        <h3 className="text-xl font-semibold text-gray-900 mb-2">{project.title}</h3>
-                        <p className="text-gray-600 text-body mb-3 line-clamp-3">{project.description}</p>
-                        <div className="flex items-center gap-1.5 text-gray-500 text-small">
-                          <MapPin size={14} />
-                          <span>{project.location}</span>
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
-              </div>
-
-              <button
-                onClick={prevSlide}
-                aria-label={t('carousel.prev')}
-                className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-6 w-11 h-11 rounded-full bg-primary text-white items-center justify-center shadow-lg hover:bg-primary-dark transition-colors"
-              >
-                <ChevronLeft size={22} />
-              </button>
-              <button
-                onClick={nextSlide}
-                aria-label={t('carousel.next')}
-                className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-6 w-11 h-11 rounded-full bg-primary text-white items-center justify-center shadow-lg hover:bg-primary-dark transition-colors"
-              >
-                <ChevronRight size={22} />
-              </button>
-            </div>
+            <PagedCarousel
+              items={displayProjects}
+              getKey={(project) => project.id}
+              renderItem={(project) => (
+                <div className="card overflow-hidden group h-full">
+                  <div className="aspect-4/3 overflow-hidden">
+                    <img
+                      src={project.image ?? '/images/hero-event.png'}
+                      alt={project.title}
+                      draggable={false}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  </div>
+                  <div className="p-6">
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2 line-clamp-2">{project.title}</h3>
+                    <p className="text-gray-600 text-body mb-3 line-clamp-3">{project.description}</p>
+                    <div className="flex items-center gap-1.5 text-gray-500 text-small">
+                      <MapPin size={14} className="shrink-0" />
+                      <span className="truncate">{project.location}</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+            />
           ) : (
             <p className="text-center text-gray-500 py-8">{t('home.realisations.empty')}</p>
           )}
 
-          {displayProjects.length > 0 && (
-            <div className="flex items-center justify-center gap-2 mt-8">
-              {displayProjects.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setActiveSlide(index)}
-                  aria-label={t('carousel.slide', { n: index + 1 })}
-                  className={`h-2.5 rounded-full transition-all duration-300 ${
-                    index === activeSlide ? 'w-6 bg-red' : 'w-2.5 bg-gray-300'
-                  }`}
-                />
-              ))}
-            </div>
-          )}
         </div>
       </section>
 
@@ -575,6 +537,9 @@ const Home = () => {
           </div>
         </div>
       </section>
+
+      {/* En images : aperçu de la galerie */}
+      <GalleryTeaser />
 
       {/* Call To Action */}
       <section className="py-16 bg-primary text-white">

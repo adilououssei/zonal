@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { Trash2, Search, Mail } from 'lucide-react'
 import { newsletterService } from '../../services/newsletter'
 import type { NewsletterSubscriber } from '../../services/newsletter'
+import RowActions from '../../components/admin/RowActions'
 
 // Liste admin des abonnés à la newsletter : recherche et suppression.
 // L'inscription se fait uniquement côté public (voir services/newsletter.ts) ;
@@ -94,33 +95,44 @@ const Newsletter = () => {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-gray-100 bg-gray-50/50">
-                  <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.email')}</th>
-                  <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.name')}</th>
-                  <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.subscribedAt')}</th>
-                  <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.status')}</th>
-                  <th className="text-right px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.actions')}</th>
+                  <th className="text-left px-4 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.email')}</th>
+                  <th className="hidden md:table-cell text-left px-4 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.name')}</th>
+                  <th className="hidden lg:table-cell text-left px-4 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.subscribedAt')}</th>
+                  <th className="hidden sm:table-cell text-left px-4 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.status')}</th>
+                  <th className="w-14 text-right px-4 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.actions')}</th>
                 </tr>
               </thead>
               <tbody>
                 {filtered.length > 0 ? (
                   filtered.map((s, i) => (
-                    <tr key={s.id} className={`border-b border-gray-50 ${i % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'}`}>
-                      <td className="px-5 py-4 text-gray-800 text-small font-medium">{s.email}</td>
-                      <td className="px-5 py-4 text-gray-600 text-small">{s.name || '—'}</td>
-                      <td className="px-5 py-4 text-gray-600 text-small">{formatDate(s.subscribedAt)}</td>
-                      <td className="px-5 py-4">
-                        <span className={`inline-block px-2.5 py-1 rounded-full text-[11px] font-semibold ${s.isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-500'}`}>
+                    <tr key={s.id} className={`border-b border-gray-50 hover:bg-gray-50/80 transition-colors ${i % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'}`}>
+                      <td className="px-4 py-3">
+                        <span title={s.email} className="block max-w-xs sm:max-w-sm truncate text-gray-800 text-small font-medium">{s.email}</span>
+                        {/* Infos des colonnes masquées sur les écrans plus étroits */}
+                        <div className="lg:hidden mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-500">
+                          {s.name && <span className="md:hidden">{s.name}</span>}
+                          <span>{formatDate(s.subscribedAt)}</span>
+                          <span className={`sm:hidden inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold ${s.isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-500'}`}>
+                            {s.isActive ? t('admin.status.active') : t('admin.status.inactive')}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="hidden md:table-cell px-4 py-3 text-gray-600 text-small">
+                        <span className="block max-w-[14rem] truncate" title={s.name || undefined}>{s.name || '—'}</span>
+                      </td>
+                      <td className="hidden lg:table-cell px-4 py-3 text-gray-600 text-small whitespace-nowrap">{formatDate(s.subscribedAt)}</td>
+                      <td className="hidden sm:table-cell px-4 py-3">
+                        <span className={`inline-block px-2.5 py-1 rounded-full text-[11px] font-semibold whitespace-nowrap ${s.isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-500'}`}>
                           {s.isActive ? t('admin.status.active') : t('admin.status.inactive')}
                         </span>
                       </td>
-                      <td className="px-5 py-4 text-right">
-                        <button
-                          onClick={() => handleDelete(s.id)}
-                          className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-red hover:bg-red/10 transition-colors"
-                          title={t('admin.actions.delete')}
-                        >
-                          <Trash2 size={15} />
-                        </button>
+                      <td className="px-4 py-3 text-right">
+                        <RowActions
+                          label={s.email}
+                          actions={[
+                            { key: 'delete', label: t('admin.actions.delete'), icon: Trash2, danger: true, onClick: () => handleDelete(s.id) },
+                          ]}
+                        />
                       </td>
                     </tr>
                   ))

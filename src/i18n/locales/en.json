@@ -7,7 +7,9 @@
             "projects": "Projects",
             "news": "News",
             "events": "Events",
-            "contact": "Contact"
+            "contact": "Contact",
+            "media": "Media",
+            "gallery": "Gallery"
         },
         "topbar": {
             "address": "N'Djamena, Chad",
@@ -19,7 +21,12 @@
             "closeMenu": "Close menu"
         },
         "cta": "WhatsApp",
-        "logo": "ZONAL NGO"
+        "logo": "ZONAL NGO",
+        "media": {
+            "newsDesc": "Our latest news and publications",
+            "eventsDesc": "Trainings, workshops and meetings",
+            "galleryDesc": "Our work in pictures"
+        }
     },
     "lang": {
         "fr": "FR",
@@ -167,7 +174,12 @@
                 "title": "Reforestation Campaign",
                 "location": "Mao, Chad"
             }
-        ]
+        ],
+        "gallery": {
+            "title": "In pictures",
+            "subtitle": "A glimpse of our work in the field, alongside local communities.",
+            "cta": "View the gallery"
+        }
     },
     "about": {
         "hero": {
@@ -979,6 +991,79 @@
         "loading": "Loading...",
         "common": {
             "loading": "Loading..."
+        },
+        "share": {
+            "title": "Share this post",
+            "subtitle": "Spread it on your social networks in one click",
+            "published": {
+                "events": "Event published!",
+                "news": "Article published!",
+                "projects": "Project published!"
+            },
+            "publishedSubtitle": "It is live on the website. Give it some visibility on your networks.",
+            "preview": "Preview",
+            "shareOn": "Share on",
+            "message": "Message",
+            "messageHint": "Editable. For Facebook, LinkedIn and Instagram it is copied automatically: paste it (Ctrl+V) into your post.",
+            "copiesHint": "The message will be copied, ready to paste",
+            "copyMessage": "Copy text",
+            "link": "Post link",
+            "copyLink": "Copy link",
+            "copied": "Copied",
+            "email": "Email",
+            "more": "More",
+            "viewOnSite": "View on website",
+            "later": "Later",
+            "close": "Close",
+            "share": "Share",
+            "toast": {
+                "linkCopied": "Link copied",
+                "messageCopied": "Message copied",
+                "pasteIn": "Message copied: paste it into {{network}} (Ctrl+V)"
+            },
+            "emoji": {
+                "events": "📅",
+                "news": "📰",
+                "projects": "🌱"
+            },
+            "cta": {
+                "events": "Full details:",
+                "news": "Read the article:",
+                "projects": "Discover the project:"
+            },
+            "hashtags": "#ZONAL #Chad #Solidarity"
+        },
+        "rowActions": {
+            "label": "Actions",
+            "labelFor": "Actions for {{name}}"
+        }
+    },
+    "gallery": {
+        "hero": {
+            "title": "Gallery",
+            "subtitle": "Our work in pictures: projects, trainings and events in the field."
+        },
+        "filters": {
+            "all": "All albums"
+        },
+        "albumCount_one": "{{count}} album",
+        "albumCount_other": "{{count}} albums",
+        "photoCount_one": "{{count}} photo",
+        "photoCount_other": "{{count}} photos",
+        "empty": "No albums yet.",
+        "notFound": "This album could not be found or is no longer available.",
+        "backToAll": "Back to the gallery",
+        "otherAlbums": "Other albums",
+        "seeAll": "See all",
+        "openPhoto": "Enlarge photo {{n}}",
+        "seoDescription": "{{title}}: ZONAL photo album ({{count}} photos).",
+        "lightbox": {
+            "label": "Photo viewer",
+            "counter": "{{current}} / {{total}}",
+            "close": "Close",
+            "previous": "Previous photo",
+            "next": "Next photo",
+            "goTo": "Show photo {{n}}"
         }
     }
 }

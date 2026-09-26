@@ -7,7 +7,9 @@
             "projects": "Projets",
             "news": "Actualités",
             "events": "Évènements",
-            "contact": "Contact"
+            "contact": "Contact",
+            "media": "Médias",
+            "gallery": "Galerie"
         },
         "topbar": {
             "address": "N'Djamena, Tchad",
@@ -19,7 +21,12 @@
             "closeMenu": "Fermer le menu"
         },
         "cta": "WhatsApp",
-        "logo": "ZONAL ONG"
+        "logo": "ZONAL ONG",
+        "media": {
+            "newsDesc": "Nos dernières nouvelles et publications",
+            "eventsDesc": "Formations, ateliers et rencontres",
+            "galleryDesc": "Nos actions en images"
+        }
     },
     "lang": {
         "fr": "FR",
@@ -167,7 +174,12 @@
                 "title": "Campagne de reboisement",
                 "location": "Mao, Tchad"
             }
-        ]
+        ],
+        "gallery": {
+            "title": "En images",
+            "subtitle": "Un aperçu de nos actions sur le terrain, aux côtés des communautés.",
+            "cta": "Voir la galerie"
+        }
     },
     "about": {
         "hero": {
@@ -979,6 +991,79 @@
         "loading": "Chargement...",
         "common": {
             "loading": "Chargement..."
+        },
+        "share": {
+            "title": "Partager la publication",
+            "subtitle": "Diffusez-la sur vos réseaux en un clic",
+            "published": {
+                "events": "Événement publié !",
+                "news": "Article publié !",
+                "projects": "Projet publié !"
+            },
+            "publishedSubtitle": "Il est en ligne sur le site. Donnez-lui de la visibilité sur vos réseaux.",
+            "preview": "Aperçu",
+            "shareOn": "Partager sur",
+            "message": "Message",
+            "messageHint": "Modifiable. Pour Facebook, LinkedIn et Instagram, il est copié automatiquement : collez-le (Ctrl+V) dans votre publication.",
+            "copiesHint": "Le message sera copié, prêt à être collé",
+            "copyMessage": "Copier le texte",
+            "link": "Lien de la publication",
+            "copyLink": "Copier le lien",
+            "copied": "Copié",
+            "email": "E-mail",
+            "more": "Autres",
+            "viewOnSite": "Voir sur le site",
+            "later": "Plus tard",
+            "close": "Fermer",
+            "share": "Partager",
+            "toast": {
+                "linkCopied": "Lien copié",
+                "messageCopied": "Message copié",
+                "pasteIn": "Message copié : collez-le dans {{network}} (Ctrl+V)"
+            },
+            "emoji": {
+                "events": "📅",
+                "news": "📰",
+                "projects": "🌱"
+            },
+            "cta": {
+                "events": "Tous les détails :",
+                "news": "Lire l'article :",
+                "projects": "Découvrir le projet :"
+            },
+            "hashtags": "#ZONAL #Tchad #Solidarité"
+        },
+        "rowActions": {
+            "label": "Actions",
+            "labelFor": "Actions pour {{name}}"
+        }
+    },
+    "gallery": {
+        "hero": {
+            "title": "Galerie",
+            "subtitle": "Nos actions en images : projets, formations et événements sur le terrain."
+        },
+        "filters": {
+            "all": "Tous les albums"
+        },
+        "albumCount_one": "{{count}} album",
+        "albumCount_other": "{{count}} albums",
+        "photoCount_one": "{{count}} photo",
+        "photoCount_other": "{{count}} photos",
+        "empty": "Aucun album pour le moment.",
+        "notFound": "Cet album est introuvable ou n'est plus disponible.",
+        "backToAll": "Retour à la galerie",
+        "otherAlbums": "Autres albums",
+        "seeAll": "Tout voir",
+        "openPhoto": "Agrandir la photo {{n}}",
+        "seoDescription": "{{title}} : album photo de ZONAL ({{count}} photos).",
+        "lightbox": {
+            "label": "Visionneuse de photos",
+            "counter": "{{current}} / {{total}}",
+            "close": "Fermer",
+            "previous": "Photo précédente",
+            "next": "Photo suivante",
+            "goTo": "Afficher la photo {{n}}"
         }
     }
 }

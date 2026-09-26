@@ -6,6 +6,7 @@ import { Image as ImageIcon, MapPin, Coins, Loader2 } from 'lucide-react'
 import { statusLabelMap } from '../../data/adminProjectsData'
 import { api } from '../../services/api'
 import { projectsService } from '../../services/projects'
+import type { ShareItem } from '../../components/admin/ShareModal'
 
 // Formulaire de création/édition d'un projet (mode déterminé par la présence
 // d'un :id dans l'URL). Une seule image (pas de galerie, contrairement aux
@@ -85,8 +86,9 @@ const ProjectsForm = () => {
 
       if (isEditing && id) {
         await projectsService.update(Number(id), payload)
+        navigate('/admin/projects')
       } else {
-        await projectsService.create(payload as {
+        const created = await projectsService.create(payload as {
           title: string
           description?: string
           image?: string
@@ -96,8 +98,13 @@ const ProjectsForm = () => {
           endDate?: string
           status?: string
         })
+        // La liste ouvre la fenêtre de partage de la nouvelle publication
+        const shareItem: ShareItem = {
+          type: 'projects', id: created.id, title: created.title, summary: created.description,
+          image: created.image, location: created.location,
+        }
+        navigate('/admin/projects', { state: { shareItem } })
       }
-      navigate('/admin/projects')
     } catch {
       console.error('Erreur lors de l\'enregistrement')
     } finally {
