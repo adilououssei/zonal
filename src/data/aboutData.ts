@@ -11,25 +11,15 @@ export const aboutStats = [
   { value: 18, label: 'Régions couvertes', icon: 'MapPin' },
 ]
 
+// Photos de l'équipe (public/images/equipes). `focus` = point du visage dans
+// l'image (utilisé comme object-position et origine du zoom) et `zoom` =
+// grossissement pour que le visage remplisse le cercle. Noms et rôles sont
+// dans i18n (about.teamMembers.<key>).
 export const teamMembers = [
-  {
-    name: 'Mahamat Ali',
-    role: 'Directeur Exécutif',
-    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=500&fit=crop',
-  },
-  {
-    name: 'Fatimé Hassana',
-    role: 'Responsable Programmes',
-    image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=500&fit=crop',
-  },
-  {
-    name: 'Abakar Moussa',
-    role: 'Responsable Environnement & Climat',
-    image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&h=500&fit=crop',
-  },
-  {
-    name: 'Aïssatou Mbodou',
-    role: 'Responsable Suivi & Évaluation',
-    image: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=400&h=500&fit=crop',
-  },
+  { key: 'houssoube', image: '/images/equipes/tof1.jpeg', focus: '49% 35%', zoom: 1.6 },
+  { key: 'yanne', image: '/images/equipes/tof4.jpeg', focus: '45% 33%', zoom: 1.6 },
+  { key: 'bachirou', image: '/images/equipes/tof3.jpeg', focus: '48% 33%', zoom: 1.4 },
+  { key: 'laoukoura', image: '/images/equipes/tof2.jpeg', focus: '51% 5%', zoom: 1.1 },
+  { key: 'nenbara', image: '/images/equipes/tof5.jpeg', focus: '55% 45%', zoom: 1.05 },
+  { key: 'bedin', image: '/images/equipes/tof6.jpeg', focus: '55% 0%', zoom: 1.5 },
 ]

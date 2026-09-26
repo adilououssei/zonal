@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import { useState, useEffect, type ElementType } from 'react'
 import {
   CheckCircle2, Eye, Star, Award, Leaf, Users, Handshake, MapPin,
-  ChevronRight, ChevronLeft, Mail, Quote, ArrowRight
+  ChevronRight, ChevronLeft, Quote, ArrowRight
 } from 'lucide-react'
 import { teamMembers } from '../data/aboutData'
 import { publicStatsService, type PublicStats } from '../services/stats'
@@ -28,6 +28,13 @@ const About = () => {
   const [activePair, setActivePair] = useState(0)
   const pairCount = Math.ceil(testimonials.length / 2)
 
+  // Carrousel de l'équipe : 3 membres par slide (1 sur mobile), défilement auto
+  const [teamPerPage, setTeamPerPage] = useState(() =>
+    window.matchMedia('(min-width: 640px)').matches ? 3 : 1
+  )
+  const [teamPage, setTeamPage] = useState(0)
+  const [teamPaused, setTeamPaused] = useState(false)
+
   useEffect(() => {
     publicStatsService.get().then(setRealStats).catch(() => {})
   }, [i18n.language])
@@ -39,6 +46,24 @@ const About = () => {
       })
       .catch(() => {})
   }, [i18n.language])
+
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 640px)')
+    const update = () => {
+      setTeamPerPage(mq.matches ? 3 : 1)
+      setTeamPage(0)
+    }
+    update()
+    mq.addEventListener('change', update)
+    return () => mq.removeEventListener('change', update)
+  }, [])
+
+  useEffect(() => {
+    const pages = Math.ceil(teamMembers.length / teamPerPage)
+    if (teamPaused || pages < 2) return
+    const timer = setInterval(() => setTeamPage((prev) => (prev + 1) % pages), 5000)
+    return () => clearInterval(timer)
+  }, [teamPerPage, teamPaused])
 
   // Défilement automatique du carrousel de témoignages toutes les 4s, désactivé
   // s'il y a moins de 3 témoignages (pas besoin de faire défiler 1 seule paire)
@@ -58,14 +83,19 @@ const About = () => {
     { value: 9, label: t('about.stats.regions'), icon: 'MapPin' },
   ]
 
-  // teamMembers (data/aboutData.ts) ne contient que les photos ; noms/rôles
-  // sont traduits via i18n en associant chaque membre à sa clé dans cet ordre
-  const teamMemberKeys = ['mahamat', 'fatime', 'abakar', 'aissatou']
-  const translatedTeam = teamMembers.map((m, i) => ({
+  // teamMembers (data/aboutData.ts) contient photos et cadrage ; noms/rôles
+  // sont traduits via i18n à partir de la clé de chaque membre
+  const translatedTeam = teamMembers.map((m) => ({
     ...m,
-    name: t(`about.teamMembers.${teamMemberKeys[i]}.name`),
-    role: t(`about.teamMembers.${teamMemberKeys[i]}.role`),
+    name: t(`about.teamMembers.${m.key}.name`),
+    role: t(`about.teamMembers.${m.key}.role`),
   }))
+  const teamPages: typeof translatedTeam[] = []
+  for (let i = 0; i < translatedTeam.length; i += teamPerPage) {
+    teamPages.push(translatedTeam.slice(i, i + teamPerPage))
+  }
+  const teamPageCount = teamPages.length
+  const currentTeamPage = Math.min(teamPage, teamPageCount - 1)
 
   return (
     <>
@@ -257,41 +287,71 @@ const About = () => {
             <p className="text-gray-600 text-body">{t('about.team.subtitle')}</p>
           </motion.div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {translatedTeam.map((member, index: number) => (
-              <motion.div
-                key={index}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, amount: 0.1 }}
-                variants={fadeUp}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="card overflow-hidden text-center"
-              >
-                <div className="aspect-4/5 overflow-hidden">
-                  <img
-                    src={member.image}
-                    alt={member.name}
-            className="w-full h-full object-scale-down"
-                  />
+          <div
+            className="relative"
+            onMouseEnter={() => setTeamPaused(true)}
+            onMouseLeave={() => setTeamPaused(false)}
+          >
+            <div className="overflow-hidden">
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.div
+                  key={`${teamPerPage}-${currentTeamPage}`}
+                  initial={{ opacity: 0, x: 60 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -60 }}
+                  transition={{ duration: 0.35 }}
+                  className="grid grid-cols-1 sm:grid-cols-3 gap-8"
+                >
+                  {teamPages[currentTeamPage]?.map((member) => (
+                    <div key={member.key} className="flex flex-col items-center text-center">
+                      <div className="w-40 h-40 md:w-48 md:h-48 rounded-full overflow-hidden ring-4 ring-primary/15 shadow-md mb-5">
+                        <img
+                          src={member.image}
+                          alt={member.name}
+                          loading="lazy"
+                          className="w-full h-full object-cover"
+                          style={{ objectPosition: member.focus, transform: `scale(${member.zoom})`, transformOrigin: member.focus }}
+                        />
+                      </div>
+                      <h3 className="font-semibold text-gray-900 text-lg">{member.name}</h3>
+                      <p className="text-gray-500 text-small mt-1 max-w-xs">{member.role}</p>
+                    </div>
+                  ))}
+                </motion.div>
+              </AnimatePresence>
+            </div>
+
+            {teamPageCount > 1 && (
+              <div className="flex items-center justify-center gap-4 mt-10">
+                <button
+                  type="button"
+                  onClick={() => setTeamPage((currentTeamPage - 1 + teamPageCount) % teamPageCount)}
+                  aria-label={t('carousel.prev')}
+                  className="w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
+                >
+                  <ChevronLeft size={18} />
+                </button>
+                <div className="flex gap-2">
+                  {teamPages.map((_, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => setTeamPage(i)}
+                      aria-label={t('carousel.slide', { n: i + 1 })}
+                      className={`h-2.5 rounded-full transition-all ${i === currentTeamPage ? 'w-8 bg-primary' : 'w-2.5 bg-gray-300'}`}
+                    />
+                  ))}
                 </div>
-                <div className="p-5">
-                  <h3 className="font-semibold text-gray-900">{member.name}</h3>
-                  <p className="text-gray-500 text-small mb-3">{member.role}</p>
-                  <div className="flex items-center justify-center gap-2">
-                    <a href="#" aria-label={t('social.facebook')} className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors">
-                      <img src="/images/icons/facebook.png" alt={t('social.facebook')} className="w-5.5 h-5.5" />
-                    </a>
-                    <a href="#" aria-label={t('social.linkedin')} className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors">
-                      <img src="/images/icons/linkedin.png" alt={t('social.linkedin')} className="w-5.5 h-5.5" />
-                    </a>
-                    <a href="#" aria-label={t('social.email')} className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors">
-                      <Mail size={15} className="text-gray-500" />
-                    </a>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
+                <button
+                  type="button"
+                  onClick={() => setTeamPage((currentTeamPage + 1) % teamPageCount)}
+                  aria-label={t('carousel.next')}
+                  className="w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
+                >
+                  <ChevronRight size={18} />
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </section>

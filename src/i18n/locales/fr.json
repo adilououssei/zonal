@@ -212,22 +212,12 @@
             "regions": "Régions couvertes"
         },
         "teamMembers": {
-            "mahamat": {
-                "name": "Mahamat Ali",
-                "role": "Directeur Exécutif"
-            },
-            "fatime": {
-                "name": "Fatimé Hassana",
-                "role": "Responsable Programmes"
-            },
-            "abakar": {
-                "name": "Abakar Moussa",
-                "role": "Responsable Environnement & Climat"
-            },
-            "aissatou": {
-                "name": "Aïssatou Mbodou",
-                "role": "Responsable Suivi & Évaluation"
-            }
+            "houssoube": { "name": "Houssoubé Kakiné", "role": "Coordonnateur national" },
+            "yanne": { "name": "Yanné Souaré", "role": "Secrétaire exécutive" },
+            "bachirou": { "name": "Bachirou Nekissel Valentin", "role": "Directeur des finances" },
+            "laoukoura": { "name": "Laoukoura Memadji Appoline", "role": "Responsable Genre et Développement durable" },
+            "nenbara": { "name": "Nenbara Guiakissam", "role": "Responsable Programmes" },
+            "bedin": { "name": "Bedin Flore", "role": "Administratrice de coordination" }
         }
     },
     "programs": {
