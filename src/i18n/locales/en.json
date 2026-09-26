@@ -82,7 +82,8 @@
             "projects": "Projects completed",
             "partners": "Partners",
             "regions": "Regions covered",
-            "beneficiaries": "Beneficiaries"
+            "beneficiaries": "Beneficiaries",
+            "millionSuffix": "M"
         },
         "domains": {
             "governance": {

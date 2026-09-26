@@ -25,7 +25,7 @@ const iconMap: Record<string, ElementType> = {
 }
 
 const Programs = () => {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [stats, setStats] = useState<PublicStats | null>(null)
   const [partners, setPartners] = useState<PublicPartner[]>([])
   const [isPaused, setIsPaused] = useState(false)
@@ -43,14 +43,14 @@ const Programs = () => {
         { value: stats.partners, suffix: '+', label: t('home.stats.partners') },
         { value: stats.testimonials, suffix: '+', label: t('admin.sidebar.testimonials') },
         { value: stats.events, suffix: '+', label: t('admin.sidebar.events') },
-        { value: 18, label: t('home.stats.regions') },
+        { value: 9, label: t('home.stats.regions') },
       ]
     : [
-        { value: 15, suffix: '+', label: t('home.stats.experience') },
+        { value: 6, label: t('home.stats.experience') },
         { value: 120, suffix: '+', label: t('home.stats.projects') },
-        { value: 350, suffix: '+', label: t('home.stats.beneficiaries') },
+        { value: new Intl.NumberFormat(i18n.language).format(4.6), suffix: t('home.stats.millionSuffix'), label: t('home.stats.beneficiaries') },
         { value: 45, suffix: '+', label: t('home.stats.partners') },
-        { value: 18, label: t('home.stats.regions') },
+        { value: 9, label: t('home.stats.regions') },
       ]
 
   const statIcons = [Users, ShieldCheck, Handshake, Calendar, Users]

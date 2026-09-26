@@ -48,7 +48,7 @@ const heroImages = [
 
 // Anime un chiffre de 0 jusqu'à `end` dès que le composant devient visible à
 // l'écran (IntersectionObserver), une seule fois grâce à `counted`.
-function CountUp({ end, duration, suffix }: { end: number; duration?: number; suffix?: string }) {
+function CountUp({ end, duration, suffix, decimals = 0, locale }: { end: number; duration?: number; suffix?: string; decimals?: number; locale?: string }) {
   const [count, setCount] = useState(0)
   const ref = useRef<HTMLSpanElement>(null)
   const counted = useRef(false)
@@ -65,7 +65,8 @@ function CountUp({ end, duration, suffix }: { end: number; duration?: number; su
           const start = performance.now()
           const tick = (now: number) => {
             const t = Math.min((now - start) / dur, 1)
-            setCount(Math.floor(t * end))
+            const factor = 10 ** decimals
+            setCount(Math.floor(t * end * factor) / factor)
             if (t < 1) requestAnimationFrame(tick)
           }
           requestAnimationFrame(tick)
@@ -75,9 +76,14 @@ function CountUp({ end, duration, suffix }: { end: number; duration?: number; su
     )
     observer.observe(el)
     return () => observer.disconnect()
-  }, [end, duration])
+  }, [end, duration, decimals])
 
-  return <span ref={ref}>{count}{suffix ?? ''}</span>
+  const formatted = new Intl.NumberFormat(locale, {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  }).format(count)
+
+  return <span ref={ref}>{formatted}{suffix ?? ''}</span>
 }
 
 // Convertit le nom de mois en français renvoyé par l'API (ex: "juin") en clé
@@ -160,11 +166,11 @@ const Home = () => {
   // Certains chiffres viennent de l'API (projets/partenaires réels), d'autres
   // sont éditoriaux et codés en dur (années d'expérience, régions, bénéficiaires)
   const translatedStats = [
-    { value: 15, suffix: '+', label: t('home.stats.experience') },
+    { value: 6, label: t('home.stats.experience') },
     { value: projectsCount, suffix: '+', label: t('home.stats.projects') },
     { value: partnersCount, suffix: '+', label: t('home.stats.partners') },
-    { value: 18, label: t('home.stats.regions') },
-    { value: 350, suffix: '+', label: t('home.stats.beneficiaries') },
+    { value: 9, label: t('home.stats.regions') },
+    { value: 4.6, decimals: 1, suffix: t('home.stats.millionSuffix'), label: t('home.stats.beneficiaries') },
   ]
 
   const featuredDomains = [
@@ -409,7 +415,13 @@ const Home = () => {
                   </div>
                   <div className="text-3xl md:text-4xl font-bold text-gray-900 mb-1">
                     {statsInView && (
-                      <CountUp end={stat.value} duration={2.5} suffix={stat.suffix || ''} />
+                      <CountUp
+                        end={stat.value}
+                        duration={2.5}
+                        decimals={stat.decimals ?? 0}
+                        locale={i18n.language}
+                        suffix={stat.suffix || ''}
+                      />
                     )}
                   </div>
                   <p className="text-gray-600 text-body">{stat.label}</p>

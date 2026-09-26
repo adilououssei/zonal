@@ -51,11 +51,11 @@ const About = () => {
   }, [testimonials.length, pairCount])
 
   const dynamicStats = [
-    { value: 15, suffix: '+', label: t('about.stats.experience'), icon: 'Award' },
+    { value: 6, label: t('about.stats.experience'), icon: 'Award' },
     { value: realStats?.completedProjects ?? 0, suffix: '+', label: t('about.stats.projects'), icon: 'Leaf' },
-    { value: 350, suffix: '+', label: t('about.stats.beneficiaries'), icon: 'Users' },
+    { value: new Intl.NumberFormat(i18n.language).format(4.6), suffix: t('home.stats.millionSuffix'), label: t('about.stats.beneficiaries'), icon: 'Users' },
     { value: realStats?.partners ?? 0, suffix: '+', label: t('about.stats.partners'), icon: 'Handshake' },
-    { value: 18, label: t('about.stats.regions'), icon: 'MapPin' },
+    { value: 9, label: t('about.stats.regions'), icon: 'MapPin' },
   ]
 
   // teamMembers (data/aboutData.ts) ne contient que les photos ; noms/rôles
