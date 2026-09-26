@@ -20,6 +20,8 @@ public/sitemap.xml
 .env
 .env.*
 !.env.example
+# Valeurs publiques du build de production (URL API, clés "site" reCAPTCHA)
+!.env.production
 
 # Editor directories and files
 .vscode/*

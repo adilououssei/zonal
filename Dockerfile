@@ -11,20 +11,11 @@ RUN npm ci
 
 COPY . .
 
-# IMPORTANT : Vite "grave en dur" VITE_API_URL dans les fichiers JS au moment
-# du build (import.meta.env n'existe plus une fois le site compilé). Pour
-# pointer vers une autre API, il faut reconstruire l'image avec un autre
-# --build-arg, pas juste changer une variable d'environnement au lancement.
-ARG VITE_API_URL=http://localhost:8000
-ENV VITE_API_URL=$VITE_API_URL
-
-# Idem pour la clé "site" reCAPTCHA v3 (publique) : changer de clé nécessite
-# aussi un rebuild de l'image.
-ARG VITE_RECAPTCHA_SITE_KEY=
-ENV VITE_RECAPTCHA_SITE_KEY=$VITE_RECAPTCHA_SITE_KEY
-ARG VITE_RECAPTCHA_V2_SITE_KEY=
-ENV VITE_RECAPTCHA_V2_SITE_KEY=$VITE_RECAPTCHA_V2_SITE_KEY
-
+# IMPORTANT : Vite "grave en dur" l'URL de l'API et les clés "site" reCAPTCHA
+# dans les fichiers JS au moment du build. Ces valeurs (publiques) viennent de
+# .env.production, committé : pour les changer, modifier ce fichier puis
+# reconstruire l'image. Ne pas les redéfinir ici avec ARG/ENV : une variable
+# d'environnement, même vide, prend le pas sur le fichier .env.production.
 RUN npm run build
 
 # --- Étape 2 : servir les fichiers statiques avec Nginx (image finale, ni ---

@@ -6,3 +6,7 @@ dist
 .vscode
 .idea
 .claude
+# Surcharges locales : ne doivent pas écraser .env.production dans l'image
+.env.local
+.env.*.local
+deploy.sh
