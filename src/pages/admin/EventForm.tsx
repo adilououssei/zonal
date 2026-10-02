@@ -9,6 +9,7 @@ import {
 import CategorySelect from '../../components/ui/CategorySelect'
 import { api } from '../../services/api'
 import { eventsService } from '../../services/events'
+import type { ShareItem } from '../../components/admin/ShareModal'
 
 const eventCategories = ['Environnement', 'Éducation', 'Eau & Assainissement', 'Gestion des catastrophes', 'Développement rural', 'Gouvernance locale']
 
@@ -183,8 +184,9 @@ const EventForm = () => {
 
       if (isEditing && id) {
         await eventsService.update(Number(id), payload)
+        navigate('/admin/events')
       } else {
-        await eventsService.create(payload as {
+        const created = await eventsService.create(payload as {
           title: string
           description?: string
           date: string
@@ -194,8 +196,13 @@ const EventForm = () => {
           coverImage?: string
           gallery?: string[]
         })
+        // La liste ouvre la fenêtre de partage de la nouvelle publication
+        const shareItem: ShareItem = {
+          type: 'events', id: created.id, title: created.title, summary: created.description,
+          image: created.coverImage, date: created.date, location: created.location,
+        }
+        navigate('/admin/events', { state: { shareItem } })
       }
-      navigate('/admin/events')
     } catch {
       console.error(t('admin.errors.saveEvent'))
     } finally {

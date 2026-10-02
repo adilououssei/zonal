@@ -23,6 +23,7 @@ const staticRoutes = [
   { path: '/projects', changefreq: 'weekly', priority: '0.8' },
   { path: '/events', changefreq: 'daily', priority: '0.8' },
   { path: '/news', changefreq: 'daily', priority: '0.8' },
+  { path: '/gallery', changefreq: 'weekly', priority: '0.7' },
   { path: '/contact', changefreq: 'yearly', priority: '0.5' },
 ]
 
@@ -41,10 +42,11 @@ function urlEntry(path, changefreq, priority) {
   return `  <url>\n    <loc>${SITE_URL}${path}</loc>\n    <changefreq>${changefreq}</changefreq>\n    <priority>${priority}</priority>\n  </url>`
 }
 
-const [events, news, projects] = await Promise.all([
+const [events, news, projects, albums] = await Promise.all([
   fetchJson('/api/events'),
   fetchJson('/api/news'),
   fetchJson('/api/projects'),
+  fetchJson('/api/gallery'),
 ])
 
 const entries = [
@@ -52,9 +54,10 @@ const entries = [
   ...events.map((e) => urlEntry(`/events/${e.id}`, 'monthly', '0.6')),
   ...news.map((n) => urlEntry(`/news/${n.id}`, 'monthly', '0.6')),
   ...projects.map((p) => urlEntry(`/projects/${p.id}`, 'monthly', '0.6')),
+  ...albums.map((a) => urlEntry(`/gallery/${a.id}`, 'monthly', '0.5')),
 ]
 
 const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${entries.join('\n')}\n</urlset>\n`
 
 writeFileSync(join(__dirname, '..', 'public', 'sitemap.xml'), xml)
-console.log(`[sitemap] public/sitemap.xml généré (${entries.length} URLs : ${staticRoutes.length} pages, ${events.length} événements, ${news.length} actualités, ${projects.length} projets).`)
+console.log(`[sitemap] public/sitemap.xml généré (${entries.length} URLs : ${staticRoutes.length} pages, ${events.length} événements, ${news.length} actualités, ${projects.length} projets, ${albums.length} albums).`)

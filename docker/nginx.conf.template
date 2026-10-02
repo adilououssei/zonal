@@ -2,6 +2,19 @@
 # indispensable pour React Router : sans elle, recharger une URL comme
 # /about ou /admin/events renvoie une 404 Nginx au lieu de laisser React
 # Router afficher la bonne page côté navigateur.
+#
+# Ce fichier est un modèle : l'image nginx officielle remplace ${OG_API_URL}
+# au démarrage du conteneur (voir le Dockerfile) avant de le copier dans
+# /etc/nginx/conf.d/default.conf.
+
+# Robots qui fabriquent l'aperçu d'un lien partagé (image + titre + résumé).
+# Ils ne lisent que le HTML brut, sans exécuter React : pour eux, les pages
+# de détail sont servies par le backend (LinkPreviewController), voir plus bas.
+map $http_user_agent $is_link_preview_bot {
+    default 0;
+    "~*(facebookexternalhit|facebookcatalog|facebot|meta-externalagent|linkedinbot|twitterbot|whatsapp|telegrambot|slackbot|discordbot|pinterest|skypeuripreview|redditbot|embedly|vkshare|viber|snapchat|mastodon)" 1;
+}
+
 server {
     listen 80;
     server_name _;
@@ -21,8 +34,29 @@ server {
     add_header Referrer-Policy "strict-origin-when-cross-origin" always;
     add_header Permissions-Policy "geolocation=(), camera=(), microphone=()" always;
 
+    # Backend joint pour les aperçus de liens. Passer par une variable (et donc
+    # un resolver) évite que Nginx refuse de démarrer si le DNS de l'API ne
+    # répond pas au lancement du conteneur : seul l'aperçu serait alors indisponible.
+    set $og_api "${OG_API_URL}";
+    resolver 1.1.1.1 8.8.8.8 valid=300s ipv6=off;
+    resolver_timeout 5s;
+    proxy_ssl_server_name on;
+    proxy_connect_timeout 5s;
+    proxy_read_timeout 10s;
+
     location / {
         try_files $uri $uri/ /index.html;
+    }
+
+    # Pages de détail partageables depuis l'admin (bouton « Partager ») : les
+    # robots d'aperçu reçoivent la page Open Graph du backend (/og/news/12...),
+    # les visiteurs reçoivent le site React comme d'habitude.
+    location ~ ^/(events|news|projects|gallery)/\d+/?$ {
+        if ($is_link_preview_bot) {
+            rewrite ^/(events|news|projects|gallery)/(\d+)/?$ /og/$1/$2 break;
+            proxy_pass $og_api;
+        }
+        try_files $uri /index.html;
     }
 
     # Cache : index.html référence le JS/CSS versionné du build. Sans Cache-Control,

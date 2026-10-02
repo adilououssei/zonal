@@ -4,10 +4,13 @@ import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import {
   FolderOpen, Plus, Edit, Trash2, MapPin, Search, ChevronDown,
-  ChevronsLeft, ChevronRight
+  ChevronsLeft, ChevronRight, Share2, Coins
 } from 'lucide-react'
 import { projectsService } from '../../services/projects'
 import type { AdminProject } from '../../services/projects'
+import ShareModal from '../../components/admin/ShareModal'
+import { useShareModal } from '../../components/admin/useShareModal'
+import RowActions from '../../components/admin/RowActions'
 import { statusLabelMap, statusColorMap } from '../../data/adminProjectsData'
 
 const statusFilters: ('Tous' | string)[] = ['Tous', 'ongoing', 'completed', 'planned']
@@ -19,6 +22,7 @@ const Projects = () => {
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState<'Tous' | string>('Tous')
+  const { shareItem, justPublished, openShare, closeShare } = useShareModal()
 
   useEffect(() => {
     let mounted = true
@@ -111,54 +115,67 @@ const Projects = () => {
           <table className="w-full">
             <thead>
               <tr className="border-b border-gray-100 bg-gray-50/50">
-                <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.project')}</th>
-                <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.location')}</th>
-                <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.budget')}</th>
-                <th className="text-left px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.status')}</th>
-                <th className="text-right px-5 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.actions')}</th>
+                <th className="text-left px-4 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.project')}</th>
+                <th className="hidden lg:table-cell text-left px-4 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.location')}</th>
+                <th className="hidden xl:table-cell text-left px-4 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.budget')}</th>
+                <th className="hidden sm:table-cell text-left px-4 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.status')}</th>
+                <th className="w-14 text-right px-4 py-3.5 text-gray-600 text-xs font-semibold tracking-wider">{t('admin.table.actions')}</th>
               </tr>
             </thead>
             <tbody>
               {filteredProjects.length > 0 ? (
                 filteredProjects.map((project, i) => (
-                  <tr key={project.id} className={`border-b border-gray-50 ${i % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'}`}>
-                    <td className="px-5 py-4">
+                  <tr key={project.id} className={`border-b border-gray-50 hover:bg-gray-50/80 transition-colors ${i % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'}`}>
+                    <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
                         <div className="w-9 h-9 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-500 shrink-0">
                           <FolderOpen size={16} />
                         </div>
-                        <span className="text-gray-800 text-small font-medium">{project.title}</span>
+                        <div className="min-w-0">
+                          {/* Titre limité à 2 lignes : le titre complet est au survol et dans le formulaire */}
+                          <Link
+                            to={`/admin/projects/${project.id}/edit`}
+                            title={project.title}
+                            className="block max-w-md text-gray-800 text-small font-medium leading-snug line-clamp-2 break-words hover:text-primary transition-colors"
+                          >
+                            {project.title}
+                          </Link>
+                          {/* Infos des colonnes masquées sur les écrans plus étroits */}
+                          <div className="xl:hidden mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-500">
+                            {project.location && <span className="lg:hidden inline-flex items-center gap-1 min-w-0"><MapPin size={12} className="shrink-0" /><span className="truncate max-w-[14rem]">{project.location}</span></span>}
+                            {project.budget && <span className="inline-flex items-center gap-1"><Coins size={12} />{project.budget}</span>}
+                            <span className={`sm:hidden inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold ${statusColorMap[project.status] ?? 'bg-gray-100 text-gray-500'}`}>{statusLabelMap[project.status] ?? project.status}</span>
+                          </div>
+                        </div>
                       </div>
                     </td>
-                    <td className="px-5 py-4">
-                      <span className="flex items-center gap-1.5 text-gray-600 text-small">
-                        <MapPin size={14} />
-                        {project.location}
+                    <td className="hidden lg:table-cell px-4 py-3">
+                      <span className="flex items-center gap-1.5 text-gray-600 text-small max-w-[14rem]" title={project.location}>
+                        <MapPin size={14} className="shrink-0" />
+                        <span className="truncate">{project.location}</span>
                       </span>
                     </td>
-                    <td className="px-5 py-4 text-gray-600 text-small">{project.budget}</td>
-                    <td className="px-5 py-4">
-                      <span className={`inline-block px-2.5 py-1 rounded-full text-[11px] font-semibold ${statusColorMap[project.status] ?? 'bg-gray-100 text-gray-500'}`}>
+                    <td className="hidden xl:table-cell px-4 py-3 text-gray-600 text-small whitespace-nowrap">{project.budget}</td>
+                    <td className="hidden sm:table-cell px-4 py-3">
+                      <span className={`inline-block px-2.5 py-1 rounded-full text-[11px] font-semibold whitespace-nowrap ${statusColorMap[project.status] ?? 'bg-gray-100 text-gray-500'}`}>
                         {statusLabelMap[project.status] ?? project.status}
                       </span>
                     </td>
-                    <td className="px-5 py-4 text-right">
-                      <div className="flex items-center justify-end gap-1">
-                        <Link
-                          to={`/admin/projects/${project.id}/edit`}
-                          className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-primary hover:bg-primary/10 transition-colors"
-                          title={t('admin.actions.edit')}
-                        >
-                          <Edit size={15} />
-                        </Link>
-                        <button
-                          onClick={() => handleDelete(project.id)}
-                          className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-red hover:bg-red/10 transition-colors"
-                          title={t('admin.actions.delete')}
-                        >
-                          <Trash2 size={15} />
-                        </button>
-                      </div>
+                    <td className="px-4 py-3 text-right">
+                      <RowActions
+                        label={project.title}
+                        actions={[
+                          { key: 'edit', label: t('admin.actions.edit'), icon: Edit, to: `/admin/projects/${project.id}/edit` },
+                          {
+                            key: 'share', label: t('admin.share.share'), icon: Share2,
+                            onClick: () => openShare({
+                              type: 'projects', id: project.id, title: project.title, summary: project.description,
+                              image: project.image, location: project.location,
+                            }),
+                          },
+                          { key: 'delete', label: t('admin.actions.delete'), icon: Trash2, danger: true, onClick: () => handleDelete(project.id) },
+                        ]}
+                      />
                     </td>
                   </tr>
                 ))
@@ -190,6 +207,7 @@ const Projects = () => {
           </button>
         </div>
       </motion.div>
+      <ShareModal item={shareItem} justPublished={justPublished} onClose={closeShare} />
     </div>
   )
 }

@@ -9,6 +9,7 @@ import {
 } from 'lucide-react'
 import { api } from '../../services/api'
 import { newsService } from '../../services/news'
+import type { ShareItem } from '../../components/admin/ShareModal'
 import CategorySelect from '../../components/ui/CategorySelect'
 
 const newsCatKey = (cat: string) => {
@@ -131,8 +132,9 @@ const NewsForm = () => {
 
       if (isEditing && id) {
         await newsService.update(Number(id), payload)
+        navigate('/admin/news')
       } else {
-        await newsService.create(payload as {
+        const created = await newsService.create(payload as {
           title: string
           excerpt?: string
           content?: string
@@ -142,8 +144,13 @@ const NewsForm = () => {
           coverImage?: string
           gallery?: string[]
         })
+        // La liste ouvre la fenêtre de partage de la nouvelle publication
+        const shareItem: ShareItem = {
+          type: 'news', id: created.id, title: created.title,
+          summary: created.excerpt || created.content, image: created.coverImage, date: created.date,
+        }
+        navigate('/admin/news', { state: { shareItem } })
       }
-      navigate('/admin/news')
     } catch {
       console.error(t('admin.errors.saveError'))
     } finally {

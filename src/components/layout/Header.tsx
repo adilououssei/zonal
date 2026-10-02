@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { motion, LayoutGroup } from 'framer-motion'
+import { motion, LayoutGroup, AnimatePresence } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import {
   MapPin, Phone, Mail, MessageCircle,
-  Menu, X, Search, LayoutDashboard
+  Menu, X, Search, LayoutDashboard, ChevronDown, Newspaper, Calendar, Images
 } from 'lucide-react'
 import LanguageSwitcher from '../ui/LanguageSwitcher'
 import { useAuth } from '../../contexts/useAuth'
@@ -12,11 +12,22 @@ import { useAuth } from '../../contexts/useAuth'
 // En-tête du site public : barre du haut (coordonnées + réseaux sociaux),
 // navigation principale et menu mobile. Devient opaque au scroll (isScrolled)
 // pour rester lisible au-dessus du contenu de la page.
+//
+// Actualités, Événements et Galerie sont regroupés sous l'entrée « Médias »
+// (menu déroulant sur ordinateur, accordéon dans le menu mobile).
+type NavItem =
+  | { path: string; label: string }
+  | { label: string; children: { path: string; label: string; description: string; icon: typeof Newspaper }[] }
+
 const Header = () => {
   const { t } = useTranslation()
   const { isAuthenticated } = useAuth()
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isMediaOpen, setIsMediaOpen] = useState(false)
+  const [isMobileMediaOpen, setIsMobileMediaOpen] = useState(false)
+  const mediaCloseTimer = useRef<number | undefined>(undefined)
+  const mediaRef = useRef<HTMLDivElement>(null)
   const location = useLocation()
 
   // Bascule le fond du header (transparent -> opaque) au-delà de 50px de scroll
@@ -28,17 +39,53 @@ const Header = () => {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  const navLinks = [
+  // Clic à l'extérieur ou Échap : fermeture du menu « Médias »
+  useEffect(() => {
+    if (!isMediaOpen) return
+    const onPointerDown = (e: PointerEvent) => {
+      if (!mediaRef.current?.contains(e.target as Node)) setIsMediaOpen(false)
+    }
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setIsMediaOpen(false) }
+    document.addEventListener('pointerdown', onPointerDown)
+    document.addEventListener('keydown', onKey)
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown)
+      document.removeEventListener('keydown', onKey)
+    }
+  }, [isMediaOpen])
+
+  useEffect(() => () => window.clearTimeout(mediaCloseTimer.current), [])
+
+  // Survol : ouverture immédiate, fermeture légèrement retardée pour laisser
+  // le temps de descendre la souris jusqu'au menu
+  const openMedia = () => {
+    window.clearTimeout(mediaCloseTimer.current)
+    setIsMediaOpen(true)
+  }
+  const closeMediaSoon = () => {
+    window.clearTimeout(mediaCloseTimer.current)
+    mediaCloseTimer.current = window.setTimeout(() => setIsMediaOpen(false), 150)
+  }
+
+  const navLinks: NavItem[] = [
     { path: '/', label: t('header.nav.home') },
     { path: '/about', label: t('header.nav.about') },
     { path: '/programs', label: t('header.nav.programs') },
     { path: '/projects', label: t('header.nav.projects') },
-    { path: '/news', label: t('header.nav.news') },
-    { path: '/events', label: t('header.nav.events') },
+    {
+      label: t('header.nav.media'),
+      children: [
+        { path: '/news', label: t('header.nav.news'), description: t('header.media.newsDesc'), icon: Newspaper },
+        { path: '/events', label: t('header.nav.events'), description: t('header.media.eventsDesc'), icon: Calendar },
+        { path: '/gallery', label: t('header.nav.gallery'), description: t('header.media.galleryDesc'), icon: Images },
+      ],
+    },
     { path: '/contact', label: t('header.nav.contact') },
   ]
 
   const isActive = (path: string) => location.pathname === path
+  // Une rubrique est active sur sa page et sur ses pages de détail (/news/12...)
+  const isSectionActive = (path: string) => location.pathname === path || location.pathname.startsWith(`${path}/`)
 
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
@@ -98,7 +145,69 @@ const Header = () => {
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center gap-1">
             <LayoutGroup>
-              {navLinks.map((link) => (
+              {navLinks.map((link) => 'children' in link ? (
+                <div
+                  key={link.label}
+                  ref={mediaRef}
+                  className="relative"
+                  onMouseEnter={openMedia}
+                  onMouseLeave={closeMediaSoon}
+                >
+                  <button
+                    type="button"
+                    onClick={() => setIsMediaOpen((o) => !o)}
+                    aria-haspopup="true"
+                    aria-expanded={isMediaOpen}
+                    className={`relative inline-flex items-center gap-1 font-medium transition-colors hover:text-primary px-3 py-2 ${
+                      link.children.some((c) => isSectionActive(c.path)) || isMediaOpen ? 'text-primary' : 'text-gray-600'
+                    }`}
+                  >
+                    {link.label}
+                    <ChevronDown size={16} className={`transition-transform duration-200 ${isMediaOpen ? 'rotate-180' : ''}`} />
+                    {link.children.some((c) => isSectionActive(c.path)) && (
+                      <motion.div
+                        layoutId="nav-indicator"
+                        className="absolute -bottom-0.5 left-2 right-2 h-0.5 bg-primary rounded-full"
+                        transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                      />
+                    )}
+                  </button>
+                  <AnimatePresence>
+                    {isMediaOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 8 }}
+                        transition={{ duration: 0.15 }}
+                        className="absolute left-1/2 -translate-x-1/2 top-full pt-3 w-80"
+                      >
+                        <div className="bg-white rounded-2xl shadow-xl ring-1 ring-black/5 p-2">
+                          {link.children.map((child) => {
+                            const Icon = child.icon
+                            const active = isSectionActive(child.path)
+                            return (
+                              <Link
+                                key={child.path}
+                                to={child.path}
+                                onClick={() => setIsMediaOpen(false)}
+                                className={`flex items-start gap-3 rounded-xl p-3 transition-colors ${active ? 'bg-primary/5' : 'hover:bg-gray-50'}`}
+                              >
+                                <span className={`w-10 h-10 shrink-0 rounded-lg flex items-center justify-center ${active ? 'bg-primary text-white' : 'bg-primary/10 text-primary'}`}>
+                                  <Icon size={18} />
+                                </span>
+                                <span>
+                                  <span className={`block font-semibold ${active ? 'text-primary' : 'text-gray-900'}`}>{child.label}</span>
+                                  <span className="block text-small text-gray-500 leading-snug">{child.description}</span>
+                                </span>
+                              </Link>
+                            )
+                          })}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              ) : (
                 <Link
                   key={link.path}
                   to={link.path}
@@ -161,7 +270,50 @@ const Header = () => {
         className="lg:hidden overflow-hidden bg-white border-t border-gray-100"
       >
         <div className="container-custom py-6 space-y-4">
-          {navLinks.map((link) => (
+          {navLinks.map((link) => 'children' in link ? (
+            <div key={link.label}>
+              <button
+                type="button"
+                onClick={() => setIsMobileMediaOpen((o) => !o)}
+                aria-expanded={isMobileMediaOpen}
+                className={`w-full flex items-center justify-between font-medium text-lg transition-colors hover:text-primary border-l-4 py-1.5 pl-3 ${
+                  link.children.some((c) => isSectionActive(c.path)) ? 'text-primary border-primary' : 'text-gray-600 border-transparent'
+                }`}
+              >
+                {link.label}
+                <ChevronDown size={20} className={`transition-transform duration-200 ${isMobileMediaOpen ? 'rotate-180' : ''}`} />
+              </button>
+              <AnimatePresence initial={false}>
+                {isMobileMediaOpen && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="mt-2 ml-4 space-y-1 border-l border-gray-100 pl-3">
+                      {link.children.map((child) => {
+                        const Icon = child.icon
+                        return (
+                          <Link
+                            key={child.path}
+                            to={child.path}
+                            onClick={() => setIsMobileMenuOpen(false)}
+                            className={`flex items-center gap-3 py-2 font-medium transition-colors hover:text-primary ${
+                              isSectionActive(child.path) ? 'text-primary' : 'text-gray-600'
+                            }`}
+                          >
+                            <Icon size={18} />
+                            {child.label}
+                          </Link>
+                        )
+                      })}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          ) : (
             <Link
               key={link.path}
               to={link.path}

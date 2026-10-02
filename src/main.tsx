@@ -14,6 +14,8 @@ import News from './pages/News'
 import NewsDetail from './pages/NewsDetail'
 import Projects from './pages/Projects'
 import ProjectDetail from './pages/ProjectDetail'
+import PublicGallery from './pages/Gallery'
+import GalleryAlbum from './pages/GalleryAlbum'
 import Contact from './pages/Contact'
 import Login from './pages/Login'
 import ForgotPassword from './pages/ForgotPassword'
@@ -70,6 +72,8 @@ const router = createBrowserRouter([
           { path: 'events/:id', element: <EventDetail /> },
           { path: 'news', element: <News /> },
           { path: 'news/:id', element: <NewsDetail /> },
+          { path: 'gallery', element: <PublicGallery /> },
+          { path: 'gallery/:id', element: <GalleryAlbum /> },
           { path: 'contact', element: <Contact /> },
         ],
       },
